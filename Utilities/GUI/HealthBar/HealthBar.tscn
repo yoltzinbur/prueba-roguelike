@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://o5p0c0ji2g7a"]
+
+[ext_resource type="Texture2D" uid="uid://5p5p8vv76onh" path="res://Utilities/GUI/HealthBar/Art/GUI_4x_sliced.png" id="1_gyucs"]
+[ext_resource type="Script" uid="uid://desytctyvk44h" path="res://Utilities/GUI/HealthBar/health_bar.gd" id="2_ni6be"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_av7k1"]
+atlas = ExtResource("1_gyucs")
+region = Rect2(252, 480, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n5dhq"]
+atlas = ExtResource("1_gyucs")
+region = Rect2(0, 500, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2coux"]
+atlas = ExtResource("1_gyucs")
+region = Rect2(4, 416, 168, 48)
+
+[node name="HealthBar" type="Control" unique_id=942822893]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("2_ni6be")
+metadata/_edit_vertical_guides_ = [1152.0, 126.0, 84.0]
+metadata/_edit_horizontal_guides_ = [648.0, 36.0, 24.0]
+
+[node name="Under" type="NinePatchRect" parent="." unique_id=447023205]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 76.0
+offset_bottom = 16.0
+texture = SubResource("AtlasTexture_av7k1")
+
+[node name="Progress" type="TextureProgressBar" parent="." unique_id=365411828]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 76.0
+offset_bottom = 16.0
+nine_patch_stretch = true
+texture_progress = SubResource("AtlasTexture_n5dhq")
+
+[node name="Over" type="NinePatchRect" parent="." unique_id=1917276989]
+layout_mode = 0
+offset_right = 84.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_2coux")
