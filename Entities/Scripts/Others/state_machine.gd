@@ -3,7 +3,7 @@ extends Node
 
 @export var initial_state: State
 @export var animation_sprite: AnimatedSprite2D
-@export var target: Node2D	
+@export var target: Node2D
 
 var states: Dictionary
 var current_state: State
@@ -16,7 +16,6 @@ func _ready():
 		states[child.name] = child
 	
 	current_state = initial_state
-	print(target, "\t | ", current_state)
 	current_state.enter()
 	
 func _process(delta: float) -> void:

@@ -8,7 +8,8 @@ func enter(args := {}):
 	
 func state_process(delta: float) -> void:
 	if input_component.input_motion != Vector2.ZERO:
-		emit_signal("transitioned", self, "Walk", {})
+		var next_state = "Chase" if target.is_in_group("Enemy") else "Walk" 
+		emit_signal("transitioned", self, next_state, {})
 		
 	if input_component.input_attack:
 		emit_signal("transitioned", self, "IdleAttack", {})

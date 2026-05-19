@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Entities/Scripts/Character/States/idle_attack.gd" id="5_sfjtg"]
 [ext_resource type="Script" uid="uid://bae2d1lj77wom" path="res://Entities/Scripts/Character/States/heal.gd" id="6_3wmxr"]
 [ext_resource type="Texture2D" uid="uid://cl4pd5x7p8i0l" path="res://Entities/Player/Art/lizard_m_hit_anim_f0.png" id="8_13bcu"]
+[ext_resource type="Script" uid="uid://osrelb7hxxqf" path="res://Entities/Scripts/Character/Classes/player_input_component.gd" id="8_l2mqv"]
 [ext_resource type="Texture2D" uid="uid://e2m2xfq5detb" path="res://Entities/Player/Art/flask_big_red.png" id="8_l8a7u"]
 [ext_resource type="Texture2D" uid="uid://1v5jq64xrp5e" path="res://Entities/Player/Art/Player.png" id="8_laxle"]
 [ext_resource type="Texture2D" uid="uid://dub8idpg2slm1" path="res://Entities/Player/Art/lizard_m_idle_anim_f0.png" id="9_laxle"]
@@ -15,7 +16,6 @@
 [ext_resource type="Texture2D" uid="uid://bo3t8d0gdfwyu" path="res://Entities/Player/Art/lizard_m_idle_anim_f2.png" id="11_3wmxr"]
 [ext_resource type="Texture2D" uid="uid://bl8vffuod11xk" path="res://Entities/Player/Art/lizard_m_idle_anim_f3.png" id="12_5qe47"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Classes/health.gd" id="12_laxle"]
-[ext_resource type="Script" uid="uid://b5l67382h8n1h" path="res://Entities/Scripts/Others/input_component.gd" id="13_l8a7u"]
 [ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Others/velocity_component.gd" id="14_3wmxr"]
 [ext_resource type="Texture2D" uid="uid://b64peihb02kgn" path="res://Entities/Player/Art/lizard_m_hit_anim_f1.png" id="14_l2mqv"]
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Entities/Scripts/Others/state_machine.gd" id="15_5qe47"]
@@ -154,10 +154,10 @@ animations = [{
 radius = 7.5
 height = 18.0
 
-[node name="Player" type="CharacterBody2D" unique_id=1539473209]
-collision_layer = 0
+[node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
+collision_layer = 2
+collision_mask = 9
 metadata/_edit_group_ = true
-metadata/_edit_vertical_guides_ = [8.0, 32.0]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("15_5qe47")
@@ -189,7 +189,7 @@ animatedSprite = NodePath("../AnimatedSprite2D")
 metadata/_custom_type_script = "uid://b35nh43yww5xt"
 
 [node name="InputComponent" type="Node" parent="." unique_id=692584448]
-script = ExtResource("13_l8a7u")
+script = ExtResource("8_l2mqv")
 metadata/_custom_type_script = "uid://b5l67382h8n1h"
 
 [node name="VelocityComponent" type="Node" parent="." unique_id=825459612]

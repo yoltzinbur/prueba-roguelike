@@ -11,7 +11,7 @@ signal health_changed(current_health: int, max_health: int)
 	set(value):
 		current_health = clampi(value, 0, MAX_HEALTH)
 		emit_signal("health_changed", current_health, MAX_HEALTH)
-		#current_health = clampi(current_health, 0, MAX_HEALTH)
+		
 		if current_health <= 0:
 			kill()
 

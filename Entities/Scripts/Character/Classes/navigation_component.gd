@@ -1,25 +1,30 @@
 class_name NavigationComponent
-extends Node2D
+extends Node
 
 @export var navigation_agent: NavigationAgent2D
-@export var update_time: Timer
+@export var timer: Timer
 
-var player: CharacterBody2D
+var player: Node2D
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("Player")
 	
-	update_time.timeout.connect(_on_timer_timeout)
-	
+	if timer:
+		timer.timeout.connect(_on_timer_timeout)
+
 func _on_timer_timeout() -> void:
 	if player and is_instance_valid(player):
 		navigation_agent.target_position = player.global_position
-		
+	
 func get_next_direction(current_target: Node2D) -> Vector2:
-	if not navigation_agent.is_target_reachable():
+	if not player and not is_instance_valid(player):
 		return Vector2.ZERO
 	
-	var next_path_pos: Vector2 = navigation_agent.get_next_path_position()
-	var local_pos: Vector2 = current_target.to_local(next_path_pos)
+	if navigation_agent.is_navigation_finished():
+		return Vector2.ZERO
 	
-	return local_pos.normalized()
+	var direction: Vector2 = current_target.to_local(
+		navigation_agent.get_next_path_position()
+	).normalized()
+	
+	return direction

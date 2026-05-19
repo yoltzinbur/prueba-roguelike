@@ -26,6 +26,11 @@ window/stretch/mode="canvas_items"
 
 project/assembly_name="Prueba-Roguelike"
 
+[global_group]
+
+Player=""
+Enemy=""
+
 [input]
 
 up={
