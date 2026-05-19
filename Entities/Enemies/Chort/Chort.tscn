@@ -1,0 +1,114 @@
+[gd_scene format=3 uid="uid://dcqv5i8h7jf77"]
+
+[ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Entities/Scripts/Others/state_machine.gd" id="2_c6ou1"]
+[ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Entities/Scripts/Character/States/idle.gd" id="3_67cp7"]
+[ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Entities/Scripts/Character/States/chase.gd" id="4_s2bv3"]
+[ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Entities/Scripts/Character/States/idle_attack.gd" id="5_dumt4"]
+[ext_resource type="Script" uid="uid://ctnnopoy830jx" path="res://Entities/Scripts/Character/Classes/enemy_input_component.gd" id="6_byj0p"]
+[ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Others/velocity_component.gd" id="7_q5l3e"]
+[ext_resource type="Texture2D" uid="uid://j4p7daod7r85" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f0.png" id="8_gsg2d"]
+[ext_resource type="Texture2D" uid="uid://b4s7bi5cv4dw2" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f1.png" id="10_ot0kb"]
+[ext_resource type="Texture2D" uid="uid://bi7gm3kfyvo0l" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f2.png" id="12_qvi5c"]
+[ext_resource type="Texture2D" uid="uid://c7m1abjqi0wox" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f3.png" id="13_3ep1g"]
+[ext_resource type="Texture2D" uid="uid://ch0fakq0uxerq" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f0.png" id="14_4reqw"]
+[ext_resource type="Texture2D" uid="uid://dc8pm5lmqx00e" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f1.png" id="15_0rn3k"]
+[ext_resource type="Script" uid="uid://chsj2udmaply6" path="res://Entities/Scripts/Character/Classes/navigation_component.gd" id="16_67cp7"]
+[ext_resource type="Texture2D" uid="uid://cxocksco0eklw" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f2.png" id="16_qhinw"]
+[ext_resource type="Texture2D" uid="uid://dnrm5pwyiv70m" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f3.png" id="17_7r0q2"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_x4g45"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_gsg2d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_ot0kb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_qvi5c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_3ep1g")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_4reqw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_0rn3k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_qhinw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_7r0q2")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_f1o35"]
+radius = 5.0
+height = 18.0
+
+[node name="Chort" type="CharacterBody2D" unique_id=130086902 groups=["Enemy"]]
+collision_layer = 8
+collision_mask = 9
+
+[node name="StateMachine" type="Node" parent="." unique_id=865661675 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
+script = ExtResource("2_c6ou1")
+initial_state = NodePath("Idle")
+animation_sprite = NodePath("../AnimatedSprite2D")
+target = NodePath("..")
+metadata/_custom_type_script = "uid://c7agcf6y1awqi"
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=695944964]
+script = ExtResource("3_67cp7")
+
+[node name="IdleAttack" type="Node" parent="StateMachine" unique_id=2132998279]
+script = ExtResource("5_dumt4")
+
+[node name="Chase" type="Node" parent="StateMachine" unique_id=1124391141]
+script = ExtResource("4_s2bv3")
+
+[node name="NavigationComponent" type="Node2D" parent="." unique_id=605962854 node_paths=PackedStringArray("navigation_agent", "timer")]
+script = ExtResource("16_67cp7")
+navigation_agent = NodePath("NavigationAgent2D")
+timer = NodePath("Timer")
+metadata/_custom_type_script = "uid://chsj2udmaply6"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1267764081]
+path_desired_distance = 8.0
+avoidance_enabled = true
+radius = 16.0
+debug_enabled = true
+
+[node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
+wait_time = 0.5
+autostart = true
+
+[node name="InputComponent" type="Node" parent="." unique_id=1522735855]
+script = ExtResource("6_byj0p")
+attack_range = 100.0
+metadata/_custom_type_script = "uid://ctnnopoy830jx"
+
+[node name="VelocityComponent" type="Node" parent="." unique_id=1903564173]
+script = ExtResource("7_q5l3e")
+speed = 50.0
+metadata/_custom_type_script = "uid://do423eahufemx"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=314416093]
+sprite_frames = SubResource("SpriteFrames_x4g45")
+animation = &"walk"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=218082508]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_f1o35")
+
+[connection signal="timeout" from="NavigationComponent/Timer" to="NavigationComponent" method="_on_timer_timeout"]
