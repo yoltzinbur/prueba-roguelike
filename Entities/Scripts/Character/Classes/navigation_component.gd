@@ -9,7 +9,7 @@ var player: Node2D
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("Player")
 	
-	if timer:
+	if timer and not timer.timeout.is_connected(_on_timer_timeout):
 		timer.timeout.connect(_on_timer_timeout)
 
 func _on_timer_timeout() -> void:

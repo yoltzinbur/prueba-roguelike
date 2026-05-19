@@ -99,7 +99,8 @@ metadata/_custom_type_script = "uid://chsj2udmaply6"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1267764081]
 path_desired_distance = 8.0
-radius = 8.0
+radius = 8.5
+neighbor_distance = 30.0
 debug_enabled = true
 
 [node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
@@ -122,5 +123,3 @@ priority = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=855630364]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_c6ou1")
-
-[connection signal="timeout" from="NavigationComponent/Timer" to="NavigationComponent" method="_on_timer_timeout"]
