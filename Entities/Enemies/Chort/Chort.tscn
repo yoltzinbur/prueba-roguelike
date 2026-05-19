@@ -57,6 +57,10 @@ animations = [{
 radius = 5.0
 height = 18.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c6ou1"]
+radius = 7.0
+height = 22.0
+
 [node name="Chort" type="CharacterBody2D" unique_id=130086902 groups=["Enemy"]]
 collision_layer = 8
 collision_mask = 9
@@ -77,22 +81,6 @@ script = ExtResource("5_dumt4")
 [node name="Chase" type="Node" parent="StateMachine" unique_id=1124391141]
 script = ExtResource("4_s2bv3")
 
-[node name="NavigationComponent" type="Node2D" parent="." unique_id=605962854 node_paths=PackedStringArray("navigation_agent", "timer")]
-script = ExtResource("16_67cp7")
-navigation_agent = NodePath("NavigationAgent2D")
-timer = NodePath("Timer")
-metadata/_custom_type_script = "uid://chsj2udmaply6"
-
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1267764081]
-path_desired_distance = 8.0
-avoidance_enabled = true
-radius = 16.0
-debug_enabled = true
-
-[node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
-wait_time = 0.5
-autostart = true
-
 [node name="InputComponent" type="Node" parent="." unique_id=1522735855]
 script = ExtResource("6_byj0p")
 attack_range = 100.0
@@ -103,6 +91,21 @@ script = ExtResource("7_q5l3e")
 speed = 50.0
 metadata/_custom_type_script = "uid://do423eahufemx"
 
+[node name="NavigationComponent" type="Node2D" parent="." unique_id=605962854 node_paths=PackedStringArray("navigation_agent", "timer")]
+script = ExtResource("16_67cp7")
+navigation_agent = NodePath("NavigationAgent2D")
+timer = NodePath("Timer")
+metadata/_custom_type_script = "uid://chsj2udmaply6"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1267764081]
+path_desired_distance = 8.0
+radius = 8.0
+debug_enabled = true
+
+[node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
+wait_time = 0.5
+autostart = true
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=314416093]
 sprite_frames = SubResource("SpriteFrames_x4g45")
 animation = &"walk"
@@ -110,5 +113,14 @@ animation = &"walk"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=218082508]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_f1o35")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=437511300]
+collision_layer = 0
+collision_mask = 8
+priority = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=855630364]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_c6ou1")
 
 [connection signal="timeout" from="NavigationComponent/Timer" to="NavigationComponent" method="_on_timer_timeout"]

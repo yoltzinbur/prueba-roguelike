@@ -12,8 +12,9 @@ func enter(args := {}):
 
 func state_physics_process(delta: float) -> void:	
 	var direction: Vector2 = navigation_component.get_next_direction(target)
+	var separation: Vector2 = velocity_component.get_separation_vector()
 	
-	print(direction)
+	var final_direction = (direction + separation * 0.75).normalized()
 	
 	if direction == Vector2.ZERO:
 		if not navigation_component.player or not is_instance_valid(navigation_component.player):
@@ -33,5 +34,5 @@ func state_physics_process(delta: float) -> void:
 	if direction.x != 0:
 		anim.scale.x = roundi(sign(direction.x))
 		
-	velocity_component.move(delta, direction)
+	velocity_component.move(delta, final_direction)
 	
