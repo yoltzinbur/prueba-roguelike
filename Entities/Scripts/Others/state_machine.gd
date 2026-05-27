@@ -38,3 +38,7 @@ func change_state(state: State, new_state_name: String, args: Dictionary) -> voi
 		current_state.exit()
 		current_state = new_state
 		new_state.enter(args)
+
+
+func _on_hurt_box_area_entered(area: Area2D) -> void:
+	pass # Replace with function body.

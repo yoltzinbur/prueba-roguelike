@@ -45,6 +45,7 @@ texture = ExtResource("1_60xkv")
 5:5/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_0apqi")
 4:5/0 = 0
 4:5/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_ws440")
+3:3/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_40tvw"]
 navigation_layer_0/layers = 1

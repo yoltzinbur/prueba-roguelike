@@ -6,7 +6,7 @@ func enter(args := {}):
 	health_component = target.get_node("HealthComponent")
 	
 	anim.play("attack")
-	
+	#
 	health_component.damage(5)
 	print(health_component.current_health)
 	

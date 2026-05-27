@@ -157,8 +157,8 @@ radius = 7.0
 height = 18.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7ymae"]
-radius = 9.0
-height = 22.0
+radius = 8.0
+height = 20.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l2mqv"]
 size = Vector2(20, 18)
@@ -211,7 +211,6 @@ sprite_frames = SubResource("SpriteFrames_inc0x")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=3118235]
-visible = false
 position = Vector2(0, 4)
 shape = SubResource("CapsuleShape2D_l2mqv")
 
@@ -239,8 +238,5 @@ script = ExtResource("25_tepoh")
 metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="HitBox" unique_id=1778411011]
-visible = false
 position = Vector2(18, 4)
 shape = SubResource("RectangleShape2D_l2mqv")
-
-[connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]

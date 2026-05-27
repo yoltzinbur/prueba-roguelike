@@ -83,7 +83,7 @@ script = ExtResource("4_s2bv3")
 
 [node name="InputComponent" type="Node" parent="." unique_id=1522735855]
 script = ExtResource("6_byj0p")
-attack_range = 100.0
+attack_range = 32.0
 metadata/_custom_type_script = "uid://ctnnopoy830jx"
 
 [node name="VelocityComponent" type="Node" parent="." unique_id=1903564173]
@@ -101,7 +101,6 @@ metadata/_custom_type_script = "uid://chsj2udmaply6"
 path_desired_distance = 8.0
 radius = 8.5
 neighbor_distance = 30.0
-debug_enabled = true
 
 [node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
 wait_time = 0.5
