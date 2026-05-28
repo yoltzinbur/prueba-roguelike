@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6", "Mobile")
 [autoload]
 
 GameManager="*uid://b6oteyek7vkkr"
+SoundManager="*uid://dtu4qc7p35bng"
 
 [display]
 

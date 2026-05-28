@@ -3,13 +3,18 @@ extends State
 var input_component: InputComponent
 var velocity_component: VelocityComponent
 var health_component: HealthComponent
+var audioWalk: AudioStreamPlayer 
 
 func enter(args := {}):
 	input_component = target.get_node("InputComponent")
 	velocity_component = target.get_node("VelocityComponent")
 	health_component = target.get_node("HealthComponent")
+	audioWalk = target.get_node_or_null("Walk")
 	
-	anim.play("walk")
+	if anim and anim.sprite_frames.has_animation("walk"):
+		anim.play("walk")
+		if audioWalk:
+			audioWalk.play()
 	
 	if health_component and not health_component.damaged.is_connected(_on_damaged):
 		health_component.damaged.connect(_on_damaged)
@@ -39,3 +44,6 @@ func _on_damaged():
 func exit():
 	if health_component and health_component.damaged.is_connected(_on_damaged):
 		health_component.damaged.disconnect(_on_damaged)
+	
+	if audioWalk:
+		audioWalk.stop()
