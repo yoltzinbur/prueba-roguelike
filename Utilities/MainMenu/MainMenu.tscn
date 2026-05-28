@@ -1,0 +1,161 @@
+[gd_scene format=3 uid="uid://fyux2tif6mbb"]
+
+[ext_resource type="Script" uid="uid://bl7inuh44q0dm" path="res://Utilities/MainMenu/MainMenu.gd" id="1_i26rj"]
+[ext_resource type="Texture2D" uid="uid://t4vac4kei1hi" path="res://Utilities/MainMenu/Art/base del menu de inicio.png" id="2_8c7vy"]
+[ext_resource type="Texture2D" uid="uid://damefh24a3my8" path="res://Utilities/MainMenu/Art/espadas del menu.png" id="3_hvqjj"]
+[ext_resource type="Texture2D" uid="uid://3ivpgn24n3dv" path="res://Utilities/MainMenu/Art/boton del menu.png" id="4_7l1er"]
+[ext_resource type="Texture2D" uid="uid://l5vb7k0b3lng" path="res://Utilities/MainMenu/Art/cristales azules.png" id="5_vgxt1"]
+[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Utilities/Art/Minecraft.ttf" id="6_hvqjj"]
+[ext_resource type="Texture2D" uid="uid://cq4tk7twl7xfo" path="res://Utilities/MainMenu/Art/cristales morados.png" id="6_qstjv"]
+[ext_resource type="AudioStream" uid="uid://dt1uyio6hhauw" path="res://Utilities/MainMenu/Music/song18.mp3" id="8_7l1er"]
+[ext_resource type="AudioStream" uid="uid://dmtyyauvce3vn" path="res://Utilities/MainMenu/Music/264447__kickhat__open-button-2.wav" id="8_vgxt1"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fimr5"]
+animations = [{
+"frames": [{
+"duration": 2.0,
+"texture": ExtResource("5_vgxt1")
+}, {
+"duration": 2.0,
+"texture": ExtResource("6_qstjv")
+}],
+"loop": true,
+"name": &"default",
+"speed": 3.0
+}]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_h7a2f"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+texture = ExtResource("4_7l1er")
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qoqlk"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+texture = ExtResource("4_7l1er")
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_iwfq2"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+texture = ExtResource("4_7l1er")
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[node name="MainMenu" type="Node2D" unique_id=593661736]
+script = ExtResource("1_i26rj")
+
+[node name="Control" type="Control" parent="." unique_id=1134674162]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Fondo" type="TextureRect" parent="Control" unique_id=570638226]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 480.0
+offset_bottom = 270.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_8c7vy")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TextureRect" type="TextureRect" parent="Control" unique_id=363110831]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+texture = ExtResource("3_hvqjj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Control" unique_id=1739613537]
+position = Vector2(240.99998, 133.25)
+scale = Vector2(1.0041667, 1.0055555)
+sprite_frames = SubResource("SpriteFrames_fimr5")
+autoplay = "default"
+frame = 1
+frame_progress = 0.022521289
+
+[node name="CenterContainer" type="CenterContainer" parent="Control" unique_id=1271751909]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_right = 480.0
+offset_bottom = 270.0
+grow_horizontal = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer" unique_id=1905021195]
+custom_minimum_size = Vector2(250, 0)
+layout_direction = 4
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer" unique_id=482402169]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 1, 1, 1)
+theme_override_fonts/font = ExtResource("6_hvqjj")
+theme_override_font_sizes/font_size = 27
+text = "CRISTAL HEARTH"
+horizontal_alignment = 1
+
+[node name="Start" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=1704388207]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8745098, 0, 0.8745098, 1)
+theme_override_fonts/font = ExtResource("6_hvqjj")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxTexture_h7a2f")
+text = "START"
+
+[node name="Options" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=2059196340]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8745098, 0, 0.8745098, 1)
+theme_override_fonts/font = ExtResource("6_hvqjj")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxTexture_qoqlk")
+text = "OPTIONS"
+
+[node name="Quit" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=1023002173]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8745098, 0, 0.8745098, 1)
+theme_override_fonts/font = ExtResource("6_hvqjj")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxTexture_iwfq2")
+text = "QUIT"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Control" unique_id=1288687144]
+stream = ExtResource("8_7l1er")
+volume_db = -4.555
+autoplay = true
+parameters/looping = true
+
+[node name="AudioStart" type="AudioStreamPlayer" parent="Control" unique_id=1388451887]
+stream = ExtResource("8_vgxt1")
+
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
