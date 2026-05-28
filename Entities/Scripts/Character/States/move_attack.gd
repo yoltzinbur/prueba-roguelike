@@ -1,15 +1,20 @@
 extends State
 
 var health_component: HealthComponent
+var audioAttack: AudioStreamPlayer
 
 @export var hitbox: CollisionShape2D
 
 func enter(args := {}):
 	health_component = target.get_node("HealthComponent")
+	audioAttack = target.get_node_or_null("Attack")
 	
 	if args.has("direction"):
 		anim.play("attack")
 		args["velocity_component"].move(0, args["direction"] * args["force"])
+		
+		if audioAttack:
+			audioAttack.play()
 	
 	if hitbox:
 		hitbox.disabled = false

@@ -171,8 +171,7 @@ size = Vector2(21, 22)
 [node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
 collision_layer = 64
 collision_mask = 17
-metadata/_edit_vertical_guides_ = [31.0, 7.0, -148.0, -64.0]
-metadata/_edit_horizontal_guides_ = [-54.0, -46.0]
+metadata/_edit_group_ = true
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("15_5qe47")
@@ -215,7 +214,7 @@ metadata/_custom_type_script = "uid://b5l67382h8n1h"
 
 [node name="VelocityComponent" type="Node" parent="." unique_id=825459612]
 script = ExtResource("14_3wmxr")
-speed = 150.0
+speed = 100.0
 metadata/_custom_type_script = "uid://do423eahufemx"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1931187168]
@@ -230,6 +229,24 @@ position = Vector2(0, 4)
 shape = SubResource("CapsuleShape2D_l2mqv")
 
 [node name="AnchorCamara2d" parent="." unique_id=1952970888 instance=ExtResource("2_iob38")]
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+
+[node name="UI" type="Node2D" parent="." unique_id=956681797]
+
+[node name="HealthBar" parent="UI" unique_id=942822893 instance=ExtResource("22_ayo8t")]
+offset_left = -148.0
+offset_top = -78.0
+offset_right = -43.0
+offset_bottom = -48.0
+metadata/_edit_use_anchors_ = true
+
+[node name="CoinsCounter" parent="UI" unique_id=794476052 instance=ExtResource("27_h03de")]
+offset_left = -148.0
+offset_top = -46.0
+offset_right = -64.0
+offset_bottom = -30.0
+metadata/_edit_use_anchors_ = true
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=1764899623 node_paths=PackedStringArray("health")]
 collision_layer = 2
@@ -253,22 +270,6 @@ metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 position = Vector2(20.5, 4)
 shape = SubResource("RectangleShape2D_l2mqv")
 disabled = true
-
-[node name="UI" type="Node2D" parent="." unique_id=158891917]
-
-[node name="HealthBar" parent="UI" unique_id=942822893 node_paths=PackedStringArray("health_component") instance=ExtResource("22_ayo8t")]
-offset_left = -148.0
-offset_top = -78.0
-offset_right = -43.0
-offset_bottom = -48.0
-health_component = NodePath("../../HealthComponent")
-metadata/_edit_use_anchors_ = true
-
-[node name="CoinsCounter" parent="UI" unique_id=794476052 instance=ExtResource("27_h03de")]
-offset_left = -148.0
-offset_top = -46.0
-offset_right = -64.0
-offset_bottom = -30.0
 
 [node name="Walk" type="AudioStreamPlayer" parent="." unique_id=1061975298]
 stream = ExtResource("28_e8qxc")

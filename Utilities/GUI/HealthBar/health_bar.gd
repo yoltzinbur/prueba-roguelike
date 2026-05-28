@@ -1,10 +1,13 @@
 extends Control
 
-@export var health_component: HealthComponent
-
+var player: CharacterBody2D
+var health_component: HealthComponent
 @onready var progress_bar: TextureProgressBar = $Progress
 
 func _ready() -> void:
+	player = get_tree().get_first_node_in_group("Player")
+	health_component = player.get_node("HealthComponent")
+	
 	if health_component:
 		health_component.health_changed.connect(_on_health_changed)
 		

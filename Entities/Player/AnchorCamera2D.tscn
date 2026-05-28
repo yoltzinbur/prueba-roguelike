@@ -1,7 +1,4 @@
 [gd_scene format=3 uid="uid://cmc4ttgo0dqth"]
 
-[sub_resource type="GDScript" id="GDScript_coqqr"]
-
 [node name="AnchorCamara2d" type="Camera2D" unique_id=1952970888]
 zoom = Vector2(1.5, 1.5)
-script = SubResource("GDScript_coqqr")
