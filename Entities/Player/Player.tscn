@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://ichcm3n2g520" path="res://Entities/Player/Art/lizard_m_run_anim_f3.png" id="5_rhhsi"]
 [ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Entities/Scripts/Character/States/idle_attack.gd" id="5_sfjtg"]
 [ext_resource type="Script" uid="uid://bae2d1lj77wom" path="res://Entities/Scripts/Character/States/heal.gd" id="6_3wmxr"]
+[ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Entities/Scripts/Character/States/hit.gd" id="7_tepoh"]
 [ext_resource type="Texture2D" uid="uid://cl4pd5x7p8i0l" path="res://Entities/Player/Art/lizard_m_hit_anim_f0.png" id="8_13bcu"]
 [ext_resource type="Script" uid="uid://osrelb7hxxqf" path="res://Entities/Scripts/Character/Classes/player_input_component.gd" id="8_l2mqv"]
 [ext_resource type="Texture2D" uid="uid://e2m2xfq5detb" path="res://Entities/Player/Art/flask_big_red.png" id="8_l8a7u"]
@@ -87,7 +88,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"attack",
-"speed": 2.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -161,11 +162,11 @@ radius = 9.0
 height = 22.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l2mqv"]
-size = Vector2(20, 18)
+size = Vector2(21, 22)
 
 [node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
 collision_layer = 0
-metadata/_edit_vertical_guides_ = [28.0, 7.0]
+metadata/_edit_vertical_guides_ = [31.0, 7.0]
 metadata/_edit_group_ = true
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
@@ -181,14 +182,20 @@ script = ExtResource("16_ayo8t")
 [node name="Walk" type="Node" parent="StateMachine" unique_id=96510628]
 script = ExtResource("17_t8qnr")
 
-[node name="IdleAttack" type="Node" parent="StateMachine" unique_id=431989004]
+[node name="IdleAttack" type="Node" parent="StateMachine" unique_id=431989004 node_paths=PackedStringArray("hitbox")]
 script = ExtResource("5_sfjtg")
+hitbox = NodePath("../../HitBox/CollisionShape2D3")
 
-[node name="MoveAttack" type="Node" parent="StateMachine" unique_id=1395817129]
+[node name="MoveAttack" type="Node" parent="StateMachine" unique_id=1395817129 node_paths=PackedStringArray("hitbox")]
 script = ExtResource("19_s1io2")
+hitbox = NodePath("../../HitBox/CollisionShape2D3")
 
 [node name="Heal" type="Node" parent="StateMachine" unique_id=524141110]
 script = ExtResource("6_3wmxr")
+
+[node name="Hit" type="Node" parent="StateMachine" unique_id=1381201182 node_paths=PackedStringArray("velocity_component")]
+script = ExtResource("7_tepoh")
+velocity_component = NodePath("../../VelocityComponent")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
 script = ExtResource("12_laxle")
@@ -208,7 +215,9 @@ metadata/_custom_type_script = "uid://do423eahufemx"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1931187168]
 sprite_frames = SubResource("SpriteFrames_inc0x")
-animation = &"idle"
+animation = &"attack"
+frame = 4
+frame_progress = 0.19782439
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=3118235]
 visible = false
@@ -226,6 +235,8 @@ health_component = NodePath("../HealthComponent")
 metadata/_edit_use_anchors_ = true
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=1764899623 node_paths=PackedStringArray("health")]
+collision_layer = 2
+collision_mask = 4
 script = ExtResource("24_80tt4")
 health = NodePath("../HealthComponent")
 metadata/_custom_type_script = "uid://du0cpqxnjs3fe"
@@ -235,12 +246,15 @@ position = Vector2(0, 4)
 shape = SubResource("CapsuleShape2D_7ymae")
 
 [node name="HitBox" type="Area2D" parent="." unique_id=238861485]
+collision_layer = 32
+collision_mask = 2
 script = ExtResource("25_tepoh")
+damage = 5
 metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="HitBox" unique_id=1778411011]
-visible = false
-position = Vector2(18, 4)
+position = Vector2(20.5, 4)
 shape = SubResource("RectangleShape2D_l2mqv")
+disabled = true
 
 [connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]

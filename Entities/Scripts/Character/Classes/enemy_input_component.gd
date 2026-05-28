@@ -28,5 +28,4 @@ func _process(delta: float) -> void:
 		pass
 	
 	else:
-		#input_motion = (player.global_position - target.global_position).normalized()
-		input_motion = Vector2.UP
+		input_motion = (player.global_position - target.global_position).normalized()

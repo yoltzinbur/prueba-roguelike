@@ -2,6 +2,7 @@ class_name HealthComponent
 extends Node
 
 signal health_changed(current_health: int, max_health: int)
+signal damaged
 
 @export var MAX_HEALTH: int
 @export var stamina: int
@@ -20,7 +21,7 @@ func heal(value: int) -> void:
 
 func damage(value: int) -> void:
 	current_health -= value
-	animatedSprite.play("hit")
+	emit_signal("damaged")
 
 func kill() -> void:
 	get_parent().queue_free()

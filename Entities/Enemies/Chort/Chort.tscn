@@ -3,10 +3,13 @@
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Entities/Scripts/Others/state_machine.gd" id="2_c6ou1"]
 [ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Entities/Scripts/Character/States/idle.gd" id="3_67cp7"]
 [ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Entities/Scripts/Character/States/chase.gd" id="4_s2bv3"]
+[ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Entities/Scripts/Character/States/hit.gd" id="5_36y4f"]
 [ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Entities/Scripts/Character/States/idle_attack.gd" id="5_dumt4"]
 [ext_resource type="Script" uid="uid://ctnnopoy830jx" path="res://Entities/Scripts/Character/Classes/enemy_input_component.gd" id="6_byj0p"]
 [ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Others/velocity_component.gd" id="7_q5l3e"]
 [ext_resource type="Texture2D" uid="uid://j4p7daod7r85" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f0.png" id="8_gsg2d"]
+[ext_resource type="Texture2D" uid="uid://fgstoh08moxw" path="res://Entities/Enemies/Chort/Art/chort_hit_anim_f0.png" id="9_q5l3e"]
+[ext_resource type="Texture2D" uid="uid://qoakj5pfmsir" path="res://Entities/Enemies/Chort/Art/chort_hit_anim_f1.png" id="10_36y4f"]
 [ext_resource type="Texture2D" uid="uid://b4s7bi5cv4dw2" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f1.png" id="10_ot0kb"]
 [ext_resource type="Texture2D" uid="uid://bi7gm3kfyvo0l" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f2.png" id="12_qvi5c"]
 [ext_resource type="Texture2D" uid="uid://c7m1abjqi0wox" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f3.png" id="13_3ep1g"]
@@ -14,10 +17,24 @@
 [ext_resource type="Texture2D" uid="uid://dc8pm5lmqx00e" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f1.png" id="15_0rn3k"]
 [ext_resource type="Script" uid="uid://chsj2udmaply6" path="res://Entities/Scripts/Character/Classes/navigation_component.gd" id="16_67cp7"]
 [ext_resource type="Texture2D" uid="uid://cxocksco0eklw" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f2.png" id="16_qhinw"]
+[ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Others/hitbox.gd" id="16_s2bv3"]
 [ext_resource type="Texture2D" uid="uid://dnrm5pwyiv70m" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f3.png" id="17_7r0q2"]
+[ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Others/hurtbox.gd" id="17_dumt4"]
+[ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Classes/health.gd" id="18_dumt4"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_x4g45"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_q5l3e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_36y4f")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 10.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("8_gsg2d")
@@ -57,9 +74,13 @@ animations = [{
 radius = 5.0
 height = 18.0
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c6ou1"]
-radius = 7.0
-height = 22.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_byj0p"]
+radius = 6.0
+height = 20.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dumt4"]
+radius = 9.0
+height = 26.0
 
 [node name="Chort" type="CharacterBody2D" unique_id=130086902 groups=["Enemy"]]
 collision_layer = 8
@@ -81,6 +102,10 @@ script = ExtResource("5_dumt4")
 [node name="Chase" type="Node" parent="StateMachine" unique_id=1124391141]
 script = ExtResource("4_s2bv3")
 
+[node name="Hit" type="Node" parent="StateMachine" unique_id=522520533 node_paths=PackedStringArray("velocity_component")]
+script = ExtResource("5_36y4f")
+velocity_component = NodePath("../../VelocityComponent")
+
 [node name="InputComponent" type="Node" parent="." unique_id=1522735855]
 script = ExtResource("6_byj0p")
 attack_range = 32.0
@@ -90,6 +115,12 @@ metadata/_custom_type_script = "uid://ctnnopoy830jx"
 script = ExtResource("7_q5l3e")
 speed = 50.0
 metadata/_custom_type_script = "uid://do423eahufemx"
+
+[node name="HealthComponent" type="Node" parent="." unique_id=700538753 node_paths=PackedStringArray("animatedSprite")]
+script = ExtResource("18_dumt4")
+MAX_HEALTH = 10
+animatedSprite = NodePath("../AnimatedSprite2D")
+metadata/_custom_type_script = "uid://b35nh43yww5xt"
 
 [node name="NavigationComponent" type="Node2D" parent="." unique_id=605962854 node_paths=PackedStringArray("navigation_agent", "timer")]
 script = ExtResource("16_67cp7")
@@ -108,17 +139,32 @@ autostart = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=314416093]
 sprite_frames = SubResource("SpriteFrames_x4g45")
-animation = &"walk"
+animation = &"hit"
+frame = 1
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=218082508]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_f1o35")
 
-[node name="Area2D" type="Area2D" parent="." unique_id=437511300]
-collision_layer = 0
-collision_mask = 8
-priority = 1
+[node name="HitBox" type="Area2D" parent="." unique_id=794687379]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("16_s2bv3")
+damage = 10
+metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=855630364]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox" unique_id=2117508812]
 position = Vector2(0, 2)
-shape = SubResource("CapsuleShape2D_c6ou1")
+shape = SubResource("CapsuleShape2D_byj0p")
+
+[node name="HurtBox" type="Area2D" parent="." unique_id=289664271 node_paths=PackedStringArray("health")]
+collision_layer = 2
+collision_mask = 32
+script = ExtResource("17_dumt4")
+health = NodePath("../HealthComponent")
+metadata/_custom_type_script = "uid://du0cpqxnjs3fe"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=1663042101]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_dumt4")

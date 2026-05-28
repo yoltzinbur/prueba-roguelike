@@ -2,10 +2,15 @@ extends State
 
 var navigation_component: NavigationComponent
 var velocity_component: VelocityComponent
+var health_component: HealthComponent
 
 func enter(args := {}):
 	navigation_component = target.get_node("NavigationComponent")
 	velocity_component = target.get_node("VelocityComponent")
+	health_component = target.get_node("HealthComponent")
+	
+	if health_component and not health_component.damaged.is_connected(_on_damaged):
+		health_component.damaged.connect(_on_damaged)
 	
 	if anim and anim.sprite_frames.has_animation("walk"):
 		anim.play("walk")
@@ -35,4 +40,10 @@ func state_physics_process(delta: float) -> void:
 		anim.scale.x = roundi(sign(direction.x))
 		
 	velocity_component.move(delta, final_direction)
-	
+
+func _on_damaged():
+	emit_signal("transitioned", self, "Hit", {})
+
+func exit():
+	if health_component and health_component.damaged.is_connected(_on_damaged):
+		health_component.damaged.disconnect(_on_damaged)
