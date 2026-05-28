@@ -3,13 +3,19 @@
 [ext_resource type="PackedScene" uid="uid://tomvta77ro88" path="res://Utilities/Layout1/TilemapLeyers.tscn" id="1_klho5"]
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="2_iqhkp"]
 [ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="3_iqhkp"]
+<<<<<<< HEAD
 [ext_resource type="PackedScene" uid="uid://cw68qufp67ifn" path="res://Utilities/Tutorial/tutorialUI.tscn" id="4_kytwb"]
 [ext_resource type="PackedScene" uid="uid://dgb250m1o7qj0" path="res://Utilities/PauseMenu/pause_menu.tscn" id="5_j2w0w"]
+=======
+[ext_resource type="PackedScene" uid="uid://dg5txc2gh0pdd" path="res://Entities/Collectables/Coin/Coin.tscn" id="4_kytwb"]
+[ext_resource type="AudioStream" uid="uid://cd8m66jogfoll" path="res://Assets/Audio/syncraftianofficial-syncraftian-dungeon-355360.mp3" id="5_j2w0w"]
+>>>>>>> e6dd64d1ba25840552b842a4b0f8485b15cadabc
 
 [node name="Main" type="Node2D" unique_id=1509926915]
 
 [node name="TilemapLeyers" parent="." unique_id=1906257315 instance=ExtResource("1_klho5")]
 
+<<<<<<< HEAD
 [node name="Chort" parent="." unique_id=130086902 instance=ExtResource("3_iqhkp")]
 position = Vector2(158, 94)
 
@@ -17,13 +23,42 @@ position = Vector2(158, 94)
 position = Vector2(168, 56)
 
 [node name="Chort3" parent="." unique_id=1339254829 instance=ExtResource("3_iqhkp")]
+=======
+[node name="Collectibles" type="Node2D" parent="." unique_id=299475727]
+
+[node name="Coin" parent="Collectibles" unique_id=464168730 instance=ExtResource("4_kytwb")]
+position = Vector2(334, 47)
+
+[node name="Coin2" parent="Collectibles" unique_id=998665065 instance=ExtResource("4_kytwb")]
+position = Vector2(438, 162)
+
+[node name="Coin3" parent="Collectibles" unique_id=495231632 instance=ExtResource("4_kytwb")]
+position = Vector2(184, 116)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1549644349]
+
+[node name="Chort" parent="Enemies" unique_id=130086902 instance=ExtResource("3_iqhkp")]
+position = Vector2(404, 209)
+
+[node name="Chort2" parent="Enemies" unique_id=943820841 instance=ExtResource("3_iqhkp")]
+position = Vector2(391, 52)
+
+[node name="Chort3" parent="Enemies" unique_id=1339254829 instance=ExtResource("3_iqhkp")]
+>>>>>>> e6dd64d1ba25840552b842a4b0f8485b15cadabc
 position = Vector2(147, 182)
 
 [node name="Player" parent="." unique_id=1539473209 instance=ExtResource("2_iqhkp")]
 position = Vector2(52, 49)
 
+<<<<<<< HEAD
 [node name="TutorialUI" parent="." unique_id=847453696 instance=ExtResource("4_kytwb")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1165154995]
 
 [node name="PauseMenu" parent="CanvasLayer" unique_id=411942886 instance=ExtResource("5_j2w0w")]
+=======
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1124704745]
+stream = ExtResource("5_j2w0w")
+volume_db = -50.0
+autoplay = true
+>>>>>>> e6dd64d1ba25840552b842a4b0f8485b15cadabc

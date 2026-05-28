@@ -16,7 +16,12 @@ config/features=PackedStringArray("4.6", "Mobile")
 
 [autoload]
 
+<<<<<<< HEAD
 TutorialManager="*uid://d0adte4yhfndb"
+=======
+GameManager="*uid://b6oteyek7vkkr"
+SoundManager="*uid://dtu4qc7p35bng"
+>>>>>>> e6dd64d1ba25840552b842a4b0f8485b15cadabc
 
 [display]
 
@@ -91,6 +96,7 @@ pausem={
 2d_physics/layer_4="enemies"
 2d_physics/layer_5="collectibles"
 2d_physics/layer_6="hitbox_player"
+2d_physics/layer_7="player"
 
 [physics]
 
