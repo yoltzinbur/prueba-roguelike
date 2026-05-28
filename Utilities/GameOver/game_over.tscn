@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://bwmf2pcbjus5l"]
+
+[ext_resource type="Script" uid="uid://bvq8b33uias8i" path="res://Utilities/GameOver/game_over.gd" id="1_hwu0h"]
+[ext_resource type="FontFile" uid="uid://bhb117w770yd" path="res://Utilities/Art/Minecraft.ttf" id="2_3hbey"]
+
+[node name="GameOver" type="Control" unique_id=909493849]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hwu0h")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=191338638]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 0.53333336)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1563047267]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -73.5
+offset_top = -36.0
+offset_right = 73.5
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=367525924]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_3hbey")
+text = "GAME OVER"
+
+[node name="Reiniciar" type="Button" parent="VBoxContainer" unique_id=401976128]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_3hbey")
+text = "REINICIAR"
+
+[node name="MainMenu" type="Button" parent="VBoxContainer" unique_id=1913091176]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_3hbey")
+text = "MENU PRINCIPAL"
+
+[connection signal="pressed" from="VBoxContainer/Reiniciar" to="." method="_on_reiniciar_pressed"]
+[connection signal="pressed" from="VBoxContainer/MainMenu" to="." method="_on_menu_pressed"]

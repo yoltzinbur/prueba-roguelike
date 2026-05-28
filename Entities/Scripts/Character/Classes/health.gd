@@ -3,6 +3,7 @@ extends Node
 
 signal health_changed(current_health: int, max_health: int)
 signal damaged
+signal muerto
 
 var damageAudio: AudioStreamPlayer
 
@@ -31,4 +32,10 @@ func damage(value: int) -> void:
 	emit_signal("damaged")
 
 func kill() -> void:
-	get_parent().queue_free()
+	var game_over = preload("res://Utilities/GameOver/game_over.tscn").instantiate()
+	get_tree().root.call_deferred("add_child", game_over)
+	get_parent().queue_free.call_deferred()
+
+func _mostrar_game_over():
+	var game_over = preload("res://Utilities/GameOver/game_over.tscn").instantiate()
+	get_tree().root.add_child(game_over)

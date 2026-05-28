@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Prueba-Roguelike"
-run/main_scene="uid://by1kjfgwmds7y"
+run/main_scene="uid://fyux2tif6mbb"
 config/features=PackedStringArray("4.6", "Mobile")
 
 [autoload]
 
+TutorialManager="*uid://d0adte4yhfndb"
 GameManager="*uid://b6oteyek7vkkr"
 SoundManager="*uid://dtu4qc7p35bng"
-TutorialManager="*uid://d0adte4yhfndb"
 
 [display]
 
@@ -77,6 +77,11 @@ attack={
 heal={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":82,"key_label":0,"unicode":114,"location":0,"echo":false,"script":null)
+]
+}
+pausem={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 pause={

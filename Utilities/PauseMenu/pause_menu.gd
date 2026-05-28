@@ -2,14 +2,20 @@ extends Control
 
 func _ready():
 	$AnimationPlayer.play("RESET")
+	visible = false
+	$PanelContainer.process_mode = Node.PROCESS_MODE_DISABLED
 
 func resume():
-	get_tree().paused=false
+	get_tree().paused = false
 	$AnimationPlayer.play_backwards("blur")
-	
+	visible = false
+	$PanelContainer.process_mode = Node.PROCESS_MODE_DISABLED
+
 func pause():
-	get_tree().paused= true
+	get_tree().paused = true
 	$AnimationPlayer.play("blur")
+	visible = true
+	$PanelContainer.process_mode = Node.PROCESS_MODE_ALWAYS
 	
 func testEsc():
 	if Input.is_action_just_pressed("pause") and get_tree().paused==false:
