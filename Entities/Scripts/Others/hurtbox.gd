@@ -6,7 +6,8 @@ signal received_damage(damage: int)
 @export var health: HealthComponent
 
 func _ready() -> void:
-	connect("area_entered", _on_area_entered)
+	if not area_entered.is_connected(_on_area_entered):
+		connect("area_entered", _on_area_entered)
 
 func _on_area_entered(hitbox: HitBox) -> void:
 	if hitbox != null:

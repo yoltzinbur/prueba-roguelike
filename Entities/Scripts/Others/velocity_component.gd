@@ -10,7 +10,7 @@ var nav_agent: NavigationAgent2D = null
 
 func _ready() -> void:
 	if target.is_in_group("Enemy"):
-		separation_area = $"../Area2D"
+		separation_area = $"../SeparationArea"
 		nav_agent = $"../NavigationComponent/NavigationAgent2D"
 	
 	if nav_agent:

@@ -82,6 +82,10 @@ height = 20.0
 radius = 9.0
 height = 26.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_36y4f"]
+radius = 7.0
+height = 22.0
+
 [node name="Chort" type="CharacterBody2D" unique_id=130086902 groups=["Enemy"]]
 collision_layer = 8
 collision_mask = 9
@@ -148,23 +152,32 @@ position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_f1o35")
 
 [node name="HitBox" type="Area2D" parent="." unique_id=794687379]
+visible = false
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("16_s2bv3")
 damage = 10
 metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox" unique_id=2117508812]
+[node name="HitBox" type="CollisionShape2D" parent="HitBox" unique_id=2117508812]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_byj0p")
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=289664271 node_paths=PackedStringArray("health")]
+visible = false
 collision_layer = 2
 collision_mask = 32
 script = ExtResource("17_dumt4")
 health = NodePath("../HealthComponent")
 metadata/_custom_type_script = "uid://du0cpqxnjs3fe"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=1663042101]
+[node name="HurtBox" type="CollisionShape2D" parent="HurtBox" unique_id=1663042101]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_dumt4")
+
+[node name="SeparationArea" type="Area2D" parent="." unique_id=42421509]
+visible = false
+
+[node name="Separation" type="CollisionShape2D" parent="SeparationArea" unique_id=1461081934]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_36y4f")
