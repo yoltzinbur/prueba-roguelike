@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://n82eoufcpx44"]
+
+[ext_resource type="Script" uid="uid://b7u8ofe7jdik8" path="res://Entities/Chest/chest.gd" id="1_5ow74"]
+[ext_resource type="Texture2D" uid="uid://b63fq7u0f4u3l" path="res://Entities/Chest/Art/chest_full_open_anim_f0.png" id="2_4ptj7"]
+[ext_resource type="Texture2D" uid="uid://q6jryekx14r3" path="res://Entities/Chest/Art/chest_full_open_anim_f1.png" id="3_x8ih0"]
+[ext_resource type="Texture2D" uid="uid://11h4ytvgexnd" path="res://Entities/Chest/Art/chest_full_open_anim_f2.png" id="4_vw88s"]
+[ext_resource type="AudioStream" uid="uid://clhy1dr81l0rp" path="res://Entities/Chest/Audio/doorOpen_2.ogg" id="5_4ptj7"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cl07o"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4ptj7")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4ptj7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_x8ih0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_vw88s")
+}],
+"loop": false,
+"name": &"open",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ow74"]
+size = Vector2(16, 13)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_w3x8t"]
+radius = 18.110771
+
+[node name="Chest" type="Node2D" unique_id=1920526650]
+script = ExtResource("1_5ow74")
+drop_radius = 18.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2081747817]
+sprite_frames = SubResource("SpriteFrames_cl07o")
+animation = &"idle"
+frame_progress = 1.0
+
+[node name="Collision" type="Area2D" parent="." unique_id=937586235]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision" unique_id=1472685588]
+position = Vector2(0, 1.5)
+shape = SubResource("RectangleShape2D_5ow74")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=655466306]
+collision_layer = 128
+collision_mask = 64
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=718593842]
+shape = SubResource("CircleShape2D_w3x8t")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1870064030]
+stream = ExtResource("5_4ptj7")
