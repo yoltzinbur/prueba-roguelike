@@ -218,6 +218,7 @@ speed = 100.0
 metadata/_custom_type_script = "uid://do423eahufemx"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1931187168]
+texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_inc0x")
 animation = &"attack"
 frame = 4
