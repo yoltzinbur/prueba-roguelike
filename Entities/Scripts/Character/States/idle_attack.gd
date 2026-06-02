@@ -7,7 +7,7 @@ var health_component: HealthComponent
 
 func enter(args := {}):
 	health_component = target.get_node("HealthComponent")
-	audioAttack = target.get_node_or_null("Attack")
+	audioAttack = target.get_node_or_null("Audios/Attack")
 	
 	anim.play("attack")
 	

@@ -17,9 +17,9 @@
 [ext_resource type="Texture2D" uid="uid://dc8pm5lmqx00e" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f1.png" id="15_0rn3k"]
 [ext_resource type="Script" uid="uid://chsj2udmaply6" path="res://Entities/Scripts/Character/Classes/navigation_component.gd" id="16_67cp7"]
 [ext_resource type="Texture2D" uid="uid://cxocksco0eklw" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f2.png" id="16_qhinw"]
-[ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Others/hitbox.gd" id="16_s2bv3"]
+[ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="16_s2bv3"]
 [ext_resource type="Texture2D" uid="uid://dnrm5pwyiv70m" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f3.png" id="17_7r0q2"]
-[ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Others/hurtbox.gd" id="17_dumt4"]
+[ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="17_dumt4"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Classes/health.gd" id="18_dumt4"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_x4g45"]
@@ -83,8 +83,7 @@ radius = 9.0
 height = 26.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_36y4f"]
-radius = 7.0
-height = 22.0
+height = 20.0
 
 [node name="Chort" type="CharacterBody2D" unique_id=130086902 groups=["Enemy"]]
 collision_layer = 8
@@ -136,7 +135,6 @@ metadata/_custom_type_script = "uid://chsj2udmaply6"
 path_desired_distance = 8.0
 radius = 8.5
 neighbor_distance = 30.0
-debug_enabled = true
 
 [node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
 wait_time = 0.5
@@ -177,8 +175,10 @@ position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_dumt4")
 
 [node name="SeparationArea" type="Area2D" parent="." unique_id=42421509]
-visible = false
+collision_layer = 8
+collision_mask = 8
 
 [node name="Separation" type="CollisionShape2D" parent="SeparationArea" unique_id=1461081934]
 position = Vector2(0, 2)
+rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_36y4f")

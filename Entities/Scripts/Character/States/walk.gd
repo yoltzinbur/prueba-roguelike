@@ -9,7 +9,7 @@ func enter(args := {}):
 	input_component = target.get_node("InputComponent")
 	velocity_component = target.get_node("VelocityComponent")
 	health_component = target.get_node("HealthComponent")
-	audioWalk = target.get_node_or_null("Walk")
+	audioWalk = target.get_node_or_null("Audios/Walk")
 	
 	if anim and anim.sprite_frames.has_animation("walk"):
 		anim.play("walk")

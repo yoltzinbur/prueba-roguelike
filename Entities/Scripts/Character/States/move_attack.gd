@@ -7,7 +7,7 @@ var audioAttack: AudioStreamPlayer
 
 func enter(args := {}):
 	health_component = target.get_node("HealthComponent")
-	audioAttack = target.get_node_or_null("Attack")
+	audioAttack = target.get_node_or_null("Audios/Attack")
 	
 	if args.has("direction"):
 		anim.play("attack")

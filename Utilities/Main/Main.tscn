@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Entities/Chest/Chest.tscn" id="5_e0a8v"]
 [ext_resource type="AudioStream" uid="uid://cd8m66jogfoll" path="res://Assets/Audio/syncraftianofficial-syncraftian-dungeon-355360.mp3" id="5_j2w0w"]
 [ext_resource type="PackedScene" uid="uid://dgb250m1o7qj0" path="res://Utilities/PauseMenu/pause_menu.tscn" id="6_065o1"]
+[ext_resource type="PackedScene" uid="uid://dxsdn1h8tjr60" path="res://Entities/Enemies/Goblin/Goblin.tscn" id="8_065o1"]
 
 [node name="Main" type="Node2D" unique_id=1509926915]
 
@@ -29,16 +30,24 @@ position = Vector2(237, -341)
 [node name="Chort4" parent="Enemies" unique_id=727770865 instance=ExtResource("3_iqhkp")]
 position = Vector2(429, -325)
 
+[node name="Goblin" parent="Enemies" unique_id=1616998431 instance=ExtResource("8_065o1")]
+position = Vector2(324, 168)
+
+[node name="Goblin2" parent="Enemies" unique_id=1598758916 instance=ExtResource("8_065o1")]
+position = Vector2(224, 127)
+
 [node name="Player" parent="." unique_id=1539473209 instance=ExtResource("2_iqhkp")]
 position = Vector2(238, 225)
 
 [node name="TutorialUI" parent="." unique_id=847453696 instance=ExtResource("5_3dw71")]
+visible = false
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1426020335]
+visible = false
 
 [node name="PauseMenu" parent="CanvasLayer" unique_id=411942886 instance=ExtResource("6_065o1")]
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=1124704745]
 stream = ExtResource("5_j2w0w")
-volume_db = -50.0
+volume_db = -25.0
 autoplay = true

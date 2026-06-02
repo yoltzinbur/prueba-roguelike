@@ -24,8 +24,8 @@
 [ext_resource type="Script" uid="uid://c4e87cpecbwop" path="res://Entities/Scripts/Character/States/walk.gd" id="17_t8qnr"]
 [ext_resource type="Script" uid="uid://cxm60o361tj2d" path="res://Entities/Scripts/Character/States/move_attack.gd" id="19_s1io2"]
 [ext_resource type="PackedScene" uid="uid://o5p0c0ji2g7a" path="res://Utilities/GUI/HealthBar/HealthBar.tscn" id="22_ayo8t"]
-[ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Others/hurtbox.gd" id="24_80tt4"]
-[ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Others/hitbox.gd" id="25_tepoh"]
+[ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="24_80tt4"]
+[ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="25_tepoh"]
 [ext_resource type="PackedScene" uid="uid://ci5gw771vp0c0" path="res://Utilities/GUI/CoinsCounter/CoinsCounter.tscn" id="27_h03de"]
 [ext_resource type="AudioStream" uid="uid://doscpw4dgofdc" path="res://Entities/Player/Audio/footstep09.ogg" id="28_e8qxc"]
 [ext_resource type="AudioStream" uid="uid://di1vuqbbcfujj" path="res://Entities/Player/Audio/knifeSlice.ogg" id="29_rvtm2"]
@@ -272,16 +272,18 @@ position = Vector2(20.5, 4)
 shape = SubResource("RectangleShape2D_l2mqv")
 disabled = true
 
-[node name="Walk" type="AudioStreamPlayer" parent="." unique_id=1061975298]
+[node name="Audios" type="Node" parent="." unique_id=774208424]
+
+[node name="Walk" type="AudioStreamPlayer" parent="Audios" unique_id=1061975298]
 stream = ExtResource("28_e8qxc")
 volume_db = -25.0
 pitch_scale = 0.5
 
-[node name="Attack" type="AudioStreamPlayer" parent="." unique_id=280483411]
+[node name="Attack" type="AudioStreamPlayer" parent="Audios" unique_id=280483411]
 stream = ExtResource("29_rvtm2")
 volume_db = -25.0
 
-[node name="Damage" type="AudioStreamPlayer" parent="." unique_id=442858049]
+[node name="Damage" type="AudioStreamPlayer" parent="Audios" unique_id=442858049]
 stream = ExtResource("30_rvtm2")
 
 [connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]

@@ -1,0 +1,168 @@
+[gd_scene format=3 uid="uid://dxsdn1h8tjr60"]
+
+[ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Entities/Scripts/Others/state_machine.gd" id="1_3fm5a"]
+[ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Entities/Scripts/Character/States/idle.gd" id="2_yc8db"]
+[ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Entities/Scripts/Character/States/idle_attack.gd" id="3_835y0"]
+[ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Entities/Scripts/Character/States/chase.gd" id="4_lcahj"]
+[ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Entities/Scripts/Character/States/hit.gd" id="5_gos13"]
+[ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Classes/health.gd" id="6_jge4o"]
+[ext_resource type="Script" uid="uid://ctnnopoy830jx" path="res://Entities/Scripts/Character/Classes/enemy_input_component.gd" id="7_8fxxw"]
+[ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Others/velocity_component.gd" id="8_i1eg2"]
+[ext_resource type="Texture2D" uid="uid://cncpnwrt4btnr" path="res://Entities/Enemies/Goblin/Art/button_red_down.png" id="9_p1tcs"]
+[ext_resource type="Texture2D" uid="uid://deiugblsauqw" path="res://Entities/Enemies/Goblin/Art/goblin_idle_anim_f0.png" id="10_yqho0"]
+[ext_resource type="Texture2D" uid="uid://bs25046gj08ef" path="res://Entities/Enemies/Goblin/Art/goblin_idle_anim_f1.png" id="11_a8wyv"]
+[ext_resource type="Texture2D" uid="uid://pkllo4tf6ww7" path="res://Entities/Enemies/Goblin/Art/goblin_idle_anim_f2.png" id="12_upf88"]
+[ext_resource type="Texture2D" uid="uid://dxqdstvfgov5q" path="res://Entities/Enemies/Goblin/Art/goblin_idle_anim_f3.png" id="13_jh2tb"]
+[ext_resource type="Texture2D" uid="uid://ci1r6h7vemkf3" path="res://Entities/Enemies/Goblin/Art/goblin_run_anim_f0.png" id="14_w4j6j"]
+[ext_resource type="Texture2D" uid="uid://udv1brniaixy" path="res://Entities/Enemies/Goblin/Art/goblin_run_anim_f1.png" id="15_n65tk"]
+[ext_resource type="Texture2D" uid="uid://b507e6juxcpap" path="res://Entities/Enemies/Goblin/Art/goblin_run_anim_f2.png" id="16_o4fvm"]
+[ext_resource type="Texture2D" uid="uid://c8pemgriesjks" path="res://Entities/Enemies/Goblin/Art/goblin_run_anim_f3.png" id="17_hiau3"]
+[ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="18_7vsu4"]
+[ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="19_6i585"]
+[ext_resource type="Script" uid="uid://chsj2udmaply6" path="res://Entities/Scripts/Character/Classes/navigation_component.gd" id="20_d1gme"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_p4l53"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_p1tcs")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_yqho0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_a8wyv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_upf88")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_jh2tb")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_w4j6j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_n65tk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_o4fvm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_hiau3")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4bmdm"]
+size = Vector2(11, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pbsn5"]
+size = Vector2(13, 14)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3fm5a"]
+radius = 9.0
+height = 22.0
+
+[node name="Goblin" type="CharacterBody2D" unique_id=1616998431 groups=["Enemy"]]
+collision_layer = 8
+collision_mask = 9
+
+[node name="StateMachine" type="Node" parent="." unique_id=2129389497 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
+script = ExtResource("1_3fm5a")
+initial_state = NodePath("Idle")
+animation_sprite = NodePath("../AnimatedSprite2D")
+target = NodePath("..")
+metadata/_custom_type_script = "uid://c7agcf6y1awqi"
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=427971407]
+script = ExtResource("2_yc8db")
+
+[node name="IdleAttack" type="Node" parent="StateMachine" unique_id=977702788 node_paths=PackedStringArray("hitbox")]
+script = ExtResource("3_835y0")
+hitbox = NodePath("../../Hitbox/Hitbox")
+
+[node name="Chase" type="Node" parent="StateMachine" unique_id=2118659027]
+script = ExtResource("4_lcahj")
+
+[node name="Hit" type="Node" parent="StateMachine" unique_id=1522031472 node_paths=PackedStringArray("velocity_component")]
+script = ExtResource("5_gos13")
+velocity_component = NodePath("../../VelocityComponent")
+
+[node name="HealthComponent" type="Node" parent="." unique_id=319380379 node_paths=PackedStringArray("animatedSprite")]
+script = ExtResource("6_jge4o")
+MAX_HEALTH = 10
+animatedSprite = NodePath("../AnimatedSprite2D")
+metadata/_custom_type_script = "uid://b35nh43yww5xt"
+
+[node name="InputComponent" type="Node" parent="." unique_id=428903765]
+script = ExtResource("7_8fxxw")
+metadata/_custom_type_script = "uid://ctnnopoy830jx"
+
+[node name="VelocityComponent" type="Node" parent="." unique_id=29633381]
+script = ExtResource("8_i1eg2")
+speed = 75.0
+metadata/_custom_type_script = "uid://do423eahufemx"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1517767972]
+sprite_frames = SubResource("SpriteFrames_p4l53")
+animation = &"walk"
+frame_progress = 0.6171167
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=686157365]
+position = Vector2(0.5, 2)
+shape = SubResource("RectangleShape2D_4bmdm")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=1555341952]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("18_7vsu4")
+damage = 5
+
+[node name="Hitbox" type="CollisionShape2D" parent="Hitbox" unique_id=407361963]
+position = Vector2(0.5, 2)
+shape = SubResource("RectangleShape2D_pbsn5")
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=200027646 node_paths=PackedStringArray("health")]
+collision_layer = 2
+collision_mask = 32
+script = ExtResource("19_6i585")
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=187208906]
+position = Vector2(0.5, 2)
+shape = SubResource("RectangleShape2D_4bmdm")
+
+[node name="SeparationArea" type="Area2D" parent="." unique_id=1603430253]
+collision_layer = 8
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SeparationArea" unique_id=728051017]
+position = Vector2(0.5, 2)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_3fm5a")
+
+[node name="NavigationComponent" type="Node2D" parent="." unique_id=970826401 node_paths=PackedStringArray("navigation_agent", "timer")]
+script = ExtResource("20_d1gme")
+navigation_agent = NodePath("NavigationAgent2D")
+timer = NodePath("Timer")
+metadata/_custom_type_script = "uid://chsj2udmaply6"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1974744689]
+debug_enabled = true
+
+[node name="Timer" type="Timer" parent="NavigationComponent" unique_id=987654135]
+wait_time = 0.5
+autostart = true

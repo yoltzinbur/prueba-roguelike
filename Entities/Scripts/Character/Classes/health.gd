@@ -20,7 +20,7 @@ var damageAudio: AudioStreamPlayer
 			kill()
 
 func _ready() -> void:
-	damageAudio = get_parent().get_node_or_null("Damage")
+	damageAudio = get_parent().get_node_or_null("Audios/Damage")
 
 func heal(value: int) -> void:
 	current_health += value
@@ -32,8 +32,9 @@ func damage(value: int) -> void:
 	emit_signal("damaged")
 
 func kill() -> void:
-	var game_over = preload("res://Utilities/GameOver/game_over.tscn").instantiate()
-	get_tree().root.call_deferred("add_child", game_over)
+	if get_parent().is_in_group("Player"):
+		var game_over = preload("res://Utilities/GameOver/game_over.tscn").instantiate()
+		get_tree().root.call_deferred("add_child", game_over)
 	get_parent().queue_free.call_deferred()
 
 func _mostrar_game_over():

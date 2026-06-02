@@ -1,5 +1,5 @@
 class_name NavigationComponent
-extends Node
+extends Node2D
 
 @export var navigation_agent: NavigationAgent2D
 @export var timer: Timer
