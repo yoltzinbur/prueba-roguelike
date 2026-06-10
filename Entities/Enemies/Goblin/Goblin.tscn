@@ -79,6 +79,7 @@ height = 22.0
 [node name="Goblin" type="CharacterBody2D" unique_id=1616998431 groups=["Enemy"]]
 collision_layer = 8
 collision_mask = 9
+metadata/_edit_group_ = true
 
 [node name="StateMachine" type="Node" parent="." unique_id=2129389497 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("1_3fm5a")
@@ -119,7 +120,7 @@ metadata/_custom_type_script = "uid://do423eahufemx"
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1517767972]
 sprite_frames = SubResource("SpriteFrames_p4l53")
 animation = &"walk"
-frame_progress = 0.6171167
+frame_progress = 0.11054481
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=686157365]
 position = Vector2(0.5, 2)

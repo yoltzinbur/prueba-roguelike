@@ -88,6 +88,7 @@ height = 20.0
 [node name="Chort" type="CharacterBody2D" unique_id=130086902 groups=["Enemy"]]
 collision_layer = 8
 collision_mask = 9
+metadata/_edit_group_ = true
 
 [node name="StateMachine" type="Node" parent="." unique_id=865661675 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("2_c6ou1")
