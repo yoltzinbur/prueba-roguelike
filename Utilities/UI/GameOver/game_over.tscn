@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bwmf2pcbjus5l"]
 
 [ext_resource type="Script" uid="uid://bvq8b33uias8i" path="res://Utilities/UI/GameOver/game_over.gd" id="1_hwu0h"]
-[ext_resource type="FontFile" uid="uid://bhb117w770yd" path="res://Utilities/Art/Minecraft.ttf" id="2_3hbey"]
+[ext_resource type="FontFile" uid="uid://bhb117w770yd" path="res://Stages/Art/Minecraft.ttf" id="2_3hbey"]
 
 [node name="GameOver" type="Control" unique_id=909493849]
 layout_mode = 3
