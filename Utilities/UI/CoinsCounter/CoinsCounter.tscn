@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ci5gw771vp0c0"]
 
-[ext_resource type="Script" uid="uid://06co83l23017" path="res://Utilities/GUI/CoinsCounter/coins_counter.gd" id="1_1ri38"]
+[ext_resource type="Script" uid="uid://06co83l23017" path="res://Utilities/UI/CoinsCounter/coins_counter.gd" id="1_1ri38"]
 [ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="2_dyqf1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_dbmto"]

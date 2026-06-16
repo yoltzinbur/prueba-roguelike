@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cq4tk7twl7xfo"
-path="res://.godot/imported/cristales morados.png-f426ea24e5a7c1cb7c88b78c0fbf458c.ctex"
+uid="uid://l5vb7k0b3lng"
+path="res://.godot/imported/cristales azules.png-91b05671fff7dfbb6be390fc77a5d2db.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Utilities/MainMenu/Art/cristales morados.png"
-dest_files=["res://.godot/imported/cristales morados.png-f426ea24e5a7c1cb7c88b78c0fbf458c.ctex"]
+source_file="res://Utilities/UI/MainMenu/Art/cristales azules.png"
+dest_files=["res://.godot/imported/cristales azules.png-91b05671fff7dfbb6be390fc77a5d2db.ctex"]
 
 [params]
 

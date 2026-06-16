@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://dcqv5i8h7jf77"]
 
-[ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Entities/Scripts/Others/state_machine.gd" id="2_c6ou1"]
-[ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Entities/Scripts/Character/States/idle.gd" id="3_67cp7"]
-[ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Entities/Scripts/Character/States/chase.gd" id="4_s2bv3"]
-[ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Entities/Scripts/Character/States/hit.gd" id="5_36y4f"]
-[ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Entities/Scripts/Character/States/idle_attack.gd" id="5_dumt4"]
-[ext_resource type="Script" uid="uid://ctnnopoy830jx" path="res://Entities/Scripts/Character/Classes/enemy_input_component.gd" id="6_byj0p"]
-[ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Others/velocity_component.gd" id="7_q5l3e"]
+[ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Common/StateMachine/state_machine.gd" id="2_c6ou1"]
+[ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Common/StateMachine/States/idle.gd" id="3_67cp7"]
+[ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Common/StateMachine/States/chase.gd" id="4_s2bv3"]
+[ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="5_36y4f"]
+[ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Common/StateMachine/States/idle_attack.gd" id="5_dumt4"]
+[ext_resource type="Script" uid="uid://ctnnopoy830jx" path="res://Entities/Scripts/Character/Nodes/enemy_input_component.gd" id="6_byj0p"]
+[ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Character/Nodes/velocity_component.gd" id="7_q5l3e"]
 [ext_resource type="Texture2D" uid="uid://j4p7daod7r85" path="res://Entities/Enemies/Chort/Art/chort_idle_anim_f0.png" id="8_gsg2d"]
 [ext_resource type="Texture2D" uid="uid://fgstoh08moxw" path="res://Entities/Enemies/Chort/Art/chort_hit_anim_f0.png" id="9_q5l3e"]
 [ext_resource type="Texture2D" uid="uid://qoakj5pfmsir" path="res://Entities/Enemies/Chort/Art/chort_hit_anim_f1.png" id="10_36y4f"]
@@ -20,7 +20,7 @@
 [ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="16_s2bv3"]
 [ext_resource type="Texture2D" uid="uid://dnrm5pwyiv70m" path="res://Entities/Enemies/Chort/Art/chort_run_anim_f3.png" id="17_7r0q2"]
 [ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="17_dumt4"]
-[ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Classes/health.gd" id="18_dumt4"]
+[ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Nodes/health_component.gd" id="18_dumt4"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_x4g45"]
 animations = [{

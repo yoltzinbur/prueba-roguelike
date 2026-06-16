@@ -33,10 +33,10 @@ func damage(value: int) -> void:
 
 func kill() -> void:
 	if get_parent().is_in_group("Player"):
-		var game_over = preload("res://Utilities/GameOver/game_over.tscn").instantiate()
+		var game_over = preload("res://Utilities/UI/GameOver/game_over.tscn").instantiate()
 		get_tree().root.call_deferred("add_child", game_over)
 	get_parent().queue_free.call_deferred()
 
 func _mostrar_game_over():
-	var game_over = preload("res://Utilities/GameOver/game_over.tscn").instantiate()
+	var game_over = preload("res://Utilities/UI/GameOver/game_over.tscn").instantiate()
 	get_tree().root.add_child(game_over)

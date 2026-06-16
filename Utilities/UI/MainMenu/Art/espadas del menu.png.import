@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3ivpgn24n3dv"
-path="res://.godot/imported/boton del menu.png-f2f62d6490e6987ce2c19d7c8c95c512.ctex"
+uid="uid://damefh24a3my8"
+path="res://.godot/imported/espadas del menu.png-de6061dcbe50733bbddfed46b6e9c878.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Utilities/MainMenu/Art/boton del menu.png"
-dest_files=["res://.godot/imported/boton del menu.png-f2f62d6490e6987ce2c19d7c8c95c512.ctex"]
+source_file="res://Utilities/UI/MainMenu/Art/espadas del menu.png"
+dest_files=["res://.godot/imported/espadas del menu.png-de6061dcbe50733bbddfed46b6e9c878.ctex"]
 
 [params]
 

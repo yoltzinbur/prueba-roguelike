@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://fyux2tif6mbb"]
 
-[ext_resource type="Script" uid="uid://bl7inuh44q0dm" path="res://Utilities/MainMenu/MainMenu.gd" id="1_i26rj"]
-[ext_resource type="Texture2D" uid="uid://t4vac4kei1hi" path="res://Utilities/MainMenu/Art/base del menu de inicio.png" id="2_8c7vy"]
-[ext_resource type="Texture2D" uid="uid://damefh24a3my8" path="res://Utilities/MainMenu/Art/espadas del menu.png" id="3_hvqjj"]
-[ext_resource type="Texture2D" uid="uid://3ivpgn24n3dv" path="res://Utilities/MainMenu/Art/boton del menu.png" id="4_7l1er"]
-[ext_resource type="Texture2D" uid="uid://l5vb7k0b3lng" path="res://Utilities/MainMenu/Art/cristales azules.png" id="5_vgxt1"]
-[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Utilities/Art/Minecraft.ttf" id="6_hvqjj"]
-[ext_resource type="Texture2D" uid="uid://cq4tk7twl7xfo" path="res://Utilities/MainMenu/Art/cristales morados.png" id="6_qstjv"]
-[ext_resource type="AudioStream" uid="uid://dt1uyio6hhauw" path="res://Utilities/MainMenu/Music/song18.mp3" id="8_7l1er"]
-[ext_resource type="AudioStream" uid="uid://dmtyyauvce3vn" path="res://Utilities/MainMenu/Music/264447__kickhat__open-button-2.wav" id="8_vgxt1"]
+[ext_resource type="Script" uid="uid://bl7inuh44q0dm" path="res://Utilities/UI/MainMenu/MainMenu.gd" id="1_i26rj"]
+[ext_resource type="Texture2D" uid="uid://t4vac4kei1hi" path="res://Utilities/UI/MainMenu/Art/base del menu de inicio.png" id="2_8c7vy"]
+[ext_resource type="Texture2D" uid="uid://damefh24a3my8" path="res://Utilities/UI/MainMenu/Art/espadas del menu.png" id="3_hvqjj"]
+[ext_resource type="Texture2D" uid="uid://3ivpgn24n3dv" path="res://Utilities/UI/MainMenu/Art/boton del menu.png" id="4_7l1er"]
+[ext_resource type="Texture2D" uid="uid://l5vb7k0b3lng" path="res://Utilities/UI/MainMenu/Art/cristales azules.png" id="5_vgxt1"]
+[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="6_hvqjj"]
+[ext_resource type="Texture2D" uid="uid://cq4tk7twl7xfo" path="res://Utilities/UI/MainMenu/Art/cristales morados.png" id="6_qstjv"]
+[ext_resource type="AudioStream" uid="uid://dt1uyio6hhauw" path="res://Utilities/UI/MainMenu/Music/song18.mp3" id="8_7l1er"]
+[ext_resource type="AudioStream" uid="uid://dmtyyauvce3vn" path="res://Utilities/UI/MainMenu/Music/264447__kickhat__open-button-2.wav" id="8_vgxt1"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fimr5"]
 animations = [{
