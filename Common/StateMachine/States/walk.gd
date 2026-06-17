@@ -4,12 +4,14 @@ var input_component: InputComponent
 var velocity_component: VelocityComponent
 var health_component: HealthComponent
 var audioWalk: AudioStreamPlayer 
+var hitbox: HitBox
 
 func enter(args := {}):
 	input_component = target.get_node("InputComponent")
 	velocity_component = target.get_node("VelocityComponent")
 	health_component = target.get_node("HealthComponent")
 	audioWalk = target.get_node_or_null("Audios/Walk")
+	hitbox = target.get_node("HitBox")
 	
 	if anim and anim.sprite_frames.has_animation("walk"):
 		anim.play("walk")
@@ -19,6 +21,9 @@ func enter(args := {}):
 	if health_component and not health_component.damaged.is_connected(_on_damaged):
 		health_component.damaged.connect(_on_damaged)
 	
+	# Ajustar posición de la hitbox según dirección
+	adjust_hitbox_position()
+
 func state_process(delta: float) -> void:
 	if input_component.input_motion == Vector2.ZERO:
 		emit_signal("transitioned", self, "Idle", {})
@@ -47,3 +52,15 @@ func exit():
 	
 	if audioWalk:
 		audioWalk.stop()
+
+func adjust_hitbox_position():
+	if hitbox == null:
+		return
+		
+	# Ajustar posición de la hitbox según dirección del movimiento
+	if input_component.input_motion.y < 0:  # Mirando hacia arriba
+		hitbox.position = Vector2(0, -19)
+	elif input_component.input_motion.y > 0:  # Mirando hacia abajo
+		hitbox.position = Vector2(0, 27)
+	else:  # En otras direcciones, posición por defecto
+		hitbox.position = Vector2(0, 0)
