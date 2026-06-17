@@ -19,10 +19,6 @@ func enter(args := {}):
 	if anim and anim.sprite_frames.has_animation("hit"):
 		anim.play("hit")
 	
-	# Esperar 1 segundo antes de continuar
-	#await get_tree().create_timer(1.0).timeout
-	#
-	## Transicionar al siguiente estado
 
 func state_physics_process(delta: float) -> void:
 	time_elapsed += delta

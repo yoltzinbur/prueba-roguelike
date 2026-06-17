@@ -20,16 +20,12 @@ func enter(args := {}):
 	
 	if health_component and not health_component.damaged.is_connected(_on_damaged):
 		health_component.damaged.connect(_on_damaged)
-	
-	# Ajustar posición de la hitbox según dirección
-	adjust_hitbox_position()
 
 func state_process(delta: float) -> void:
 	if input_component.input_motion == Vector2.ZERO:
 		emit_signal("transitioned", self, "Idle", {})
 	elif input_component.input_motion.x != 0:
 		target.get_node("AnimatedSprite2D").scale.x = roundi(input_component.input_motion.x)
-		target.get_node("HitBox").scale.x = roundi(input_component.input_motion.x)
 
 	velocity_component.move(delta, input_component.input_motion)
 
@@ -42,6 +38,8 @@ func state_process(delta: float) -> void:
 		
 	if input_component.input_heal:
 		emit_signal("transitioned", self, "Heal", {})
+	
+	adjust_hitbox_position()
 
 func _on_damaged():
 	emit_signal("transitioned", self, "Hit", {})
@@ -62,5 +60,7 @@ func adjust_hitbox_position():
 		hitbox.position = Vector2(0, -19)
 	elif input_component.input_motion.y > 0:  # Mirando hacia abajo
 		hitbox.position = Vector2(0, 27)
-	else:  # En otras direcciones, posición por defecto
-		hitbox.position = Vector2(0, 0)
+	elif input_component.input_motion.x > 0:
+		hitbox.position = Vector2(20, 5)
+	elif input_component.input_motion.x < 0:
+		hitbox.position = Vector2(-20, 5)

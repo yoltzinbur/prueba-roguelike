@@ -162,7 +162,6 @@ timer = NodePath("Timer")
 metadata/_custom_type_script = "uid://chsj2udmaply6"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1974744689]
-debug_enabled = true
 
 [node name="Timer" type="Timer" parent="NavigationComponent" unique_id=987654135]
 wait_time = 0.5
