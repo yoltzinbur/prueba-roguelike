@@ -4,7 +4,7 @@ extends State
 var parent: Node2D
 var original_velocity: Vector2
 
-func enter(args := {}):	
+func enter(args := {}):
 	# Guardar la velocidad original antes de aplicar retroceso
 	if velocity_component:
 		original_velocity = velocity_component.velocity
