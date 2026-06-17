@@ -13,7 +13,9 @@ func enter(args := {}):
 		# Retroceso de 100 unidades en dirección opuesta al movimiento
 		var knockback_direction = -original_velocity.normalized()
 		var knockback_force = 100.0
-		target.velocity = knockback_direction * knockback_force
+		
+		# Usar el método move para aplicar el retroceso
+		velocity_component.move(get_process_delta_time(), knockback_direction * knockback_force)
 	
 	if anim and anim.sprite_frames.has_animation("hit"):
 		anim.play("hit")
@@ -23,12 +25,8 @@ func enter(args := {}):
 		velocity_component.move(get_process_delta_time(), Vector2.ZERO)
 		set_process_input(false)
 	
-	# Esperar 0.5 segundo antes de continuar
-	await get_tree().create_timer(0.5).timeout
-	
-	# Restaurar velocidad original si es necesario
-	if velocity_component:
-		target.velocity = original_velocity
+	# Esperar 1 segundo antes de continuar
+	await get_tree().create_timer(1.0).timeout
 	
 	# Transicionar al siguiente estado
 	var next_state = "Chase" if target.is_in_group("Enemy") else "Walk"
