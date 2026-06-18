@@ -54,7 +54,7 @@ func exit():
 func adjust_hitbox_position():
 	if hitbox == null:
 		return
-		
+	
 	# Ajustar posición de la hitbox según dirección del movimiento
 	if input_component.input_motion.y < 0:  # Mirando hacia arriba
 		hitbox.position = Vector2(0, -19)

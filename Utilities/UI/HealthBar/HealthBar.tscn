@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://5p5p8vv76onh" path="res://Utilities/UI/HealthBar/Art/GUI_4x_sliced.png" id="1_gyucs"]
 [ext_resource type="Script" uid="uid://desytctyvk44h" path="res://Utilities/UI/HealthBar/health_bar.gd" id="2_ni6be"]
+[ext_resource type="PackedScene" uid="uid://l4io17s6eb5v" path="res://Utilities/UI/PotionsCount/PotionsCount.tscn" id="3_oy3wr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_av7k1"]
 atlas = ExtResource("1_gyucs")
@@ -44,3 +45,10 @@ layout_mode = 0
 offset_right = 84.0
 offset_bottom = 24.0
 texture = SubResource("AtlasTexture_2coux")
+
+[node name="PotionsCount" parent="." unique_id=1959845641 instance=ExtResource("3_oy3wr")]
+layout_mode = 1
+offset_left = 84.0
+offset_top = 2.0
+offset_right = 84.0
+offset_bottom = 2.0

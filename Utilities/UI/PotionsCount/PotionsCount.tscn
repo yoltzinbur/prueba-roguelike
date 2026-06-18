@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://l4io17s6eb5v"]
+
+[ext_resource type="Texture2D" uid="uid://6hv4q0cvm4g1" path="res://Utilities/UI/PotionsCount/Art/flask_big_red.png" id="1_46aew"]
+[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="2_4iriq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_46aew"]
+font = ExtResource("2_4iriq")
+font_size = 12
+
+[node name="PotionsCount" type="Control" unique_id=1959845641]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -364.0
+offset_bottom = -230.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_vertical_guides_ = [20.0]
+metadata/_edit_horizontal_guides_ = [20.0]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=733826705]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = ExtResource("1_46aew")
+
+[node name="Label" type="Label" parent="." unique_id=233695108]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 6.0
+offset_right = 65.0
+offset_bottom = 18.0
+text = "Potions:"
+label_settings = SubResource("LabelSettings_46aew")

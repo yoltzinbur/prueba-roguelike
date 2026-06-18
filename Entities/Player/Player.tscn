@@ -171,8 +171,7 @@ size = Vector2(21, 22)
 [node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
 collision_layer = 64
 collision_mask = 17
-metadata/_edit_vertical_guides_ = [31.0, 10.0, 11.0, -11.0]
-metadata/_edit_horizontal_guides_ = [15.0, -7.0, -8.0, -30.0, 38.0, 16.0, 5.0]
+metadata/_edit_horizontal_guides_ = [-30.0]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("15_5qe47")
