@@ -14,7 +14,7 @@ func _ready() -> void:
 		# Conectar a señales del componente de salud si existe
 		if player.has_node("HealthComponent"):
 			var health_component = player.get_node("HealthComponent")
-			health_component.connect("health_changed", self, "_on_health_changed")
+			health_component.health_changed.connect(_on_health_changed)
 	
 	update_ui()
 
@@ -28,12 +28,12 @@ func update_ui() -> void:
 	# Actualizar la interfaz con el número actual de pociones
 	if potion_label and player and player.has_node("HealthComponent"):
 		var health_component = player.get_node("HealthComponent")
-		potion_label.text = str(health_component.stamina)
+		potion_label.text = str(health_component.flasks)
 	
 	# Cambiar el icono según la cantidad
 	if player and player.has_node("HealthComponent"):
 		var health_component = player.get_node("HealthComponent")
-		if health_component.stamina <= 0:
+		if health_component.flasks <= 0:
 			potion_icon.modulate = Color(0.5, 0.5, 0.5)  # Gris cuando no hay pociones
 		else:
 			potion_icon.modulate = Color.WHITE
@@ -43,33 +43,17 @@ func _on_health_changed(current_health: int, max_health: int) -> void:
 	# el contador de pociones cuando se usa una poción
 	update_ui()
 
-func use_potion() -> bool:
-	if player and player.has_node("HealthComponent"):
-		var health_component = player.get_node("HealthComponent")
-		
-		if health_component.stamina > 0:
-			# Usar una poción (reducir contador)
-			health_component.stamina -= 1
-			
-			# Curar al jugador (usando el método heal del componente de salud)
-			health_component.heal(20)
-			
-			update_ui()
-			return true
-	
-	return false
-
 func add_potion(amount: int = 1) -> void:
 	if player and player.has_node("HealthComponent"):
 		var health_component = player.get_node("HealthComponent")
-		health_component.stamina += amount
-		health_component.stamina = clampi(health_component.stamina, 0, 5)
+		health_component.flasks += amount
+		health_component.flasks = clampi(health_component.flasks, 0, 5)
 	
 	update_ui()
 
 func set_max_potions(value: int) -> void:
 	if player and player.has_node("HealthComponent"):
 		var health_component = player.get_node("HealthComponent")
-		health_component.stamina = clampi(health_component.stamina, 0, value)
+		health_component.flasks = clampi(health_component.flasks, 0, value)
 	
 	update_ui()

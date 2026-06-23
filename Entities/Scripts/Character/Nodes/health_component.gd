@@ -8,7 +8,7 @@ signal muerto
 var damageAudio: AudioStreamPlayer
 
 @export var MAX_HEALTH: int
-@export var stamina: int
+@export var flasks: int = 3
 @export var animatedSprite: AnimatedSprite2D
 
 @onready var current_health := MAX_HEALTH:

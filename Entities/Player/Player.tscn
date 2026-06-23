@@ -204,7 +204,6 @@ velocity_component = NodePath("../../VelocityComponent")
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
 script = ExtResource("12_laxle")
 MAX_HEALTH = 50
-stamina = 50
 animatedSprite = NodePath("../AnimatedSprite2D")
 metadata/_custom_type_script = "uid://b35nh43yww5xt"
 
