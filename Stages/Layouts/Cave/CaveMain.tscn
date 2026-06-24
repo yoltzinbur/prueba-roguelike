@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_htryh"]
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="2_rpjdk"]
-[ext_resource type="PackedScene" uid="uid://dou4sn8syimqo" path="res://Stages/Layouts/Cave/CaveDoor1.tscn" id="3_cjj2y"]
+[ext_resource type="PackedScene" uid="uid://dou4sn8syimqo" path="res://Stages/Layouts/Cave/Environment/CaveDoor1.tscn" id="3_cjj2y"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -385,8 +385,8 @@ tile_map_data = PackedByteArray("AAAKAP7/AAANAAAAAAAKAP//AAANAAEAAAAKAAAAAAANAAI
 tile_set = SubResource("TileSet_vdbw6")
 navigation_enabled = false
 
+[node name="Player" parent="." unique_id=1539473209 instance=ExtResource("2_rpjdk")]
+position = Vector2(231, 151)
+
 [node name="CaveDoor1" parent="." unique_id=1405134328 instance=ExtResource("3_cjj2y")]
 position = Vector2(192, -24)
-
-[node name="Player" parent="." unique_id=1539473209 instance=ExtResource("2_rpjdk")]
-position = Vector2(205, 124)

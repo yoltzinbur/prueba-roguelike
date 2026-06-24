@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://by1kjfgwmds7y"]
 
-[ext_resource type="PackedScene" uid="uid://tomvta77ro88" path="res://Stages/Layouts/Layout1/TilemapLeyers.tscn" id="1_klho5"]
+[ext_resource type="PackedScene" uid="uid://tomvta77ro88" path="res://Stages/Layouts/LayoutCombate/TilemapLeyers.tscn" id="1_klho5"]
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="2_iqhkp"]
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="3_1hnq0"]
 [ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="3_iqhkp"]

@@ -16,9 +16,9 @@ func _on_body_exited(body):
 		body.current_interactable = null
 
 func interact() -> void:
-	open_door()
+	open()
 
-func open_door():
+func open():
 	door_interacted.emit()
 	if GameManager:
 		GameManager.load_scene("res://Stages/Main/Main.tscn")
