@@ -44,12 +44,14 @@ position = Vector2(238, 225)
 [node name="TutorialUI" parent="." unique_id=847453696 instance=ExtResource("5_3dw71")]
 visible = false
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1426020335]
-visible = false
-
-[node name="PauseMenu" parent="CanvasLayer" unique_id=411942886 instance=ExtResource("6_065o1")]
-
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=1124704745]
 stream = ExtResource("5_j2w0w")
 volume_db = -25.0
 autoplay = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1426020335]
+process_mode = 3
+layer = 100
+visible = false
+
+[node name="PauseMenu" parent="CanvasLayer" unique_id=411942886 instance=ExtResource("6_065o1")]

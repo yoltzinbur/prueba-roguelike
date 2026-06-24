@@ -3,39 +3,39 @@ extends Control
 func _ready():
 	$AnimationPlayer.play("RESET")
 	visible = false
-	$PanelContainer.process_mode = Node.PROCESS_MODE_DISABLED
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	# Fuerza también el CanvasLayer padre
+	get_parent().process_mode = Node.PROCESS_MODE_ALWAYS
 
 func resume():
 	get_tree().paused = false
 	$AnimationPlayer.play_backwards("blur")
 	visible = false
-	$PanelContainer.process_mode = Node.PROCESS_MODE_DISABLED
 
 func pause():
-	get_tree().paused = true
-	$AnimationPlayer.play("blur")
+	print("pause llamado, visible antes: ", visible)
 	visible = true
-	$PanelContainer.process_mode = Node.PROCESS_MODE_ALWAYS
+	print("visible ahora: ", visible)
+	$AnimationPlayer.play("blur")
+	get_tree().paused = true
 	
 func testEsc():
-	if Input.is_action_just_pressed("pause") and get_tree().paused==false:
-		pause()
-	elif Input.is_action_just_pressed("pause") and get_tree().paused==true:
-		resume()
-		
+	if Input.is_action_just_pressed("pause"):
+		if get_tree().paused == false:
+			pause()
+		else:
+			resume()
 
-func _on_reanudar_pressed() -> void:
-	resume() # Replace with function body.
-	
-
-func _on_reiniciar_pressed() -> void:
-	get_tree().paused=false
-	get_tree().reload_current_scene() # Replace with function body.
-	
-	
-
-func _on_salir_pressed() -> void:
-	get_tree().quit() # Replace with function body.
-	
 func _process(delta):
 	testEsc()
+
+# --- Señales de los botones ---
+func _on_reanudar_pressed() -> void:
+	resume()
+
+func _on_reiniciar_pressed() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+func _on_salir_pressed() -> void:
+	get_tree().quit()
