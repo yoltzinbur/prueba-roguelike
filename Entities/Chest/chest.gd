@@ -16,12 +16,6 @@ func _ready() -> void:
 	interaction_area.body_entered.connect(_on_body_entered)
 	interaction_area.body_exited.connect(_on_body_exited)
 
-func _process(_delta: float) -> void:
-	if is_player_inside and not is_opened and player_ref:
-		var input_component = player_ref.get_node_or_null("InputComponent")
-		if input_component and input_component.input_action:
-			open_chest()
-
 func open_chest() -> void:
 	is_opened = true
 	
@@ -43,6 +37,12 @@ func spawn_coins() -> void:
 		coin_instance.global_position = global_position + offset
 		
 		get_tree().current_scene.add_child(coin_instance)
+
+func _process(_delta: float) -> void:
+	if is_player_inside and not is_opened and player_ref:
+		var input_component = player_ref.get_node_or_null("InputComponent")
+		if input_component and input_component.input_action:
+			open_chest()
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Player"):
