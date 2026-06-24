@@ -14,6 +14,7 @@ func enter(args := {}):
 		anim.play("heal")
 		health_component.heal(20)
 	
-	# Esperar a que termine la acción y regresar a Idle
-	await get_tree().create_timer(0.5).timeout
+		# Esperar a que termine la acción y regresar a Idle
+		await get_tree().create_timer(0.5).timeout
+	
 	emit_signal("transitioned", self, "Idle", {})
