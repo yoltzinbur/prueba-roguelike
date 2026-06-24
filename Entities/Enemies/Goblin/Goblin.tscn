@@ -98,9 +98,8 @@ hitbox = NodePath("../../Hitbox/Hitbox")
 [node name="Chase" type="Node" parent="StateMachine" unique_id=2118659027]
 script = ExtResource("4_lcahj")
 
-[node name="Hit" type="Node" parent="StateMachine" unique_id=1522031472 node_paths=PackedStringArray("velocity_component")]
+[node name="Hit" type="Node" parent="StateMachine" unique_id=1522031472]
 script = ExtResource("5_gos13")
-velocity_component = NodePath("../../VelocityComponent")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=319380379 node_paths=PackedStringArray("animatedSprite")]
 script = ExtResource("6_jge4o")

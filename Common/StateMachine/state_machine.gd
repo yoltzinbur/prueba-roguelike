@@ -9,12 +9,21 @@ var states: Dictionary
 var current_state: State
 
 func _ready():
+	var _input = target.get_node_or_null("InputComponent")
+	var _velocity = target.get_node_or_null("VelocityComponent")
+	var _health = target.get_node_or_null("HealthComponent")
+	var _navigation = target.get_node_or_null("NavigationComponent")
+
 	for child in get_children():
 		child.target = target
 		child.anim = animation_sprite
+		child.input_component = _input
+		child.velocity_component = _velocity
+		child.health_component = _health
+		child.navigation_component = _navigation
 		child.transitioned.connect(change_state)
 		states[child.name] = child
-	
+
 	current_state = initial_state
 	current_state.enter()
 	

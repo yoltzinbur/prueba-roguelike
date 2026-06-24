@@ -106,9 +106,8 @@ script = ExtResource("5_dumt4")
 [node name="Chase" type="Node" parent="StateMachine" unique_id=1124391141]
 script = ExtResource("4_s2bv3")
 
-[node name="Hit" type="Node" parent="StateMachine" unique_id=522520533 node_paths=PackedStringArray("velocity_component")]
+[node name="Hit" type="Node" parent="StateMachine" unique_id=522520533]
 script = ExtResource("5_36y4f")
-velocity_component = NodePath("../../VelocityComponent")
 
 [node name="InputComponent" type="Node" parent="." unique_id=1522735855]
 script = ExtResource("6_byj0p")

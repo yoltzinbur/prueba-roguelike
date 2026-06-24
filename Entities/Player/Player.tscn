@@ -30,6 +30,7 @@
 [ext_resource type="AudioStream" uid="uid://doscpw4dgofdc" path="res://Entities/Player/Audio/footstep09.ogg" id="28_e8qxc"]
 [ext_resource type="AudioStream" uid="uid://di1vuqbbcfujj" path="res://Entities/Player/Audio/knifeSlice.ogg" id="29_rvtm2"]
 [ext_resource type="AudioStream" uid="uid://brfft4fulrig2" path="res://Entities/Player/Audio/roblox-death-sound-effect.ogg" id="30_rvtm2"]
+[ext_resource type="Script" path="res://Entities/Player/player.gd" id="31_plyr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5qe47"]
 atlas = ExtResource("8_laxle")
@@ -171,6 +172,7 @@ size = Vector2(21, 22)
 [node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
 collision_layer = 64
 collision_mask = 17
+script = ExtResource("31_plyr")
 metadata/_edit_horizontal_guides_ = [-30.0]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
@@ -197,9 +199,8 @@ hitbox = NodePath("../../HitBox/CollisionShape2D3")
 [node name="Heal" type="Node" parent="StateMachine" unique_id=524141110]
 script = ExtResource("6_3wmxr")
 
-[node name="Hit" type="Node" parent="StateMachine" unique_id=1381201182 node_paths=PackedStringArray("velocity_component")]
+[node name="Hit" type="Node" parent="StateMachine" unique_id=1381201182]
 script = ExtResource("7_tepoh")
-velocity_component = NodePath("../../VelocityComponent")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
 script = ExtResource("12_laxle")
