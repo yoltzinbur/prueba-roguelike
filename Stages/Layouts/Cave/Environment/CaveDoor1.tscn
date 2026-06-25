@@ -29,6 +29,6 @@ visible = false
 collision_mask = 72
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=901618227]
-position = Vector2(26, 30)
+position = Vector2(26, 31)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_6eypa")
