@@ -20,7 +20,7 @@ func spawn_all_categories() -> void:
 		return
 	
 	if spawn_categories.is_empty():
-		push_error("Error: No hay categorías configuradas")
+		# Sin categorías = sala pacífica (Start/Puzzle/Rest): nada que spawnear.
 		return
 	
 	NavigationServer2D.map_force_update(get_world_2d().get_navigation_map())

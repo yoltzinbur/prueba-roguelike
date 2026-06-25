@@ -11,7 +11,6 @@ height = 32.0
 script = ExtResource("1_6eypa")
 metadata/_edit_vertical_guides_ = [48.0]
 metadata/_edit_horizontal_guides_ = [40.0]
-metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1311976427]
 position = Vector2(24.000002, 20.000004)
@@ -21,14 +20,12 @@ region_enabled = true
 region_rect = Rect2(48, 8, 48, 40)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=635364148]
-visible = false
 polygon = PackedVector2Array(0, 40, 7, 40, 7, 33, 17, 20, 35, 20, 42, 31, 42, 40, 48, 40, 48, 0, 0, 0)
 
 [node name="InteractionArea" type="Area2D" parent="." unique_id=561964535]
-visible = false
 collision_mask = 72
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=901618227]
-position = Vector2(26, 31)
+position = Vector2(25, 34)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_6eypa")

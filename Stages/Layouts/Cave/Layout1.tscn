@@ -406,4 +406,4 @@ rotation = 4.712389
 
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=374500737 node_paths=PackedStringArray("node_floor_layer")]
 script = ExtResource("4_w34kc")
-node_floor_layer = NodePath("../Layers/navigation_floor")
+node_floor_layer = NodePath("../Layers")
