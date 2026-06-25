@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://b05wrwft053ic"]
+
+[ext_resource type="Texture2D" uid="uid://kf7tlocy7mjk" path="res://Stages/Art/16x16_Jerom_CC-BY-SA-3.0.png" id="1_wmsdg"]
+
+[node name="Interrupter" type="StaticBody2D" unique_id=469530297]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1379167007]
+position = Vector2(0, -1)
+texture = ExtResource("1_wmsdg")
+region_enabled = true
+region_rect = Rect2(96, 96, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=305109835]
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1984742301]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1647564602]
