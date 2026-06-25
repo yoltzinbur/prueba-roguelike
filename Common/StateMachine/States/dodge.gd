@@ -12,8 +12,13 @@ func enter(args := {}):
 	hurtbox = target.get_node_or_null("HurtBox")
 
 	dodge_direction = input_component.input_motion if input_component else Vector2.ZERO
-	if dodge_direction == Vector2.ZERO:
-		dodge_direction = Vector2.RIGHT if anim.scale.x >= 0 else Vector2.LEFT
+	if dodge_direction == Vector2.ZERO and input_component:
+		match input_component.last_direction:
+			"right": dodge_direction = Vector2.RIGHT
+			"left": dodge_direction = Vector2.LEFT
+			"up": dodge_direction = Vector2.UP
+			"down": dodge_direction = Vector2.DOWN
+			_: dodge_direction = Vector2.DOWN
 	dodge_direction = dodge_direction.normalized()
 
 	if hurtbox:
