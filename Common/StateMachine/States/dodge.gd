@@ -21,7 +21,7 @@ func enter(args := {}):
 
 	anim.modulate = Color(1, 1, 1, 0.5)
 
-	play_directional_anim("walk")
+	play_directional_anim("dodge")
 
 func state_physics_process(delta: float) -> void:
 	time_elapsed += delta
