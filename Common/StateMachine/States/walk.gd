@@ -33,6 +33,9 @@ func state_process(delta: float) -> void:
 	if input_component.input_heal:
 		transitioned.emit(self, "Heal", {})
 
+	if input_component.input_dodge:
+		transitioned.emit(self, "Dodge", {})
+
 	adjust_hitbox_position()
 
 func _on_damaged():

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dou4sn8syimqo"]
 
-[ext_resource type="Script" uid="uid://d1d2wqsgsnnti" path="res://Stages/Layouts/Cave/cave_door_1.gd" id="1_6eypa"]
+[ext_resource type="Script" uid="uid://d1d2wqsgsnnti" path="res://Stages/Layouts/Cave/Environment/cave_door.gd" id="1_6eypa"]
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_y8mv2"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6eypa"]
@@ -26,6 +26,6 @@ polygon = PackedVector2Array(0, 40, 7, 40, 7, 33, 17, 20, 35, 20, 42, 31, 42, 40
 collision_mask = 72
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=901618227]
-position = Vector2(26, 30)
+position = Vector2(25, 34)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_6eypa")

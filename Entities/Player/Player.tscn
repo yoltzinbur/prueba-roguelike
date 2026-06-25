@@ -6,6 +6,12 @@
 [ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="7_tepoh"]
 [ext_resource type="Script" uid="uid://osrelb7hxxqf" path="res://Entities/Scripts/Character/Nodes/player_input_component.gd" id="8_l2mqv"]
 [ext_resource type="Texture2D" uid="uid://e2m2xfq5detb" path="res://Entities/Player/Art/flask_big_red.png" id="8_l8a7u"]
+[ext_resource type="Texture2D" uid="uid://1v5jq64xrp5e" path="res://Entities/Player/Art/Player.png" id="8_laxle"]
+[ext_resource type="Script" uid="uid://dqhgujueriu8i" path="res://Common/StateMachine/States/dodge.gd" id="9_gbla8"]
+[ext_resource type="Texture2D" uid="uid://dub8idpg2slm1" path="res://Entities/Player/Art/lizard_m_idle_anim_f0.png" id="9_laxle"]
+[ext_resource type="Texture2D" uid="uid://b4l2rcdmra08d" path="res://Entities/Player/Art/lizard_m_idle_anim_f1.png" id="10_l8a7u"]
+[ext_resource type="Texture2D" uid="uid://bo3t8d0gdfwyu" path="res://Entities/Player/Art/lizard_m_idle_anim_f2.png" id="11_3wmxr"]
+[ext_resource type="Texture2D" uid="uid://bl8vffuod11xk" path="res://Entities/Player/Art/lizard_m_idle_anim_f3.png" id="12_5qe47"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Nodes/health_component.gd" id="12_laxle"]
 [ext_resource type="Texture2D" uid="uid://diwi2c76c3wb" path="res://Entities/Player/Art/Attack.png" id="12_o8vwu"]
 [ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Character/Nodes/velocity_component.gd" id="14_3wmxr"]
@@ -23,7 +29,8 @@
 [ext_resource type="PackedScene" uid="uid://ci5gw771vp0c0" path="res://Utilities/UI/CoinsCounter/CoinsCounter.tscn" id="27_h03de"]
 [ext_resource type="AudioStream" uid="uid://doscpw4dgofdc" path="res://Entities/Player/Audio/footstep09.ogg" id="28_e8qxc"]
 [ext_resource type="AudioStream" uid="uid://di1vuqbbcfujj" path="res://Entities/Player/Audio/knifeSlice.ogg" id="29_rvtm2"]
-[ext_resource type="Script" path="res://Entities/Player/player.gd" id="31_plyr"]
+[ext_resource type="AudioStream" uid="uid://brfft4fulrig2" path="res://Entities/Player/Audio/roblox-death-sound-effect.ogg" id="30_rvtm2"]
+[ext_resource type="Script" uid="uid://me8fgaw8qowh" path="res://Entities/Player/player.gd" id="31_plyr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gbla8"]
 atlas = ExtResource("12_o8vwu")
@@ -197,6 +204,9 @@ script = ExtResource("6_3wmxr")
 
 [node name="Hit" type="Node" parent="StateMachine" unique_id=1381201182]
 script = ExtResource("7_tepoh")
+
+[node name="Dodge" type="Node" parent="StateMachine" unique_id=1717315949]
+script = ExtResource("9_gbla8")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
 script = ExtResource("12_laxle")

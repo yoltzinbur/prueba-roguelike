@@ -6,7 +6,8 @@ func _process(delta: float) -> void:
 	input_attack = Input.is_action_just_pressed("attack")
 	input_heal = Input.is_action_just_pressed("heal")
 	input_action = Input.is_action_just_pressed("enter")
-	
+	input_dodge = Input.is_action_just_pressed("dodge")
+
 	if input_motion != Vector2.ZERO:
 		TutorialManager.registrar_accion("moverse")
 	
