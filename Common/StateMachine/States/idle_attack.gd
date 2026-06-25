@@ -7,7 +7,7 @@ var audioAttack: AudioStreamPlayer
 func enter(args := {}):
 	audioAttack = target.get_node_or_null("Audios/Attack")
 
-	anim.play("attack")
+	play_directional_anim("attack")
 
 	if audioAttack:
 		audioAttack.play()

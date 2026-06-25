@@ -12,11 +12,16 @@ func enter(args := {}):
 	var current_velocity = target.velocity
 	if current_velocity != Vector2.ZERO:
 		knockback_velocity = -current_velocity.normalized() * knockback_force
+	elif input_component:
+		match input_component.last_direction:
+			"left": knockback_velocity = Vector2.RIGHT * knockback_force
+			"right": knockback_velocity = Vector2.LEFT * knockback_force
+			"up": knockback_velocity = Vector2.DOWN * knockback_force
+			_: knockback_velocity = Vector2.UP * knockback_force
 	else:
-		knockback_velocity = Vector2.LEFT * knockback_force if anim.flip_h else Vector2.RIGHT * knockback_force
+		knockback_velocity = Vector2.LEFT * knockback_force
 
-	if anim and anim.sprite_frames.has_animation("hit"):
-		anim.play("hit")
+	play_directional_anim("hit")
 
 func state_physics_process(delta: float) -> void:
 	time_elapsed += delta

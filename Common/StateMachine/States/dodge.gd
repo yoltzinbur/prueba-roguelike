@@ -21,8 +21,7 @@ func enter(args := {}):
 
 	anim.modulate = Color(1, 1, 1, 0.5)
 
-	if anim and anim.sprite_frames.has_animation("walk"):
-		anim.play("walk")
+	play_directional_anim("walk")
 
 func state_physics_process(delta: float) -> void:
 	time_elapsed += delta

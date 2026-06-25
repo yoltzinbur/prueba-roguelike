@@ -8,7 +8,7 @@ func enter(args := {}):
 	audioAttack = target.get_node_or_null("Audios/Attack")
 
 	if args.has("direction"):
-		anim.play("attack")
+		play_directional_anim("attack")
 		args["velocity_component"].move(0, args["direction"] * args["force"])
 
 		if audioAttack:

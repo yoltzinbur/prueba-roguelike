@@ -9,6 +9,10 @@ func _process(delta: float) -> void:
 	input_dodge = Input.is_action_just_pressed("dodge")
 
 	if input_motion != Vector2.ZERO:
+		if abs(input_motion.x) >= abs(input_motion.y):
+			last_direction = "right" if input_motion.x > 0 else "left"
+		else:
+			last_direction = "down" if input_motion.y > 0 else "up"
 		TutorialManager.registrar_accion("moverse")
 	
 	if input_attack:

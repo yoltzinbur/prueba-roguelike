@@ -4,7 +4,7 @@ func enter(args := {}):
 	if health_component and not health_component.damaged.is_connected(_on_damaged):
 		health_component.damaged.connect(_on_damaged)
 
-	anim.play("idle")
+	play_directional_anim("idle")
 
 func state_process(delta: float) -> void:
 	if input_component:

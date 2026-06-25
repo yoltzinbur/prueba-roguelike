@@ -2,15 +2,16 @@ extends State
 
 var audioWalk: AudioStreamPlayer
 var hitbox: HitBox
+var current_dir: String = ""
 
 func enter(args := {}):
 	audioWalk = target.get_node_or_null("Audios/Walk")
 	hitbox = target.get_node_or_null("HitBox")
 
-	if anim and anim.sprite_frames.has_animation("walk"):
-		anim.play("walk")
-		if audioWalk:
-			audioWalk.play()
+	current_dir = input_component.last_direction if input_component else "down"
+	play_directional_anim("walk")
+	if audioWalk:
+		audioWalk.play()
 
 	if health_component and not health_component.damaged.is_connected(_on_damaged):
 		health_component.damaged.connect(_on_damaged)
@@ -18,8 +19,12 @@ func enter(args := {}):
 func state_process(delta: float) -> void:
 	if input_component.input_motion == Vector2.ZERO:
 		transitioned.emit(self, "Idle", {})
-	elif input_component.input_motion.x != 0:
-		target.get_node("AnimatedSprite2D").scale.x = roundi(input_component.input_motion.x)
+		return
+
+	var new_dir = input_component.last_direction if input_component else "down"
+	if new_dir != current_dir:
+		current_dir = new_dir
+		play_directional_anim("walk")
 
 	velocity_component.move(delta, input_component.input_motion)
 

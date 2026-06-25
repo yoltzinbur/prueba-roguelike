@@ -23,7 +23,8 @@ const ROOM_REST := "Rest"
 
 ## Tamaño en píxeles del "footprint" de cada sala. Debe coincidir con el tamaño
 ## real de Layout1.tscn para que las puertas vecinas queden alineadas.
-@export var room_size: Vector2 = Vector2(528, 288)
+#@export var room_size: Vector2 = Vector2(528, 288)
+@export var room_size: Vector2 = Vector2(592, 368)
 
 ## Semilla de generación. -1 = aleatoria en cada ejecución.
 @export var generation_seed: int = -1
