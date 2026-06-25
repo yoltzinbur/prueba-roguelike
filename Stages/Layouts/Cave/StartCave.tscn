@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://d0slvxbu2rsoe"]
+
+[ext_resource type="Script" uid="uid://bpyfr6n80qkdm" path="res://Stages/Layouts/Cave/start_cave.gd" id="1_n66si"]
+[ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="2_jcrri"]
+
+[node name="CaveMain" type="Node2D" unique_id=1789932892]
+script = ExtResource("1_n66si")
+
+[node name="Rooms" type="Node2D" parent="." unique_id=1841904167]
+
+[node name="Player" parent="." unique_id=1886145527 instance=ExtResource("2_jcrri")]
+position = Vector2(231, 151)

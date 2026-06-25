@@ -21,4 +21,4 @@ func interact() -> void:
 func open():
 	door_interacted.emit()
 	if GameManager:
-		GameManager.load_scene("res://Stages/Layouts/Cave/Layout1.tscn")
+		GameManager.load_scene("res://Stages/Layouts/Cave/StartCave.tscn")

@@ -63,7 +63,7 @@ func _configure_door(door: Node2D, has_neighbor: bool) -> void:
 	if door == null:
 		return
 
-	var collision := door.get_node_or_null("CollisionPolygon2D") as CollisionPolygon2D
+	var collision := door.get_node_or_null("CollisionShape2D") as CollisionShape2D
 	var interaction := door.get_node_or_null("InteractionArea") as Area2D
 
 	# En el mapa procedural las puertas no transicionan de escena: son muro o

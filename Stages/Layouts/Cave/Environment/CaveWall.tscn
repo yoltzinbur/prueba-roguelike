@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cp272m3pwpwat"]
+
+[ext_resource type="Texture2D" uid="uid://cbrjtd7s756ac" path="res://Stages/Art/cave_wall.png" id="1_f5x5r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3tw7e"]
+size = Vector2(80, 48)
+
+[node name="CaveWall" type="StaticBody2D" unique_id=410064646]
+collision_mask = 72
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1732720559]
+position = Vector2(40.000004, 24)
+scale = Vector2(1.0000001, 1)
+texture = ExtResource("1_f5x5r")
+region_rect = Rect2(208, 0, 32, 48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=893120931]
+position = Vector2(40.000004, 24)
+shape = SubResource("RectangleShape2D_3tw7e")
