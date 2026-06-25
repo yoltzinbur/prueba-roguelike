@@ -26,69 +26,66 @@ animations = [{
 }]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_h7a2f"]
-content_margin_left = 20.0
 content_margin_top = 10.0
-content_margin_right = 20.0
 content_margin_bottom = 10.0
 texture = ExtResource("4_7l1er")
-expand_margin_left = 10.0
 expand_margin_top = 10.0
-expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hxh00"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("8_chw8y")
+expand_margin_top = 10.0
 expand_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qr3ii"]
-content_margin_left = 20.0
 content_margin_top = 10.0
-content_margin_right = 20.0
 content_margin_bottom = 10.0
 texture = ExtResource("8_chw8y")
-expand_margin_left = 10.0
 expand_margin_top = 10.0
-expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qoqlk"]
-content_margin_left = 20.0
 content_margin_top = 10.0
-content_margin_right = 20.0
 content_margin_bottom = 10.0
 texture = ExtResource("4_7l1er")
-expand_margin_left = 10.0
 expand_margin_top = 10.0
-expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lviwe"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("8_chw8y")
+expand_margin_top = 10.0
 expand_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_chw8y"]
-content_margin_left = 20.0
 content_margin_top = 10.0
-content_margin_right = 20.0
 content_margin_bottom = 10.0
 texture = ExtResource("8_chw8y")
-expand_margin_left = 10.0
 expand_margin_top = 10.0
-expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_iwfq2"]
-content_margin_left = 20.0
 content_margin_top = 10.0
-content_margin_right = 20.0
 content_margin_bottom = 10.0
 texture = ExtResource("4_7l1er")
-expand_margin_left = 10.0
 expand_margin_top = 10.0
-expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jhjc0"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("8_chw8y")
+expand_margin_top = 10.0
 expand_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_y721j"]
-content_margin_left = 20.0
 content_margin_top = 10.0
-content_margin_right = 20.0
 content_margin_bottom = 10.0
 texture = ExtResource("8_chw8y")
-expand_margin_left = 10.0
 expand_margin_top = 10.0
-expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 
 [node name="MainMenu" type="Node2D" unique_id=593661736]
@@ -126,7 +123,7 @@ offset_bottom = 264.0
 texture = ExtResource("3_hvqjj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Control" unique_id=1739613537]
-position = Vector2(241, 136)
+position = Vector2(241, 134)
 scale = Vector2(1.0041667, 1.0055555)
 sprite_frames = SubResource("SpriteFrames_fimr5")
 autoplay = "default"
@@ -161,30 +158,39 @@ horizontal_alignment = 1
 [node name="Start" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=1704388207]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_pressed_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_hover_color = Color(0.24705882, 0.14509805, 0.32156864, 1)
 theme_override_fonts/font = ExtResource("6_hvqjj")
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxTexture_h7a2f")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_hxh00")
 theme_override_styles/hover = SubResource("StyleBoxTexture_qr3ii")
 text = "START"
 
 [node name="Options" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=2059196340]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_pressed_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_hover_color = Color(0.24705882, 0.14509805, 0.32156864, 1)
 theme_override_fonts/font = ExtResource("6_hvqjj")
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxTexture_qoqlk")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_lviwe")
 theme_override_styles/hover = SubResource("StyleBoxTexture_chw8y")
-text = "OPTIONS"
+text = "CREDITOS"
 
 [node name="Quit" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=1023002173]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_pressed_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_hover_color = Color(0.24705882, 0.14509805, 0.32156864, 1)
 theme_override_fonts/font = ExtResource("6_hvqjj")
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxTexture_iwfq2")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_jhjc0")
 theme_override_styles/hover = SubResource("StyleBoxTexture_y721j")
 text = "QUIT"
 

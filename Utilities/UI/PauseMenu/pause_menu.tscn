@@ -1,10 +1,85 @@
 [gd_scene format=3 uid="uid://dgb250m1o7qj0"]
 
 [ext_resource type="Script" uid="uid://bn3gvgt5pry3r" path="res://Utilities/UI/PauseMenu/pause_menu.gd" id="1_nwcfo"]
-[ext_resource type="Texture2D" uid="uid://881s0d1ln654" path="res://Utilities/UI/MainMenu/Art/scifi_main_menu.jpg" id="3_70se0"]
+[ext_resource type="Shader" uid="uid://b3v4plgjxxm4j" path="res://Utilities/UI/PauseMenu/pausemenu.gdshader" id="2_05uyy"]
+[ext_resource type="Texture2D" uid="uid://btykrx8ny63p0" path="res://Utilities/UI/MainMenu/Art/fondoRedondeado.png" id="3_mimiv"]
+[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="4_g8udi"]
+[ext_resource type="Texture2D" uid="uid://3ivpgn24n3dv" path="res://Utilities/UI/MainMenu/Art/boton del menu.png" id="5_mimiv"]
+[ext_resource type="Texture2D" uid="uid://cslhpw1ht6om1" path="res://Utilities/UI/MainMenu/Art/boton morado.png" id="6_f852v"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_70se0"]
+shader = ExtResource("2_05uyy")
+shader_parameter/lod = 0.4830000229425
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g8udi"]
-texture = ExtResource("3_70se0")
+texture = ExtResource("3_mimiv")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_f852v"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("5_mimiv")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xd2ax"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("6_f852v")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_s4mnr"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("6_f852v")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_y4llf"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("5_mimiv")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8tfif"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("6_f852v")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jvyj6"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("6_f852v")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_71hod"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("5_mimiv")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bv86b"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("6_f852v")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2adl6"]
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("6_f852v")
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
 
 [sub_resource type="Animation" id="Animation_2nc7s"]
 length = 0.3
@@ -46,7 +121,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.3),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [0.0, 0.694000032965]
+"values": [0.0, 0.1310000062225]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -69,58 +144,96 @@ _data = {
 
 [node name="PauseMenu" type="Control" unique_id=1520165393]
 process_mode = 3
-z_index = 100
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_nwcfo")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=745447421]
 process_mode = 3
+z_index = 1
+material = SubResource("ShaderMaterial_70se0")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 956.0
-offset_bottom = 642.0
+offset_right = 482.0
+offset_bottom = 272.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(1, 0, 0.08627451, 1)
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=1599488417]
 process_mode = 3
 modulate = Color(1, 1, 1, 0)
 top_level = true
+z_index = 4
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -185.0
-offset_top = -105.0
-offset_right = 185.0
-offset_bottom = 105.0
+offset_left = -150.0
+offset_top = -99.5
+offset_right = 150.0
+offset_bottom = 99.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_g8udi")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1126634009]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1212071226]
 layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 15
 
-[node name="Reanudar" type="Button" parent="PanelContainer/VBoxContainer" unique_id=685143468]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=1126634009]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1231400445]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.30588236, 0.9607843, 0.89411765, 1)
+theme_override_fonts/font = ExtResource("4_g8udi")
+theme_override_font_sizes/font_size = 40
+text = "PAUSA"
+horizontal_alignment = 1
+
+[node name="Reanudar" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=685143468]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_pressed_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_hover_color = Color(0.24624881, 0.1447469, 0.32116103, 1)
+theme_override_fonts/font = ExtResource("4_g8udi")
+theme_override_styles/normal = SubResource("StyleBoxTexture_f852v")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_xd2ax")
+theme_override_styles/hover = SubResource("StyleBoxTexture_s4mnr")
 text = "Reanudar"
 
-[node name="Reiniciar" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1754725966]
+[node name="Reiniciar" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1754725966]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_pressed_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_hover_color = Color(0.24705882, 0.14509805, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("4_g8udi")
+theme_override_styles/normal = SubResource("StyleBoxTexture_y4llf")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_8tfif")
+theme_override_styles/hover = SubResource("StyleBoxTexture_jvyj6")
 text = "	Reiniciar
 "
 
-[node name="Salir" type="Button" parent="PanelContainer/VBoxContainer" unique_id=88664546]
+[node name="Salir" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=88664546]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_pressed_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
+theme_override_colors/font_hover_color = Color(0.24705882, 0.14509805, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("4_g8udi")
+theme_override_styles/normal = SubResource("StyleBoxTexture_71hod")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_bv86b")
+theme_override_styles/hover = SubResource("StyleBoxTexture_2adl6")
 text = "Salir
 "
 
@@ -128,6 +241,6 @@ text = "Salir
 process_mode = 3
 libraries/ = SubResource("AnimationLibrary_mxa3g")
 
-[connection signal="pressed" from="PanelContainer/VBoxContainer/Reanudar" to="." method="_on_reanudar_pressed"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/Reiniciar" to="." method="_on_reiniciar_pressed"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/Salir" to="." method="_on_salir_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/Reanudar" to="." method="_on_reanudar_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/Reiniciar" to="." method="_on_reiniciar_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/Salir" to="." method="_on_salir_pressed"]
