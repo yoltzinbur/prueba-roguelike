@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bl8vffuod11xk"
-path="res://.godot/imported/lizard_m_idle_anim_f3.png-e04e11cb8fd3c301188768ec01b337f7.ctex"
+uid="uid://bwy03wlus63wr"
+path="res://.godot/imported/Roll.png-48f3d2fd0e000004334e35846c3fdaac.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Entities/Player/Art/lizard_m_idle_anim_f3.png"
-dest_files=["res://.godot/imported/lizard_m_idle_anim_f3.png-e04e11cb8fd3c301188768ec01b337f7.ctex"]
+source_file="res://Entities/Player/Art/Roll.png"
+dest_files=["res://.godot/imported/Roll.png-48f3d2fd0e000004334e35846c3fdaac.ctex"]
 
 [params]
 
