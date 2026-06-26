@@ -707,8 +707,7 @@ metadata/_custom_type_script = "uid://do423eahufemx"
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1931187168]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_inc0x")
-animation = &"walk_down"
-frame_progress = 0.41276637
+animation = &"dodge_left"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=3118235]
 visible = false

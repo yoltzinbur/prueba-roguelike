@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://vfvpbrmhwgu3"]
+
+[ext_resource type="Texture2D" uid="uid://banegaxxxbowd" path="res://Stages/Art/TilesetDungeon.png" id="1_0d3ts"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8xy6y"]
+size = Vector2(16, 14)
+
+[node name="PressurePlate" type="Node2D" unique_id=1431680022]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2013366734]
+position = Vector2(8, 8)
+texture = ExtResource("1_0d3ts")
+hframes = 2
+region_enabled = true
+region_rect = Rect2(32, 16, 32, 16)
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=62451494]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1761854102]
+position = Vector2(8, 9)
+shape = SubResource("RectangleShape2D_8xy6y")

@@ -370,6 +370,9 @@ physics_layer_0/collision_layer = 1
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_w34kc")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w34kc"]
+size = Vector2(496, 272)
+
 [node name="Layout" type="Node2D" unique_id=951008621]
 script = ExtResource("1_5x7ud")
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]
@@ -410,3 +413,9 @@ rotation = 4.712389
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=374500737 node_paths=PackedStringArray("node_floor_layer")]
 script = ExtResource("4_w34kc")
 node_floor_layer = NodePath("../Layers")
+
+[node name="RoomTrigger" type="Area2D" parent="." unique_id=1291136231]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RoomTrigger" unique_id=2107331927]
+position = Vector2(248, 136)
+shape = SubResource("RectangleShape2D_w34kc")

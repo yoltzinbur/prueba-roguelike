@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5h74t"]
 size = Vector2(16, 16)
 
-[node name="Block" type="CharacterBody2D" unique_id=773332783]
+[node name="Box" type="CharacterBody2D" unique_id=773332783]
 collision_mask = 72
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1521557435]
@@ -15,6 +15,5 @@ region_enabled = true
 region_rect = Rect2(128, 128, 16, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=227503406]
-visible = false
 position = Vector2(8, 8)
 shape = SubResource("RectangleShape2D_5h74t")

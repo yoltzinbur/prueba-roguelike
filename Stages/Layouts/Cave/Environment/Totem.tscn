@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cbky0ospmu4s3"]
+
+[ext_resource type="Texture2D" uid="uid://cu0bretdlom3w" path="res://Stages/Art/TilesetHouse.png" id="1_ktio6"]
+
+[node name="Totem" type="StaticBody2D" unique_id=934829289]
+collision_mask = 72
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1318383703]
+position = Vector2(16, 16)
+scale = Vector2(0.99999994, 1)
+texture = ExtResource("1_ktio6")
+region_enabled = true
+region_rect = Rect2(48, 304, 32, 32)
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=1319963507]
+polygon = PackedVector2Array(12, 2, 20, 2, 25, 8, 25, 12, 27, 13, 27, 17, 29, 17, 31, 19, 31, 31, 30, 32, 2, 32, 1, 31, 1, 19, 3, 17, 5, 17, 5, 13, 7, 12, 7, 8)

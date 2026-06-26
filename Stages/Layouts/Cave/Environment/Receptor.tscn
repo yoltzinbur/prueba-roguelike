@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://o1j6hhh1clsy"]
 
-[ext_resource type="Texture2D" uid="uid://kf7tlocy7mjk" path="res://Stages/Art/16x16_Jerom_CC-BY-SA-3.0.png" id="1_cisf1"]
+[ext_resource type="Texture2D" uid="uid://cffdyf6qs7kia" path="res://Stages/Art/TilesetLogic.png" id="1_cisf1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_06b08"]
 size = Vector2(16, 16)
@@ -12,8 +12,9 @@ collision_mask = 72
 position = Vector2(8, 8)
 texture = ExtResource("1_cisf1")
 region_enabled = true
-region_rect = Rect2(144, 368, 16, 16)
+region_rect = Rect2(64, 80, 16, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1411375784]
+visible = false
 position = Vector2(8, 8)
 shape = SubResource("RectangleShape2D_06b08")

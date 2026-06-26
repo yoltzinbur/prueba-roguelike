@@ -2,13 +2,17 @@ class_name HealthComponent
 extends Node
 
 signal health_changed(current_health: int, max_health: int)
+signal flasks_changed(current_flasks: int)
 signal damaged
 signal muerto
 
 var damageAudio: AudioStreamPlayer
 
 @export var MAX_HEALTH: int
-@export var flasks: int = 3
+@export var flasks: int = 3:
+	set(value):
+		flasks = value
+		flasks_changed.emit(flasks)
 @export var animatedSprite: AnimatedSprite2D
 
 @onready var current_health := MAX_HEALTH:
