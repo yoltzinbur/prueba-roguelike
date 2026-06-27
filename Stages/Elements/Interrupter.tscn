@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b05wrwft053ic"]
 
-[ext_resource type="Script" uid="uid://ct86enlthsuas" path="res://Stages/Layouts/Cave/Environment/interrupter.gd" id="1_bjtne"]
+[ext_resource type="Script" uid="uid://ct86enlthsuas" path="res://Stages/Elements/interrupter.gd" id="1_bjtne"]
 [ext_resource type="Texture2D" uid="uid://banegaxxxbowd" path="res://Stages/Art/TilesetDungeon.png" id="1_k4nev"]
 [ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_k4nev"]
 

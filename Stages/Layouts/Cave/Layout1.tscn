@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="4_w34kc"]
 [ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Common/StateMachine/States/idle.gd" id="5_5ttq7"]
 [ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="5_h3you"]
+[ext_resource type="PackedScene" uid="uid://d4ley6l1h7oee" path="res://Stages/Layouts/Cave/Layers/Rest/RestRoom.tscn" id="5_quhbb"]
 [ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Common/StateMachine/States/idle_attack.gd" id="6_xfp8t"]
 [ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Common/StateMachine/States/chase.gd" id="7_quhbb"]
 [ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="8_gyikr"]
@@ -481,6 +482,7 @@ size = Vector2(464, 240)
 [node name="Layout" type="Node2D" unique_id=951008621]
 script = ExtResource("1_5x7ud")
 puzzle_list = Array[PackedScene]([ExtResource("4_arith"), ExtResource("4_lasr0"), ExtResource("4_0w4ut")])
+rest_list = Array[PackedScene]([ExtResource("5_quhbb")])
 easy_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_8beky")])
 medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]
