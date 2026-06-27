@@ -400,7 +400,9 @@ position = Vector2(464, 240)
 [node name="Control" type="Control" parent="." unique_id=1507436732]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 208.0
+offset_top = 16.0
+offset_right = 288.0
+offset_bottom = 48.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Control" unique_id=693244997]

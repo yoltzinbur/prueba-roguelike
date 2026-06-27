@@ -217,6 +217,20 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 	_close_all_active_doors()
 	_show_puzzle_hint()
 	_start_enemy_waves()
+	_begin_timed_puzzles()
+
+## Arranca los puzzles con temporizador propio (p. ej. el aritmético) al entrar el
+## jugador, para que su validación no corra con la sala vacía.
+func _begin_timed_puzzles() -> void:
+	for child in content.get_children():
+		if child is PuzzleArithmetic:
+			child.begin()
+
+## Pausa los puzzles con temporizador propio al salir el jugador.
+func _halt_timed_puzzles() -> void:
+	for child in content.get_children():
+		if child is PuzzleArithmetic:
+			child.halt()
 
 ## Pide al puzzle de la sala que muestre momentáneamente su pista en la UI, solo la
 ## primera vez: el de Pila/Cola muestra el orden objetivo; el de láser, la compuerta
@@ -245,14 +259,25 @@ func _start_enemy_waves() -> void:
 	# El intervalo depende del puzzle de la sala (el de láser es más exigente).
 	_wave_timer.wait_time = _wave_interval()
 	_wave_timer.start()
+	# El puzzle aritmético presiona desde el primer instante: primera oleada ya.
+	if _waves_start_immediately():
+		_on_wave_timer_timeout()
 
-## Intervalo entre oleadas según el puzzle de la sala: 10 s para el de láseres,
+## Intervalo entre oleadas según el puzzle de la sala: 7 s para el de láseres,
 ## el estándar (15 s) para el resto.
 func _wave_interval() -> float:
 	for child in content.get_children():
 		if child is PuzzleLaser:
 			return LASER_WAVE_INTERVAL_SECONDS
 	return WAVE_INTERVAL_SECONDS
+
+## Indica si la primera oleada debe lanzarse de inmediato al entrar, sin esperar al
+## primer ciclo del temporizador. Lo usa el puzzle aritmético.
+func _waves_start_immediately() -> bool:
+	for child in content.get_children():
+		if child is PuzzleArithmetic:
+			return true
+	return false
 
 ## Detiene las oleadas sin destruir el temporizador ni perder el conteo.
 func _stop_enemy_waves() -> void:
@@ -301,6 +326,7 @@ func _on_room_trigger_exited(body: Node2D) -> void:
 	if body.is_in_group("Player") and body.current_room == self:
 		body.current_room = null
 		_stop_enemy_waves()
+		_halt_timed_puzzles()
 
 ## Recorre las 4 puertas y cierra (vuelve muro con colisión) solo aquellas que
 ## estaban abiertas porque conectaban con un vecino.
@@ -368,6 +394,11 @@ func _rebuild_puzzle() -> void:
 		var objective_code := _puzzle_order[0] if not _puzzle_order.is_empty() else ""
 		instance.apply_fixed_mode(_puzzle_mode, objective_code)
 	content.add_child(instance)
+
+	# El reset siempre ocurre con el jugador dentro de la sala, así que reanuda el
+	# ciclo de los puzzles con temporizador propio sobre la copia nueva.
+	if instance is PuzzleArithmetic:
+		instance.begin()
 
 	# Notifica el reset para que la UI/sistemas externos se reconecten.
 	puzzle_reset.emit()
