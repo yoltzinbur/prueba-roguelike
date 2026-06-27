@@ -41,6 +41,20 @@ var map: Dictionary = {}
 
 @onready var rooms_container: Node2D = $Rooms
 
+# --- Progreso de puzzles y desbloqueo del Boss -------------------------------
+
+## Total de salas de puzzle del nivel (se cuenta tras generar el mapa).
+var total_puzzles: int = 0
+## Puzzles ya resueltos.
+var puzzles_completed: int = 0
+# Set (por instance_id) de salas ya contadas, para no contar un mismo puzzle dos veces.
+var _cleared_rooms: Dictionary = {}
+var _boss_room: RoomLayout = null
+# Contenedor del contador (Control con ícono + Label) y su Label de texto. El
+# contenedor solo se hace visible dentro de un nivel procedural.
+var _puzzle_counter_node: Control = null
+var _puzzle_counter: Label = null
+
 func _ready() -> void:
 	if generation_seed >= 0:
 		seed(generation_seed)
@@ -48,6 +62,7 @@ func _ready() -> void:
 		randomize()
 	generate_map()
 	build_rooms()
+	_init_puzzle_progress()
 
 ## Calcula el tamaño total del mapa y reparte los tipos de sala sobre las
 ## coordenadas obtenidas con Drunkard's Walk.
@@ -144,3 +159,68 @@ func build_rooms() -> void:
 		var has_west: bool = map.has(coord + WEST)
 
 		room.configure_room(map[coord], has_north, has_south, has_east, has_west)
+
+## Cuenta las salas de puzzle, localiza la del Boss, conecta sus señales de
+## resolución y prepara el contador de la UI. El Boss arranca bloqueado (lo hace la
+## propia sala en configure_room); aquí solo se desbloquea al completar todo.
+func _init_puzzle_progress() -> void:
+	for room in rooms_container.get_children():
+		if not room is RoomLayout:
+			continue
+		match room.room_type:
+			ROOM_BOSS:
+				_boss_room = room
+			ROOM_PUZZLE:
+				total_puzzles += 1
+				room.room_cleared.connect(_on_room_cleared)
+	_resolve_puzzle_counter()
+	# El contador solo se ve dentro del nivel procedural: aquí se activa al entrar.
+	if _puzzle_counter_node:
+		_puzzle_counter_node.visible = true
+	_update_puzzle_counter_ui()
+	# Sin puzzles que resolver, el Boss queda accesible de entrada.
+	if total_puzzles == 0:
+		_unlock_boss_room()
+
+## Maneja la resolución de una sala de puzzle: la cuenta UNA sola vez (evita dobles
+## si el jugador vuelve a interactuar), refresca la UI y, al completar todas,
+## desbloquea la sala del Boss.
+func _on_room_cleared(room: RoomLayout) -> void:
+	var id := room.get_instance_id()
+	if _cleared_rooms.has(id):
+		return
+	_cleared_rooms[id] = true
+	puzzles_completed += 1
+	_update_puzzle_counter_ui()
+	if puzzles_completed >= total_puzzles:
+		_unlock_boss_room()
+
+## Localiza el contador dentro de la UI del Player: el nodo "PuzzlesCounter"
+## (instancia de PuzzlesCounter.tscn) y su hijo "Label".
+func _resolve_puzzle_counter() -> void:
+	var player := get_tree().get_first_node_in_group("Player")
+	if player == null:
+		return
+	_puzzle_counter_node = player.get_node_or_null("UI/PuzzlesCounter") as Control
+	if _puzzle_counter_node:
+		_puzzle_counter = _puzzle_counter_node.get_node_or_null("Label") as Label
+
+## Actualiza el texto del contador con el formato "Puzzles: X / Y".
+func _update_puzzle_counter_ui() -> void:
+	if _puzzle_counter:
+		_puzzle_counter.text = "Puzzles: %d / %d" % [puzzles_completed, total_puzzles]
+
+## Al salir del nivel procedural (este nodo abandona el árbol), vuelve a ocultar el
+## contador para que no quede visible fuera del dungeon. Se protege con
+## is_instance_valid por si el Player se libera junto con la escena.
+func _exit_tree() -> void:
+	if is_instance_valid(_puzzle_counter_node):
+		_puzzle_counter_node.visible = false
+
+## Desbloquea el acceso físico a la sala del Boss y avisa al jugador.
+func _unlock_boss_room() -> void:
+	if _boss_room:
+		_boss_room.unlock_boss_room()
+	var player := get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("show_message"):
+		player.show_message("¡La sala del Jefe ha sido desbloqueada!", 4.0)

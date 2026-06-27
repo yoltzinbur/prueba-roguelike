@@ -28,6 +28,10 @@ extends Node2D
 ## La UI o los sistemas externos pueden reconectarse al nuevo contenido aquí.
 signal puzzle_reset
 
+## Emitida cuando la sala de puzzle se resuelve (desde complete_puzzle). La escucha
+## el administrador del nivel (start_cave.gd) para el contador y el desbloqueo del Boss.
+signal room_cleared(room: RoomLayout)
+
 # Configuración ORIGINAL de las puertas (qué lados conectan con un vecino). Se
 # guarda en configure_room() para poder restaurar la apertura tras el puzzle.
 var _n_active: bool
@@ -101,6 +105,7 @@ func configure_room(type: String, north: bool, south: bool, east: bool, west: bo
 			_setup_combat(hard_combat)
 		ROOM_TYPE_BOSS:
 			_setup_combat(boss_combat)
+			_lock_boss_room()
 		ROOM_TYPE_PUZZLE:
 			_setup_peaceful(puzzle_list)
 		ROOM_TYPE_REST:
@@ -364,10 +369,27 @@ func complete_puzzle() -> void:
 	is_puzzled_cleared = true
 	# Puzzle resuelto: dejan de aparecer enemigos.
 	_stop_enemy_waves()
+	_open_active_doors()
+	# Avisa al administrador del nivel (contador de puzzles y desbloqueo del Boss).
+	room_cleared.emit(self)
+
+## Reabre (restaura como pasillo) las puertas que conectan con un vecino, según el
+## estado original guardado en configure_room().
+func _open_active_doors() -> void:
 	_configure_door(doors.get_node_or_null("NorthDoor"), _n_active)
 	_configure_door(doors.get_node_or_null("SouthDoor"), _s_active)
 	_configure_door(doors.get_node_or_null("EastDoor"), _e_active)
 	_configure_door(doors.get_node_or_null("WestDoor"), _w_active)
+
+## Sala del Boss: queda bloqueada de inicio cerrando (volviendo muro) las puertas
+## que conectan con vecinos, hasta que el nivel la desbloquee.
+func _lock_boss_room() -> void:
+	_close_all_active_doors()
+
+## API pública: desbloquea el acceso físico a la sala del Boss, reabriendo sus
+## puertas hacia los vecinos. La llama el administrador del nivel al completar los puzzles.
+func unlock_boss_room() -> void:
+	_open_active_doors()
 
 ## API pública (botón "reset"): destruye el contenido dinámico actual del puzzle
 ## y vuelve a instanciar una copia limpia de la escena guardada.

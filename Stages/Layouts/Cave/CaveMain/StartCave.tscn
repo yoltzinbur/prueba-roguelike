@@ -8,8 +8,7 @@ script = ExtResource("1_n66si")
 easy_room = 0
 medium_room = 0
 hard_room = 0
-puzzle_room = 2
-rest_room = 0
+puzzle_room = 3
 
 [node name="Rooms" type="Node2D" parent="." unique_id=1841904167]
 

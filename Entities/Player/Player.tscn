@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://cxm60o361tj2d" path="res://Common/StateMachine/States/move_attack.gd" id="19_s1io2"]
 [ext_resource type="PackedScene" uid="uid://o5p0c0ji2g7a" path="res://Utilities/UI/HealthBar/HealthBar.tscn" id="22_ayo8t"]
 [ext_resource type="PackedScene" uid="uid://b1y0de6mb1cqi" path="res://Utilities/UI/MessageUI/Message.tscn" id="22_h03de"]
+[ext_resource type="PackedScene" uid="uid://dyvifaf40ibg2" path="res://Utilities/UI/PuzzlesCounter/PuzzlesCounter.tscn" id="23_ewrch"]
 [ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="24_80tt4"]
 [ext_resource type="AudioStream" uid="uid://bx2o053cufkgb" path="res://Entities/Player/Audio/01._damage_grunt_male.wav" id="24_mgqku"]
 [ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="25_tepoh"]
@@ -658,8 +659,8 @@ size = Vector2(21, 22)
 collision_layer = 64
 collision_mask = 17
 script = ExtResource("31_plyr")
-metadata/_edit_horizontal_guides_ = [-30.0]
-metadata/_edit_vertical_guides_ = [-160.0, 160.0]
+metadata/_edit_horizontal_guides_ = [-30.0, -50.0, -46.0]
+metadata/_edit_vertical_guides_ = [160.0]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("15_5qe47")
@@ -741,6 +742,12 @@ offset_left = 72.0
 offset_top = -64.0
 offset_right = 72.0
 offset_bottom = -64.0
+
+[node name="PuzzlesCounter" parent="UI" unique_id=512160119 instance=ExtResource("23_ewrch")]
+offset_left = -154.0
+offset_top = -46.0
+offset_right = -154.0
+offset_bottom = -46.0
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=1764899623 node_paths=PackedStringArray("health")]
 collision_layer = 2

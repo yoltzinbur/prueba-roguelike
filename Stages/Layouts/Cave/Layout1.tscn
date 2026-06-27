@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_w34kc"]
 [ext_resource type="Script" uid="uid://c21nal448snfe" path="res://Entities/Enemies/spawn_category.gd" id="3_65yas"]
 [ext_resource type="PackedScene" uid="uid://cp272m3pwpwat" path="res://Stages/Layouts/Cave/Environment/CaveWall.tscn" id="3_w34kc"]
+[ext_resource type="PackedScene" uid="uid://c5005hcgimv6q" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleStackQueue.tscn" id="4_0w4ut"]
 [ext_resource type="PackedScene" uid="uid://b43mqe76a4lfe" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleArithmetic.tscn" id="4_arith"]
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Common/StateMachine/state_machine.gd" id="4_eyjty"]
 [ext_resource type="PackedScene" uid="uid://d2nnpso6gfrsw" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleLaser.tscn" id="4_lasr0"]
@@ -479,7 +480,7 @@ size = Vector2(464, 240)
 
 [node name="Layout" type="Node2D" unique_id=951008621]
 script = ExtResource("1_5x7ud")
-puzzle_list = Array[PackedScene]([ExtResource("4_arith"), ExtResource("4_lasr0")])
+puzzle_list = Array[PackedScene]([ExtResource("4_arith"), ExtResource("4_lasr0"), ExtResource("4_0w4ut")])
 easy_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_8beky")])
 medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]
