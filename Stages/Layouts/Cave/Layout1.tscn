@@ -4,9 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_w34kc"]
 [ext_resource type="Script" uid="uid://c21nal448snfe" path="res://Entities/Enemies/spawn_category.gd" id="3_65yas"]
 [ext_resource type="PackedScene" uid="uid://cp272m3pwpwat" path="res://Stages/Layouts/Cave/Environment/CaveWall.tscn" id="3_w34kc"]
+[ext_resource type="PackedScene" uid="uid://b43mqe76a4lfe" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleArithmetic.tscn" id="4_arith"]
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Common/StateMachine/state_machine.gd" id="4_eyjty"]
 [ext_resource type="PackedScene" uid="uid://d2nnpso6gfrsw" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleLaser.tscn" id="4_lasr0"]
-[ext_resource type="PackedScene" uid="uid://b43mqe76a4lfe" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleArithmetic.tscn" id="4_arith"]
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="4_w34kc"]
 [ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Common/StateMachine/States/idle.gd" id="5_5ttq7"]
 [ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="5_h3you"]
@@ -479,7 +479,7 @@ size = Vector2(464, 240)
 
 [node name="Layout" type="Node2D" unique_id=951008621]
 script = ExtResource("1_5x7ud")
-puzzle_list = Array[PackedScene]([ExtResource("4_lasr0"), ExtResource("4_arith")])
+puzzle_list = Array[PackedScene]([ExtResource("4_arith"), ExtResource("4_lasr0")])
 easy_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_8beky")])
 medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]

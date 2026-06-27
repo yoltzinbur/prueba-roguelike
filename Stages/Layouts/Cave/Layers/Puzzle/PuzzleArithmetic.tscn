@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dvc53ch1p1fm1" path="res://Stages/Layouts/Cave/Layers/Puzzle/puzzle_arithmetic.gd" id="1_5t0ef"]
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_s804e"]
 [ext_resource type="PackedScene" uid="uid://b05wrwft053ic" path="res://Stages/Layouts/Cave/Environment/Interrupter.tscn" id="3_hn7nq"]
+[ext_resource type="PackedScene" uid="uid://b1y0de6mb1cqi" path="res://Utilities/UI/MessageUI/Message.tscn" id="4_x7a50"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -381,28 +382,26 @@ tile_set = SubResource("TileSet_x7a50")
 [node name="InteractionObjects" type="Node2D" parent="." unique_id=1922983034]
 
 [node name="Interrupter" parent="InteractionObjects" unique_id=469530297 instance=ExtResource("3_hn7nq")]
-position = Vector2(64, 144)
+position = Vector2(176, 96)
 
 [node name="Interrupter2" parent="InteractionObjects" unique_id=1349247740 instance=ExtResource("3_hn7nq")]
-position = Vector2(352, 144)
+position = Vector2(96, 144)
 
 [node name="Interrupter3" parent="InteractionObjects" unique_id=1094902143 instance=ExtResource("3_hn7nq")]
 position = Vector2(192, 208)
 
 [node name="Interrupter4" parent="InteractionObjects" unique_id=1294353654 instance=ExtResource("3_hn7nq")]
-position = Vector2(272, 64)
+position = Vector2(272, 80)
 
 [node name="Interrupter5" parent="InteractionObjects" unique_id=754557802 instance=ExtResource("3_hn7nq")]
-position = Vector2(464, 240)
+position = Vector2(288, 160)
 
 [node name="Triggers" type="Node2D" parent="." unique_id=592686245]
 
-[node name="Control" type="Control" parent="." unique_id=1507436732]
-layout_mode = 3
-anchors_preset = 0
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=693244997]
+
+[node name="Message" parent="." unique_id=684060352 instance=ExtResource("4_x7a50")]
 offset_left = 208.0
 offset_top = 16.0
 offset_right = 288.0
 offset_bottom = 48.0
-
-[node name="CanvasLayer" type="CanvasLayer" parent="Control" unique_id=693244997]

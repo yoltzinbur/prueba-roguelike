@@ -16,7 +16,11 @@ signal puzzle_solved
 ## Módulo (divisor) de la sala: la suma activa debe ser múltiplo de este valor.
 @export var modulo: int = 5
 ## Segundos entre cada validación automática del puzzle.
-@export var validation_interval: int = 8
+@export var validation_interval: int = 10
+
+# La cuenta regresiva en la UI solo aparece en los últimos segundos, para no saturar
+# el mensaje del jugador y dejar que el aviso inicial se vea completo.
+const COUNTDOWN_VISIBLE_FROM: int = 5
 
 # Rango de valores aleatorios asignados a cada interruptor.
 const MIN_VALUE: int = 1
@@ -30,7 +34,6 @@ var _is_solved: bool = false
 var _seconds_left: int = 0
 
 @onready var interaction_objects: Node2D = $InteractionObjects
-@onready var canvas_layer: CanvasLayer = $Control/CanvasLayer
 
 var _residue_label: Label
 var _tick_timer: Timer
@@ -50,19 +53,65 @@ func _ready() -> void:
 func _init_interrupters() -> void:
 	for child in interaction_objects.get_children():
 		if child is Interrupter:
-			child.set_value(randi_range(MIN_VALUE, MAX_VALUE))
+			child.set_value(_random_value())
 			child.interrupter_changed.connect(_on_interrupter_changed)
 			_interrupters.append(child)
 
-## Crea la etiqueta de residuo dentro del CanvasLayer del puzzle (UI local).
+## Devuelve un valor aleatorio en [MIN_VALUE, MAX_VALUE] que NO sea múltiplo del
+## módulo: un múltiplo no aportaría nada al residuo y sería un interruptor "muerto"
+## (p. ej. el 5 con módulo 5). Si no quedara ningún valor válido, cae al rango completo.
+func _random_value() -> int:
+	var pool: Array[int] = []
+	for v in range(MIN_VALUE, MAX_VALUE + 1):
+		if modulo <= 0 or v % modulo != 0:
+			pool.append(v)
+	if pool.is_empty():
+		return randi_range(MIN_VALUE, MAX_VALUE)
+	return pool.pick_random()
+
+## Resuelve la etiqueta del residuo dentro del CanvasLayer del puzzle, la centra en
+## la parte superior de la pantalla (sin chocar con la barra de vida) y la deja
+## OCULTA hasta que la sala llame a begin(); así no se muestra el residuo de salas
+## donde el jugador no está, ni se enciman varias del mismo puzzle.
 func _setup_residue_label() -> void:
+	_residue_label = _resolve_residue_label()
+	if _residue_label == null:
+		return
 	var settings := LabelSettings.new()
 	settings.font = LABEL_FONT
 	settings.font_size = 16
-	_residue_label = Label.new()
 	_residue_label.label_settings = settings
-	_residue_label.position = Vector2(16.0, 16.0)
-	canvas_layer.add_child(_residue_label)
+	# Centrado arriba: ancho completo y alineación centrada.
+	_residue_label.anchor_left = 0.0
+	_residue_label.anchor_right = 1.0
+	_residue_label.offset_left = 0.0
+	_residue_label.offset_right = 0.0
+	_residue_label.offset_top = 8.0
+	_residue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_residue_label.visible = false
+
+## Busca la etiqueta "Message" bajo el CanvasLayer del puzzle. Admite la estructura
+## nueva (CanvasLayer/Message) y la anterior (Control/CanvasLayer); si "Message" es
+## un componente con un Label hijo, usa ese; y si no hay nada, crea un Label.
+func _resolve_residue_label() -> Label:
+	var canvas := get_node_or_null("CanvasLayer") as CanvasLayer
+	if canvas == null:
+		canvas = get_node_or_null("Control/CanvasLayer") as CanvasLayer
+	if canvas == null:
+		canvas = CanvasLayer.new()
+		canvas.name = "CanvasLayer"
+		add_child(canvas)
+	var node := canvas.get_node_or_null("Message")
+	if node is Label:
+		return node
+	if node != null:
+		var inner := node.get_node_or_null("Message") as Label
+		if inner:
+			return inner
+	var label := Label.new()
+	label.name = "Message"
+	canvas.add_child(label)
+	return label
 
 # --- Suma y residuo en tiempo real -------------------------------------------
 
@@ -79,7 +128,12 @@ func _recalculate() -> void:
 	_update_residue_label()
 
 func _update_residue_label() -> void:
-	if _residue_label:
+	if _residue_label == null:
+		return
+	# Sin interruptores activos (inicio): muestra "--" en lugar de 0.
+	if _active_sum == 0:
+		_residue_label.text = "Residuo: --"
+	else:
 		_residue_label.text = "Residuo: %d" % _residue()
 
 func _residue() -> int:
@@ -95,6 +149,11 @@ func _residue() -> int:
 func begin() -> void:
 	if _is_solved:
 		return
+	# Muestra el residuo solo mientras el jugador está en esta sala.
+	if _residue_label:
+		_residue_label.visible = true
+	# Aviso inicial para dejar claro el objetivo del puzzle.
+	_show_message("Obtén residuo 0", 3.0)
 	_seconds_left = validation_interval
 	if _tick_timer == null:
 		_tick_timer = Timer.new()
@@ -106,6 +165,9 @@ func begin() -> void:
 ## API pública (la llama la sala al salir el jugador): pausa la validación para no
 ## penalizar ni mostrar mensajes mientras el jugador no está en la sala.
 func halt() -> void:
+	# Oculta el residuo al salir (y pausa la validación).
+	if _residue_label:
+		_residue_label.visible = false
 	if _tick_timer:
 		_tick_timer.stop()
 
@@ -116,7 +178,9 @@ func _on_tick() -> void:
 		return
 	_seconds_left -= 1
 	if _seconds_left > 0:
-		_show_message("Validación en: %ds" % _seconds_left, 1.5)
+		# Solo muestra la cuenta regresiva en los últimos segundos.
+		if _seconds_left <= COUNTDOWN_VISIBLE_FROM:
+			_show_message("Validación en: %ds" % _seconds_left, 1.5)
 	else:
 		_validate()
 		_seconds_left = validation_interval
@@ -132,20 +196,19 @@ func _validate() -> void:
 	if _active_sum > 0 and residue == 0:
 		_mark_solved()
 	elif residue != 0:
-		_show_message("RESIDUO %d: ¡oleadas!" % residue, 2.0)
+		_show_message("RESIDUO %d: ¡enemigos!" % residue, 2.0)
 		_apply_penalty(residue)
 	else:
 		# Suma 0 (todos apagados): ni victoria ni penalización.
 		_show_message("Enciende interruptores", 1.5)
 
-## La severidad de la penalización escala con el residuo: una oleada por unidad
-## sobrante, sobre el piso del puzzle (vía la sala).
+## La severidad de la penalización escala con el residuo: spawnea esa cantidad de
+## enemigos (no oleadas enteras), para no acumular demasiados de golpe.
 func _apply_penalty(severity: int) -> void:
 	var room := _find_room()
 	if room == null:
 		return
-	for i in severity:
-		room.spawn_penalty_wave()
+	room.spawn_penalty_enemies(severity)
 
 func _mark_solved() -> void:
 	if _is_solved:
@@ -153,6 +216,9 @@ func _mark_solved() -> void:
 	_is_solved = true
 	if _tick_timer:
 		_tick_timer.stop()
+	# Bloquea los interruptores para que el jugador no pueda alterar la solución.
+	for interrupter in _interrupters:
+		interrupter.lock()
 	_show_message("PUZZLE RESUELTO", 3.0)
 	puzzle_solved.emit()
 	# Avisa a la sala para que reabra las puertas, si el puzzle vive dentro de una.

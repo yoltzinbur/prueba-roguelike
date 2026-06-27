@@ -30,6 +30,10 @@ var is_on: bool = false
 ## Valor entero que aporta a la suma del puzzle cuando está encendido.
 var value: int = 0
 
+# Bloqueado: ignora interacción y golpes (p. ej. al resolver el puzzle, para que el
+# jugador no pueda alterar la solución).
+var _locked: bool = false
+
 var _value_label: Label
 var _attack_locked: bool = false
 
@@ -42,11 +46,18 @@ func _ready() -> void:
 func _on_interacted() -> void:
 	toggle()
 
-## API pública: invierte el estado, actualiza el sprite y emite el cambio.
+## API pública: invierte el estado, actualiza el sprite y emite el cambio. Si está
+## bloqueado, no hace nada.
 func toggle() -> void:
+	if _locked:
+		return
 	is_on = not is_on
 	sprite.frame = FRAME_ON if is_on else FRAME_OFF
 	interrupter_changed.emit(is_on)
+
+## API pública: bloquea el interruptor para que no pueda alternarse (puzzle resuelto).
+func lock() -> void:
+	_locked = true
 
 ## API pública: fija el valor que aporta el interruptor y refresca su etiqueta.
 func set_value(new_value: int) -> void:

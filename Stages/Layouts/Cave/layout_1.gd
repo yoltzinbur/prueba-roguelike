@@ -320,6 +320,17 @@ func spawn_penalty_wave() -> void:
 	enemy_spawner.spawn_pool(easy_combat, puzzle_floor)
 	enemy_spawner.spawn_pool(medium_combat, puzzle_floor)
 
+## API pública: penalización de cantidad CONTROLADA. Spawnea exactamente `count`
+## enemigos básicos sobre el piso del puzzle, para no acumular oleadas enteras
+## (p. ej. la penalización por residuo del puzzle aritmético).
+func spawn_penalty_enemies(count: int) -> void:
+	if enemy_spawner == null:
+		return
+	var puzzle_floor := _puzzle_floor()
+	if puzzle_floor == null:
+		return
+	enemy_spawner.spawn_count(easy_combat, count, puzzle_floor)
+
 ## Al salir de la sala, desvincula al jugador para no resetearla desde fuera y
 ## detiene las oleadas (no deben seguir apareciendo enemigos en una sala vacía).
 func _on_room_trigger_exited(body: Node2D) -> void:
