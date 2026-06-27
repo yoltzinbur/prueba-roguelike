@@ -103,15 +103,17 @@ El generador llama `configure_room(type, north, south, east, west)` donde los bo
 
 **Contenido por tipo de sala:**
 
-| Tipo | Combate? | Max Enemigos | Pools | Interior |
-|------|----------|-------------|-------|----------|
-| Start | No | 0 | Ninguno | Ninguno |
-| Easy | Si | 4 | `easy_combat` | Aleatorio de `combat_list` |
-| Medium | Si | 6 | `medium_combat` | Aleatorio de `combat_list` |
-| Hard | Si | 8 | `hard_combat` | Aleatorio de `combat_list` |
-| Boss | Si | 1 | `boss_combat` | Aleatorio de `combat_list` |
-| Puzzle | No | 0 | Ninguno | Aleatorio de `puzzle_list` |
-| Rest | No | 0 | Ninguno | Aleatorio de `rest_list` |
+La cantidad de enemigos por sala la define `quantity` de cada `SpawnCategory` de la pool (no hay un tope por sala en el código).
+
+| Tipo | Combate? | Pools | Interior |
+|------|----------|-------|----------|
+| Start | No | Ninguno | Ninguno |
+| Easy | Si | `easy_combat` | Aleatorio de `combat_list` |
+| Medium | Si | `medium_combat` | Aleatorio de `combat_list` |
+| Hard | Si | `hard_combat` | Aleatorio de `combat_list` |
+| Boss | Si | `boss_combat` | Aleatorio de `combat_list` |
+| Puzzle | No | Ninguno | Aleatorio de `puzzle_list` |
+| Rest | No | Ninguno | Aleatorio de `rest_list` |
 
 **Listas de contenido (@export):**
 - `combat_list: Array[PackedScene]` — Layouts internos de combate (obstaculos, decoracion).
@@ -144,31 +146,37 @@ SpawnCategory (Resource)
 ```
 
 ### Enemy Spawner (`enemy_spawner.gd`)
-Ubicado en `Entities/Enemies/enemy_spawner.gd`, extiende `Node2D`.
+Ubicado en `Entities/Enemies/enemy_spawner.gd`, extiende `Node2D` (`class_name EnemySpawner`).
+
+Es un **servicio pasivo**: no lee nodos del inspector ni auto-spawnea en `_ready()`. Quien lo usa (el `RoomLayout`) le indica el piso y la pool en cada llamada; el jugador se resuelve solo desde el grupo `"Player"`.
 
 **Propiedades @export:**
 ```
-spawn_categories: Array[SpawnCategory]  -- Pools de enemigos (inyectadas por RoomLayout)
-max_enemies: int = 5                    -- Limite maximo de enemigos
-node_floor_layer: Node2D                -- Referencia al nodo padre de TileMapLayers
-player: Node2D                          -- Referencia al jugador
 min_player_distance: float = 150.0      -- Distancia minima al jugador para spawn
 ```
 
-**Algoritmo de Spawn:**
-1. En `_ready()`, obtiene la capa `navigation_floor` del `node_floor_layer`.
-2. Ejecuta `spawn_all_categories()` de forma diferida (`call_deferred`).
-3. Fuerza actualizacion del mapa de navegacion: `NavigationServer2D.map_force_update()`.
-4. Para cada `SpawnCategory`:
-   a. Elige una celda aleatoria de `navigation_floor.get_used_cells()`.
+**API:**
+```
+spawn_pool(pool: Array[SpawnCategory], floor_layer: TileMapLayer) -> void
+```
+
+**Algoritmo de Spawn (`spawn_pool`):**
+1. Valida que `floor_layer` no sea null y que la pool no este vacia.
+2. Fuerza actualizacion del mapa de navegacion: `NavigationServer2D.map_force_update()`.
+3. Obtiene las celdas validas con `floor_layer.get_used_cells()`.
+4. Resuelve al jugador con `get_tree().get_first_node_in_group("Player")`.
+5. Para cada `SpawnCategory` (`_spawn_category`):
+   a. Elige una celda aleatoria y descarta las que no tengan poligono de navegacion.
    b. Convierte a posicion global con `map_to_local()` + `to_global()`.
    c. Verifica que la posicion este a mas de `min_player_distance` del jugador.
    d. Elige una escena aleatoria de `category.scenes` e instancia.
    e. Limite de intentos: `category.quantity * 5` para evitar bucles.
-5. Si `spawn_categories` esta vacio, no spawnea nada (sala pacifica).
 
 **Integracion con Generacion Procedural:**
-El spawner no sabe que tipo de sala es. `RoomLayout.configure_room()` inyecta las pools correctas y el `max_enemies` antes de que el spawner ejecute su `_ready()` diferido. Para salas pacificas (Start, Puzzle, Rest), `_clear_spawner()` vacia las categorias.
+El spawner no sabe que tipo de sala es. `RoomLayout` lo invoca segun el tipo:
+- **Salas de combate** (`_setup_combat`): llama `spawn_pool(pool, floor_layer)` de forma diferida, donde `floor_layer` es la capa navegable propia de la sala, resuelta automaticamente por `_find_floor_layer()` (prioriza `Layers/navigation_floor`).
+- **Salas de puzzle** (oleadas): cada `WAVE_INTERVAL_SECONDS`, `_on_wave_timer_timeout()` llama `spawn_pool()` con el piso del puzzle actual (`_puzzle_floor()`, el nodo `FloorLayer` del contenido).
+- **Salas pacificas** (Start, Rest): simplemente no se invoca al spawner.
 
 ---
 

@@ -15,15 +15,14 @@ extends Node2D
 @export var hard_combat: Array[SpawnCategory]
 @export var boss_combat: Array[SpawnCategory]
 
-# Cantidad máxima de enemigos por tipo de sala de combate.
-@export var easy_max_enemies: int = 4
-@export var medium_max_enemies: int = 6
-@export var hard_max_enemies: int = 8
-@export var boss_max_enemies: int = 1
-
 @onready var doors: Node2D = $Doors
 @onready var content: Node2D = $Content
-@onready var enemy_spawner: Node2D = $EnemySpawner
+@onready var enemy_spawner: EnemySpawner = $EnemySpawner
+
+# Piso navegable propio de la sala: sobre sus celdas aparecen los enemigos de las
+# salas de combate. Se resuelve solo desde $Layers (no requiere asignación manual
+# en el inspector), priorizando la capa dedicada "navigation_floor".
+@onready var floor_layer: TileMapLayer = _find_floor_layer()
 
 ## Emitida tras reinstanciar el contenido del puzzle en reset_current_puzzle().
 ## La UI o los sistemas externos pueden reconectarse al nuevo contenido aquí.
@@ -93,20 +92,21 @@ func configure_room(type: String, north: bool, south: bool, east: bool, west: bo
 
 	match type:
 		ROOM_TYPE_EASY:
-			_setup_combat(easy_combat, easy_max_enemies)
+			_setup_combat(easy_combat)
 		ROOM_TYPE_MEDIUM:
-			_setup_combat(medium_combat, medium_max_enemies)
+			_setup_combat(medium_combat)
 		ROOM_TYPE_HARD:
-			_setup_combat(hard_combat, hard_max_enemies)
+			_setup_combat(hard_combat)
 		ROOM_TYPE_BOSS:
-			_setup_combat(boss_combat, boss_max_enemies)
+			_setup_combat(boss_combat)
 		ROOM_TYPE_PUZZLE:
 			_setup_peaceful(puzzle_list)
 		ROOM_TYPE_REST:
 			_setup_peaceful(rest_list)
 		_:
-			# Sala de Inicio (Start) u otras: pacífica y sin contenido.
-			_clear_spawner()
+			# Sala de Inicio (Start) u otras: pacífica y sin contenido. El spawner es
+			# un servicio pasivo, así que basta con no invocarlo.
+			pass
 
 # Identificadores de tipo, alineados con los del generador (cave_main.gd).
 const ROOM_TYPE_EASY := "Easy"
@@ -141,20 +141,18 @@ func _configure_door(door: Node2D, has_neighbor: bool) -> void:
 		if collision:
 			collision.set_deferred("disabled", false)
 
-## Sala de combate: inyecta las pools al spawner y, si existen, instancia un
-## layout interno de combate al azar.
-func _setup_combat(pools: Array[SpawnCategory], max_enemies: int) -> void:
+## Sala de combate: instancia (si existe) un layout interno de combate y pide al
+## spawner que aparezca la pool sobre el piso de la sala. El spawneo se difiere
+## para que el mapa de navegación ya esté listo cuando aparezcan los enemigos.
+func _setup_combat(pools: Array[SpawnCategory]) -> void:
 	_spawn_interior(combat_list)
 
 	if enemy_spawner == null:
 		return
-	# El spawner ejecuta spawn_all_categories() de forma diferida en su _ready();
-	# configure_room() corre antes de ese diferido, así que basta actualizar sus
-	# propiedades aquí para que use las pools correctas.
-	enemy_spawner.spawn_categories = pools
-	enemy_spawner.max_enemies = max_enemies
+	enemy_spawner.call_deferred("spawn_pool", pools, floor_layer)
 
-## Sala pacífica (Puzzle/Rest): instancia contenido y limpia el spawner.
+## Sala pacífica (Puzzle/Rest): instancia contenido. No invoca al spawner, así que
+## la sala queda sin enemigos.
 func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 	# Guarda la escena elegida antes de instanciarla para poder clonarla en el
 	# reset. En salas Rest queda registrada también, pero reset_current_puzzle()
@@ -165,7 +163,24 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 	if instance is PuzzleStackQueue:
 		_puzzle_mode = instance.mode
 		_puzzle_order = instance.target_order.duplicate()
-	_clear_spawner()
+
+## Busca la capa de piso navegable de la sala bajo $Layers. Prioriza la capa
+## dedicada "navigation_floor" (separada del "floor" visual); si no existe, cae a
+## la primera TileMapLayer cuyo nombre contenga "floor" (escenas antiguas).
+## Devuelve null si no encuentra ninguna.
+func _find_floor_layer() -> TileMapLayer:
+	var layers := get_node_or_null("Layers")
+	if layers == null:
+		push_warning("[RoomLayout] No se encontró el nodo 'Layers' con el piso navegable.")
+		return null
+	var nav := layers.get_node_or_null("navigation_floor")
+	if nav is TileMapLayer:
+		return nav
+	for child in layers.get_children():
+		if child is TileMapLayer and "floor" in String(child.name).to_lower():
+			return child
+	push_warning("[RoomLayout] No se encontró una TileMapLayer de piso ('navigation_floor' o 'floor') bajo 'Layers'.")
+	return null
 
 ## Elige una escena al azar de la lista, la añade como hija de Content (lo que
 ## guarda también la PackedScene en _current_puzzle_scene) y devuelve la instancia
@@ -180,14 +195,6 @@ func _spawn_interior(scene_list: Array[PackedScene]) -> Node:
 	var instance := scene.instantiate()
 	content.add_child(instance)
 	return instance
-
-## Vacía las categorías del spawner para que no aparezcan enemigos.
-func _clear_spawner() -> void:
-	if enemy_spawner == null:
-		return
-	var empty: Array[SpawnCategory] = []
-	enemy_spawner.spawn_categories = empty
-	enemy_spawner.max_enemies = 0
 
 # --- Mecánica de bloqueo de puertas (salas de tipo Puzzle) -------------------
 
@@ -221,7 +228,6 @@ func _show_puzzle_hint() -> void:
 ## vez y se reutiliza; el conteo de oleadas NO se reinicia, para que la dificultad
 ## siga escalando aunque el jugador entre y salga.
 func _start_enemy_waves() -> void:
-	print("Wave")
 	if _wave_timer == null:
 		_wave_timer = Timer.new()
 		_wave_timer.wait_time = WAVE_INTERVAL_SECONDS
@@ -237,30 +243,25 @@ func _stop_enemy_waves() -> void:
 ## Cada oleada lanza enemigos básicos (easy); cada MEDIUM_EVERY_WAVES oleadas,
 ## además, enemigos medianos. Que sufra el jugador.
 func _on_wave_timer_timeout() -> void:
-	print("New wave: ", _wave_count)
 	if enemy_spawner == null or is_puzzled_cleared:
-		print("Error 1. New wave: ", _wave_count)
 		return
-	# Reapunta el spawner al piso del puzzle actual (cambia tras cada reinicio).
-	if not _aim_spawner_at_puzzle_floor():
-		print("Error 2. New wave: ", _wave_count)
+	# El piso del puzzle cambia tras cada reinicio, así que se resuelve por oleada.
+	var puzzle_floor := _puzzle_floor()
+	if puzzle_floor == null:
 		return
 	_wave_count += 1
-	enemy_spawner.spawn_pool(easy_combat)
+	enemy_spawner.spawn_pool(easy_combat, puzzle_floor)
 	if _wave_count % MEDIUM_EVERY_WAVES == 0:
-		enemy_spawner.spawn_pool(medium_combat)
+		enemy_spawner.spawn_pool(medium_combat, puzzle_floor)
 
-## Apunta el spawner al piso navegable del puzzle (su corredor) y le pasa el
-## jugador para respetar la distancia mínima de aparición. Devuelve false si no
-## encuentra un FloorLayer donde spawnear.
-func _aim_spawner_at_puzzle_floor() -> bool:
+## Devuelve el piso navegable del puzzle actual (su corredor), buscando un nodo
+## "FloorLayer" entre el contenido instanciado. Devuelve null si no lo encuentra.
+func _puzzle_floor() -> TileMapLayer:
 	for child in content.get_children():
 		var floor_node := child.get_node_or_null("FloorLayer")
 		if floor_node is TileMapLayer:
-			enemy_spawner.floor_layer = floor_node
-			enemy_spawner.player = get_tree().get_first_node_in_group("Player")
-			return true
-	return false
+			return floor_node
+	return null
 
 ## Al salir de la sala, desvincula al jugador para no resetearla desde fuera y
 ## detiene las oleadas (no deben seguir apareciendo enemigos en una sala vacía).

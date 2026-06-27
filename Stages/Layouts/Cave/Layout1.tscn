@@ -513,9 +513,8 @@ rotation = 4.712389
 
 [node name="Content" type="Node2D" parent="." unique_id=25439851]
 
-[node name="EnemySpawner" type="Node2D" parent="." unique_id=804096097 node_paths=PackedStringArray("node_floor_layer")]
+[node name="EnemySpawner" type="Node2D" parent="." unique_id=804096097]
 script = ExtResource("4_w34kc")
-node_floor_layer = NodePath("../Layers")
 metadata/_custom_type_script = "uid://b0dk75r1emvfb"
 
 [node name="RoomTrigger" type="Area2D" parent="." unique_id=1291136231]
