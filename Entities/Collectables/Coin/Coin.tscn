@@ -28,8 +28,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ala3e"]
-radius = 3.0
-height = 8.0
+radius = 8.0
+height = 20.0
 
 [node name="Coin" type="Node2D" unique_id=464168730]
 script = ExtResource("1_pmph2")

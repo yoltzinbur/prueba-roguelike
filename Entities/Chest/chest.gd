@@ -5,7 +5,7 @@ extends Node2D
 @export var drop_radius: float = 20.0
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
-@onready var interaction_area: Area2D = $Area2D
+@onready var interaction_area: Area2D = $InteractionArea
 @onready var openAudio: AudioStreamPlayer = $AudioStreamPlayer
 
 var is_opened: bool = false
