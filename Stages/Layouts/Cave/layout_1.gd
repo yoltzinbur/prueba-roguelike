@@ -40,14 +40,20 @@ var _w_active: bool
 # clonarla en reset_current_puzzle().
 var _current_puzzle_scene: PackedScene
 
-# Modo (Pila/Cola) sorteado por el puzzle en su primera instanciación. Se guarda
-# para reimponerlo en cada reinicio y que su naturaleza no cambie. -1 = sin fijar
-# (sala que no es de tipo Puzzle o cuyo contenido no es un PuzzleStackQueue).
+# Modo (Pila/Cola) y secuencia objetivo sorteados por el puzzle en su primera
+# instanciación. Se guardan para reimponerlos en cada reinicio y que el reto no
+# cambie. _puzzle_mode = -1 indica que no hay configuración guardada (sala que no
+# es de tipo Puzzle o cuyo contenido no es un PuzzleStackQueue).
 var _puzzle_mode: int = -1
+var _puzzle_order: Array[String] = []
 
 # Estado de la sala para la mecánica de bloqueo de puertas.
 var room_type: String = ""
 var is_puzzled_cleared: bool = false
+
+# La pista del orden solo se muestra la primera vez que se entra a la sala; ni
+# reentrar ni reiniciar el puzzle vuelven a mostrarla. Que sufra el jugador.
+var _hint_shown: bool = false
 
 ## Conecta el RoomTrigger (añadido manualmente en el editor) para detectar la
 ## entrada del jugador. Corre antes que configure_room(), así que room_type aún
@@ -144,9 +150,11 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 	# reset. En salas Rest queda registrada también, pero reset_current_puzzle()
 	# solo actúa sobre salas de tipo Puzzle.
 	var instance := _spawn_interior(scene_list)
-	# Recuerda el modo sorteado por el puzzle para conservarlo en los reinicios.
+	# Recuerda modo y secuencia sorteados por el puzzle para conservarlos en los
+	# reinicios.
 	if instance is PuzzleStackQueue:
 		_puzzle_mode = instance.mode
+		_puzzle_order = instance.target_order.duplicate()
 	_clear_spawner()
 
 ## Elige una escena al azar de la lista, la añade como hija de Content (lo que
@@ -184,6 +192,19 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 	if room_type != ROOM_TYPE_PUZZLE or is_puzzled_cleared:
 		return
 	_close_all_active_doors()
+	_show_puzzle_hint()
+
+## Pide al puzzle de la sala que muestre momentáneamente la pista del orden en
+## la UI, solo la primera vez. No hace nada si el contenido no es un
+## PuzzleStackQueue o si la pista ya se mostró antes.
+func _show_puzzle_hint() -> void:
+	if _hint_shown:
+		return
+	for child in content.get_children():
+		if child is PuzzleStackQueue:
+			child.show_order_hint()
+			_hint_shown = true
+			return
 
 ## Al salir de la sala, desvincula al jugador para no resetearla desde fuera.
 func _on_room_trigger_exited(body: Node2D) -> void:
@@ -234,10 +255,10 @@ func reset_current_puzzle() -> void:
 
 	# Instancia una copia nueva (node_id distinto al hijo anterior).
 	var instance := _current_puzzle_scene.instantiate()
-	# Reimpone el modo original ANTES de añadirlo al árbol, para que su _ready() no
-	# vuelva a sortear la naturaleza (Pila/Cola) del puzzle.
+	# Reimpone modo y secuencia originales ANTES de añadirlo al árbol, para que su
+	# _ready() no vuelva a sortear el reto (naturaleza Pila/Cola y orden).
 	if instance is PuzzleStackQueue and _puzzle_mode != -1:
-		instance.apply_fixed_mode(_puzzle_mode)
+		instance.apply_fixed_config(_puzzle_mode, _puzzle_order)
 	content.add_child(instance)
 
 	# Notifica el reset para que la UI/sistemas externos se reconecten.

@@ -8,7 +8,7 @@ var current_room: Node = null
 var _message_token: int = 0
 
 @onready var input_component: InputComponent = $InputComponent
-@onready var message_label: Label = $UI/Message
+@onready var message_label: Label = $UI/Message.get_node("Message")
 
 func _ready() -> void:
 	# El Label arranca vacío y oculto; solo aparece al pedir un mensaje.

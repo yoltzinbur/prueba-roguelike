@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://b1y0de6mb1cqi"]
+
+[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="1_e8mj4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_on30b"]
+font = ExtResource("1_e8mj4")
+font_size = 8
+
+[node name="Message" type="Control" unique_id=684060352]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Message" type="Label" parent="." unique_id=52521700]
+layout_mode = 0
+offset_left = -80.0
+offset_top = -16.0
+offset_right = 80.0
+offset_bottom = -8.0
+label_settings = SubResource("LabelSettings_on30b")
+horizontal_alignment = 2

@@ -20,7 +20,10 @@ enum PuzzleMode { STACK, QUEUE }
 ## la sala vuelve a fijarlo con apply_fixed_mode() para conservar la naturaleza.
 @export var mode: PuzzleMode = PuzzleMode.STACK
 
-## Orden objetivo expresado con los tipos de caja.
+## Orden objetivo expresado con los tipos de caja. Se baraja al azar en _ready()
+## la primera vez para que cada instancia exija una secuencia distinta; en los
+## reinicios la sala vuelve a fijarlo con apply_fixed_config() para no cambiar el
+## reto a mitad de partida.
 var target_order: Array[String] = ["Fuego", "Hielo", "Rayo"]
 ## Orden acumulado por el jugador durante la partida.
 var current_order: Array[String] = []
@@ -32,6 +35,10 @@ const BOX_TYPES: Dictionary = {
 	"Box3": "Rayo",
 }
 
+## Fuente compartida por las etiquetas flotantes de las cajas, para mantener el
+## estilo pixel-art del resto de la UI.
+const LABEL_FONT := preload("res://Assets/Fonts/Minecraft.ttf")
+
 @onready var plate_1: PressurePlate = $InteractionObjects/PressurePlate
 @onready var plate_2: PressurePlate = $InteractionObjects/PressurePlate2
 @onready var plate_3: PressurePlate = $InteractionObjects/PressurePlate3
@@ -40,14 +47,15 @@ const BOX_TYPES: Dictionary = {
 var _plate_contents: Dictionary = {}
 var _is_solved: bool = false
 
-# Cuando la sala impone el modo (en un reinicio), se evita volver a sortearlo.
-var _mode_fixed: bool = false
+# Cuando la sala impone la configuración (en un reinicio), se evita re-sortearla.
+var _config_fixed: bool = false
 
 func _ready() -> void:
-	# Solo se sortea el modo en la primera instanciación. En los reinicios la sala
-	# ya lo ha fijado con apply_fixed_mode(), conservando la naturaleza original.
-	if not _mode_fixed:
+	# Solo se sortean modo y orden en la primera instanciación. En los reinicios la
+	# sala ya los ha fijado con apply_fixed_config(), conservando el reto original.
+	if not _config_fixed:
 		_randomize_mode()
+		_randomize_order()
 
 	# Conecta las tres placas pasando la propia placa como argumento extra.
 	plate_1.plate_activated.connect(_on_plate_activated.bind(plate_1))
@@ -59,16 +67,24 @@ func _ready() -> void:
 		_disable_plate(plate_2)
 		_disable_plate(plate_3)
 
+	# Identifica cada caja con su elemento, ya que no hay diferencia visual entre ellas.
+	_create_box_labels()
+
 ## Elige STACK o QUEUE al azar. Solo se llama en la primera instanciación.
 func _randomize_mode() -> void:
 	mode = PuzzleMode.STACK if randi() % 2 == 0 else PuzzleMode.QUEUE
 
-## Fija el modo desde fuera (la sala) ANTES de añadir el nodo al árbol, de modo
-## que _ready() no vuelva a sortearlo. Así un reinicio conserva la naturaleza
-## (Pila/Cola) elegida en la primera instanciación.
-func apply_fixed_mode(fixed_mode: PuzzleMode) -> void:
+## Baraja la secuencia objetivo. Solo se llama en la primera instanciación.
+func _randomize_order() -> void:
+	target_order.shuffle()
+
+## Fija modo y orden desde fuera (la sala) ANTES de añadir el nodo al árbol, de
+## modo que _ready() no vuelva a sortearlos. Así un reinicio conserva el reto
+## (naturaleza Pila/Cola y secuencia) elegido en la primera instanciación.
+func apply_fixed_config(fixed_mode: PuzzleMode, fixed_order: Array[String]) -> void:
 	mode = fixed_mode
-	_mode_fixed = true
+	target_order = fixed_order.duplicate()
+	_config_fixed = true
 
 # --- Despacho de señales -----------------------------------------------------
 
@@ -194,3 +210,24 @@ func _show_message(text: String) -> void:
 	var player := get_tree().get_first_node_in_group("Player")
 	if player and player.has_method("show_message"):
 		player.show_message(text)
+
+## Muestra momentáneamente en la UI el orden de elementos que el jugador debe
+## seguir. La llama la sala al entrar y tras cada reinicio.
+func show_order_hint() -> void:
+	_show_message("Orden: " + " > ".join(target_order))
+
+## Crea un Label flotante por encima de cada caja con su elemento, para que el
+## jugador pueda distinguirlas (todas comparten el mismo sprite).
+func _create_box_labels() -> void:
+	var settings := LabelSettings.new()
+	settings.font = LABEL_FONT
+	settings.font_size = 8
+	for box_name in BOX_TYPES:
+		var box := get_node_or_null("InteractionObjects/" + box_name) as Node2D
+		if box == null:
+			continue
+		var label := Label.new()
+		label.text = BOX_TYPES[box_name]
+		label.label_settings = settings
+		label.position = Vector2(-6.0, -12.0)
+		box.add_child(label)
