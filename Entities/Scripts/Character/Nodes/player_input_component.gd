@@ -7,6 +7,7 @@ func _process(delta: float) -> void:
 	input_heal = Input.is_action_just_pressed("heal")
 	input_action = Input.is_action_just_pressed("enter")
 	input_dodge = Input.is_action_just_pressed("dodge")
+	input_reset = Input.is_action_just_pressed("reset")
 
 	if input_motion != Vector2.ZERO:
 		if abs(input_motion.x) >= abs(input_motion.y):

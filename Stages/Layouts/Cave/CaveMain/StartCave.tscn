@@ -5,6 +5,10 @@
 
 [node name="CaveMain" type="Node2D" unique_id=1789932892]
 script = ExtResource("1_n66si")
+easy_room = 0
+medium_room = 0
+hard_room = 0
+rest_room = 0
 
 [node name="Rooms" type="Node2D" parent="." unique_id=1841904167]
 

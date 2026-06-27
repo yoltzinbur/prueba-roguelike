@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://o1j6hhh1clsy" path="res://Stages/Layouts/Cave/Environment/Receptor.tscn" id="3_sf5l0"]
 [ext_resource type="PackedScene" uid="uid://ij5vke6le04n" path="res://Stages/Layouts/Cave/Environment/Laser.tscn" id="5_tv4th"]
 [ext_resource type="PackedScene" uid="uid://cbf0uwquaeyrj" path="res://Stages/Layouts/Cave/Environment/Box.tscn" id="6_grspr"]
-[ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="7_tv4th"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -430,6 +429,3 @@ position = Vector2(-80, 96)
 position = Vector2(336, -96)
 
 [node name="Triggers" type="Node2D" parent="." unique_id=67619935]
-
-[node name="Player" parent="." unique_id=1539473209 instance=ExtResource("7_tv4th")]
-position = Vector2(32, 128)

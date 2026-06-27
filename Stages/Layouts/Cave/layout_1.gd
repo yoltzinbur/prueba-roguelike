@@ -25,9 +25,46 @@ extends Node2D
 @onready var content: Node2D = $Content
 @onready var enemy_spawner: Node2D = $EnemySpawner
 
+## Emitida tras reinstanciar el contenido del puzzle en reset_current_puzzle().
+## La UI o los sistemas externos pueden reconectarse al nuevo contenido aquí.
+signal puzzle_reset
+
+# Configuración ORIGINAL de las puertas (qué lados conectan con un vecino). Se
+# guarda en configure_room() para poder restaurar la apertura tras el puzzle.
+var _n_active: bool
+var _s_active: bool
+var _e_active: bool
+var _w_active: bool
+
+# Escena del puzzle instanciada en _setup_peaceful(); se conserva para poder
+# clonarla en reset_current_puzzle().
+var _current_puzzle_scene: PackedScene
+
+# Estado de la sala para la mecánica de bloqueo de puertas.
+var room_type: String = ""
+var is_puzzled_cleared: bool = false
+
+## Conecta el RoomTrigger (añadido manualmente en el editor) para detectar la
+## entrada del jugador. Corre antes que configure_room(), así que room_type aún
+## está vacío aquí: solo se cablea la señal y el tipo se lee de forma diferida.
+func _ready() -> void:
+	var room_trigger := get_node_or_null("RoomTrigger") as Area2D
+	if room_trigger:
+		room_trigger.body_entered.connect(_on_room_trigger_entered)
+		room_trigger.body_exited.connect(_on_room_trigger_exited)
+
 ## Punto de entrada llamado por el generador. Abre/cierra las puertas según los
 ## vecinos e inyecta contenido o enemigos según el tipo de sala.
 func configure_room(type: String, north: bool, south: bool, east: bool, west: bool) -> void:
+	# Guarda la configuración original para restaurarla al completar el puzzle.
+	room_type = type
+	_n_active = north
+	_s_active = south
+	_e_active = east
+	_w_active = west
+	# Verificación: confirma el estado guardado al iniciar el juego.
+	print_verbose("[RoomLayout] type=%s | N:%s S:%s E:%s W:%s" % [type, north, south, east, west])
+
 	_configure_door(doors.get_node_or_null("NorthDoor"), north)
 	_configure_door(doors.get_node_or_null("SouthDoor"), south)
 	_configure_door(doors.get_node_or_null("EastDoor"), east)
@@ -98,17 +135,22 @@ func _setup_combat(pools: Array[SpawnCategory], max_enemies: int) -> void:
 
 ## Sala pacífica (Puzzle/Rest): instancia contenido y limpia el spawner.
 func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
-	_spawn_interior(scene_list)
+	# Guarda la escena elegida antes de instanciarla para poder clonarla en el
+	# reset. En salas Rest queda registrada también, pero reset_current_puzzle()
+	# solo actúa sobre salas de tipo Puzzle.
+	_current_puzzle_scene = _spawn_interior(scene_list)
 	_clear_spawner()
 
-## Elige una escena al azar de la lista y la añade como hija de Content.
-func _spawn_interior(scene_list: Array[PackedScene]) -> void:
+## Elige una escena al azar de la lista, la añade como hija de Content y
+## devuelve la PackedScene elegida (o null si la lista está vacía).
+func _spawn_interior(scene_list: Array[PackedScene]) -> PackedScene:
 	if scene_list.is_empty() or content == null:
-		return
+		return null
 	var scene: PackedScene = scene_list.pick_random()
 	if scene == null:
-		return
+		return null
 	content.add_child(scene.instantiate())
+	return scene
 
 ## Vacía las categorías del spawner para que no aparezcan enemigos.
 func _clear_spawner() -> void:
@@ -117,3 +159,68 @@ func _clear_spawner() -> void:
 	var empty: Array[SpawnCategory] = []
 	enemy_spawner.spawn_categories = empty
 	enemy_spawner.max_enemies = 0
+
+# --- Mecánica de bloqueo de puertas (salas de tipo Puzzle) -------------------
+
+## Disparada por el RoomTrigger. Si el jugador entra a una sala de puzzle aún no
+## resuelta, encierra al jugador cerrando todas las puertas activas.
+func _on_room_trigger_entered(body: Node2D) -> void:
+	print("Puzzle activado")
+	if not body.is_in_group("Player"):
+		return
+	# El jugador queda asociado a esta sala para que el input "reset" sepa cuál
+	# reiniciar (reset_current_puzzle() solo actúa sobre salas de tipo Puzzle).
+	body.current_room = self
+	if room_type != ROOM_TYPE_PUZZLE or is_puzzled_cleared:
+		return
+	_close_all_active_doors()
+
+## Al salir de la sala, desvincula al jugador para no resetearla desde fuera.
+func _on_room_trigger_exited(body: Node2D) -> void:
+	if body.is_in_group("Player") and body.current_room == self:
+		body.current_room = null
+
+## Recorre las 4 puertas y cierra (vuelve muro con colisión) solo aquellas que
+## estaban abiertas porque conectaban con un vecino.
+func _close_all_active_doors() -> void:
+	_close_door_if_active(doors.get_node_or_null("NorthDoor"), _n_active)
+	_close_door_if_active(doors.get_node_or_null("SouthDoor"), _s_active)
+	_close_door_if_active(doors.get_node_or_null("EastDoor"), _e_active)
+	_close_door_if_active(doors.get_node_or_null("WestDoor"), _w_active)
+
+## Convierte una puerta abierta en muro: visible y con colisión activa.
+func _close_door_if_active(door: Node2D, was_active: bool) -> void:
+	if door == null or not was_active:
+		return
+	door.visible = true
+	var collision := door.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collision:
+		collision.set_deferred("disabled", false)
+
+## API pública: marca el puzzle como resuelto y reabre las puertas que conectan
+## con vecinos, restaurando el estado original guardado en configure_room().
+func complete_puzzle() -> void:
+	is_puzzled_cleared = true
+	_configure_door(doors.get_node_or_null("NorthDoor"), _n_active)
+	_configure_door(doors.get_node_or_null("SouthDoor"), _s_active)
+	_configure_door(doors.get_node_or_null("EastDoor"), _e_active)
+	_configure_door(doors.get_node_or_null("WestDoor"), _w_active)
+
+## API pública (botón "reset"): destruye el contenido dinámico actual del puzzle
+## y vuelve a instanciar una copia limpia de la escena guardada.
+func reset_current_puzzle() -> void:
+	print("reset")
+	if room_type != ROOM_TYPE_PUZZLE or _current_puzzle_scene == null:
+		return
+	if content == null:
+		return
+
+	# Marca los hijos actuales para eliminación.
+	for child in content.get_children():
+		child.queue_free()
+
+	# Instancia una copia nueva (node_id distinto al hijo anterior).
+	content.add_child(_current_puzzle_scene.instantiate())
+
+	# Notifica el reset para que la UI/sistemas externos se reconecten.
+	puzzle_reset.emit()

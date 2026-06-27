@@ -1,8 +1,11 @@
 [gd_scene format=4 uid="uid://x6f1dngpyde6"]
 
 [ext_resource type="Script" uid="uid://cj7tt2yaax68o" path="res://Stages/Layouts/Cave/layout_1.gd" id="1_5x7ud"]
+[ext_resource type="PackedScene" uid="uid://b43mqe76a4lfe" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleArithmetic.tscn" id="2_7jefb"]
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_w34kc"]
+[ext_resource type="PackedScene" uid="uid://d2nnpso6gfrsw" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleLaser.tscn" id="3_65yas"]
 [ext_resource type="PackedScene" uid="uid://cp272m3pwpwat" path="res://Stages/Layouts/Cave/Environment/CaveWall.tscn" id="3_w34kc"]
+[ext_resource type="PackedScene" uid="uid://c5005hcgimv6q" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleStackQueue.tscn" id="4_0w4ut"]
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="4_w34kc"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
@@ -375,6 +378,7 @@ size = Vector2(496, 272)
 
 [node name="Layout" type="Node2D" unique_id=951008621]
 script = ExtResource("1_5x7ud")
+puzzle_list = Array[PackedScene]([ExtResource("2_7jefb"), ExtResource("3_65yas"), ExtResource("4_0w4ut")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]
 metadata/_edit_vertical_guides_ = [496.0, 0.0, 224.0, -272.0]
 
@@ -415,6 +419,8 @@ script = ExtResource("4_w34kc")
 node_floor_layer = NodePath("../Layers")
 
 [node name="RoomTrigger" type="Area2D" parent="." unique_id=1291136231]
+collision_layer = 0
+collision_mask = 64
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RoomTrigger" unique_id=2107331927]
 position = Vector2(248, 136)
