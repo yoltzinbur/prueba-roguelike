@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://vfvpbrmhwgu3"]
 
 [ext_resource type="Texture2D" uid="uid://banegaxxxbowd" path="res://Stages/Art/TilesetDungeon.png" id="1_0d3ts"]
+[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_8xy6y"]
+[ext_resource type="Script" uid="uid://rll2icxg6rnq" path="res://Stages/Layouts/Cave/Environment/pressure_plate.gd" id="3_6551a"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8xy6y"]
 size = Vector2(16, 14)
 
 [node name="PressurePlate" type="Node2D" unique_id=1431680022]
+script = ExtResource("3_6551a")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2013366734]
 position = Vector2(8, 8)
@@ -14,7 +17,10 @@ hframes = 2
 region_enabled = true
 region_rect = Rect2(32, 16, 32, 16)
 
-[node name="InteractionArea" type="Area2D" parent="." unique_id=62451494]
+[node name="InteractionArea" type="Area2D" parent="." unique_id=210859034]
+collision_mask = 73
+script = ExtResource("2_8xy6y")
+metadata/_custom_type_script = "uid://ci008ej21i8t4"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1761854102]
 position = Vector2(8, 9)

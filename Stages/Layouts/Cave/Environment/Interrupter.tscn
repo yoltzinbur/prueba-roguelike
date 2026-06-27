@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://b05wrwft053ic"]
 
+[ext_resource type="Script" uid="uid://ct86enlthsuas" path="res://Stages/Layouts/Cave/Environment/interrupter.gd" id="1_bjtne"]
 [ext_resource type="Texture2D" uid="uid://banegaxxxbowd" path="res://Stages/Art/TilesetDungeon.png" id="1_k4nev"]
+[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_k4nev"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wmsdg"]
 radius = 6.0
@@ -11,6 +13,7 @@ radius = 12.0415945
 
 [node name="Interrupter" type="StaticBody2D" unique_id=469530297]
 collision_mask = 72
+script = ExtResource("1_bjtne")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=963679590]
 position = Vector2(8, 8)
@@ -24,7 +27,11 @@ region_rect = Rect2(32, 32, 16, 32)
 position = Vector2(8, 8)
 shape = SubResource("CapsuleShape2D_wmsdg")
 
-[node name="InteractionArea" type="Area2D" parent="." unique_id=1984742301]
+[node name="InteractionArea" type="Area2D" parent="." unique_id=291591390]
+collision_layer = 128
+collision_mask = 64
+script = ExtResource("2_k4nev")
+metadata/_custom_type_script = "uid://ci008ej21i8t4"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1647564602]
 position = Vector2(8, 8)

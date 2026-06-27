@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d1d2wqsgsnnti" path="res://Stages/Layouts/Cave/Environment/cave_door.gd" id="1_6eypa"]
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_y8mv2"]
-[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interactable_area.gd" id="3_qqvur"]
+[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="3_qqvur"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6eypa"]
 radius = 10.000002

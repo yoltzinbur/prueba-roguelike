@@ -42,6 +42,27 @@ func _apply_movement(velocity_to_apply: Vector2) -> void:
 	target.velocity.x = move_toward(target.velocity.x, velocity_to_apply.x, speed)
 	target.velocity.y = move_toward(target.velocity.y, velocity_to_apply.y, speed)
 	target.move_and_slide()
+	_push_colliding_boxes(velocity_to_apply)
+
+## Tras moverse, empuja las cajas con las que el jugador choca avanzando hacia
+## ellas. Solo el jugador empuja (los enemigos las ignoran) y solo cuando se
+## desplaza hacia la caja, evitando que se deslice al estar simplemente apoyado.
+func _push_colliding_boxes(intended_velocity: Vector2) -> void:
+	if intended_velocity == Vector2.ZERO:
+		return
+	if not target.is_in_group("Player"):
+		return
+
+	var move_dir := intended_velocity.normalized()
+	for i in target.get_slide_collision_count():
+		var collision := target.get_slide_collision(i)
+		var box := collision.get_collider() as Box
+		if box == null:
+			continue
+		# Dirección de empuje = hacia el interior de la caja (contra su normal).
+		var push_dir := -collision.get_normal()
+		if move_dir.dot(push_dir) > 0.0:
+			box.push(push_dir * speed)
 
 func get_separation_vector() -> Vector2:
 	if not separation_area:

@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://q6jryekx14r3" path="res://Entities/Chest/Art/chest_full_open_anim_f1.png" id="3_x8ih0"]
 [ext_resource type="Texture2D" uid="uid://11h4ytvgexnd" path="res://Entities/Chest/Art/chest_full_open_anim_f2.png" id="4_vw88s"]
 [ext_resource type="AudioStream" uid="uid://clhy1dr81l0rp" path="res://Entities/Chest/Audio/doorOpen_2.ogg" id="5_4ptj7"]
-[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interactable_area.gd" id="5_x8ih0"]
+[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="5_x8ih0"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_cl07o"]
 animations = [{

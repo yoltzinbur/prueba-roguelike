@@ -1,12 +1,14 @@
 [gd_scene format=3 uid="uid://cbf0uwquaeyrj"]
 
+[ext_resource type="Script" uid="uid://dtopybpxl7xk3" path="res://Stages/Layouts/Cave/Environment/box.gd" id="1_tq0nf"]
 [ext_resource type="Texture2D" uid="uid://kf7tlocy7mjk" path="res://Stages/Art/16x16_Jerom_CC-BY-SA-3.0.png" id="1_vjwl1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5h74t"]
 size = Vector2(16, 16)
 
 [node name="Box" type="CharacterBody2D" unique_id=773332783]
-collision_mask = 72
+collision_mask = 73
+script = ExtResource("1_tq0nf")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1521557435]
 position = Vector2(8, 8)

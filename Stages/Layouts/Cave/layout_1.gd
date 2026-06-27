@@ -165,7 +165,6 @@ func _clear_spawner() -> void:
 ## Disparada por el RoomTrigger. Si el jugador entra a una sala de puzzle aún no
 ## resuelta, encierra al jugador cerrando todas las puertas activas.
 func _on_room_trigger_entered(body: Node2D) -> void:
-	print("Puzzle activado")
 	if not body.is_in_group("Player"):
 		return
 	# El jugador queda asociado a esta sala para que el input "reset" sepa cuál
@@ -209,7 +208,6 @@ func complete_puzzle() -> void:
 ## API pública (botón "reset"): destruye el contenido dinámico actual del puzzle
 ## y vuelve a instanciar una copia limpia de la escena guardada.
 func reset_current_puzzle() -> void:
-	print("reset")
 	if room_type != ROOM_TYPE_PUZZLE or _current_puzzle_scene == null:
 		return
 	if content == null:

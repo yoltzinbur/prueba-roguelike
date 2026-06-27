@@ -10,5 +10,4 @@ func _process(_delta: float) -> void:
 		current_interactable.interact()
 
 	if input_component.input_reset and current_room:
-		print("Reset")
 		current_room.reset_current_puzzle()
