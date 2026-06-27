@@ -19,6 +19,7 @@
 [ext_resource type="Script" uid="uid://c4e87cpecbwop" path="res://Common/StateMachine/States/walk.gd" id="17_t8qnr"]
 [ext_resource type="Script" uid="uid://cxm60o361tj2d" path="res://Common/StateMachine/States/move_attack.gd" id="19_s1io2"]
 [ext_resource type="PackedScene" uid="uid://o5p0c0ji2g7a" path="res://Utilities/UI/HealthBar/HealthBar.tscn" id="22_ayo8t"]
+[ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="22_h03de"]
 [ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="24_80tt4"]
 [ext_resource type="AudioStream" uid="uid://bx2o053cufkgb" path="res://Entities/Player/Audio/01._damage_grunt_male.wav" id="24_mgqku"]
 [ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="25_tepoh"]
@@ -646,6 +647,10 @@ animations = [{
 radius = 7.0
 height = 18.0
 
+[sub_resource type="LabelSettings" id="LabelSettings_ewrch"]
+font = ExtResource("22_h03de")
+font_size = 8
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7ymae"]
 radius = 9.0
 height = 22.0
@@ -658,6 +663,7 @@ collision_layer = 64
 collision_mask = 17
 script = ExtResource("31_plyr")
 metadata/_edit_horizontal_guides_ = [-30.0]
+metadata/_edit_vertical_guides_ = [-160.0, 160.0]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("15_5qe47")
@@ -733,6 +739,14 @@ offset_top = -58.0
 offset_right = -70.0
 offset_bottom = -42.0
 metadata/_edit_use_anchors_ = true
+
+[node name="Message" type="Label" parent="UI" unique_id=1752564285]
+offset_left = 64.0
+offset_top = -80.0
+offset_right = 152.0
+offset_bottom = -72.0
+label_settings = SubResource("LabelSettings_ewrch")
+horizontal_alignment = 2
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=1764899623 node_paths=PackedStringArray("health")]
 collision_layer = 2

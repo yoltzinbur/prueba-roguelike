@@ -40,6 +40,11 @@ var _w_active: bool
 # clonarla en reset_current_puzzle().
 var _current_puzzle_scene: PackedScene
 
+# Modo (Pila/Cola) sorteado por el puzzle en su primera instanciación. Se guarda
+# para reimponerlo en cada reinicio y que su naturaleza no cambie. -1 = sin fijar
+# (sala que no es de tipo Puzzle o cuyo contenido no es un PuzzleStackQueue).
+var _puzzle_mode: int = -1
+
 # Estado de la sala para la mecánica de bloqueo de puertas.
 var room_type: String = ""
 var is_puzzled_cleared: bool = false
@@ -138,19 +143,25 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 	# Guarda la escena elegida antes de instanciarla para poder clonarla en el
 	# reset. En salas Rest queda registrada también, pero reset_current_puzzle()
 	# solo actúa sobre salas de tipo Puzzle.
-	_current_puzzle_scene = _spawn_interior(scene_list)
+	var instance := _spawn_interior(scene_list)
+	# Recuerda el modo sorteado por el puzzle para conservarlo en los reinicios.
+	if instance is PuzzleStackQueue:
+		_puzzle_mode = instance.mode
 	_clear_spawner()
 
-## Elige una escena al azar de la lista, la añade como hija de Content y
-## devuelve la PackedScene elegida (o null si la lista está vacía).
-func _spawn_interior(scene_list: Array[PackedScene]) -> PackedScene:
+## Elige una escena al azar de la lista, la añade como hija de Content (lo que
+## guarda también la PackedScene en _current_puzzle_scene) y devuelve la instancia
+## creada (o null si la lista está vacía).
+func _spawn_interior(scene_list: Array[PackedScene]) -> Node:
 	if scene_list.is_empty() or content == null:
 		return null
 	var scene: PackedScene = scene_list.pick_random()
 	if scene == null:
 		return null
-	content.add_child(scene.instantiate())
-	return scene
+	_current_puzzle_scene = scene
+	var instance := scene.instantiate()
+	content.add_child(instance)
+	return instance
 
 ## Vacía las categorías del spawner para que no aparezcan enemigos.
 func _clear_spawner() -> void:
@@ -210,6 +221,10 @@ func complete_puzzle() -> void:
 func reset_current_puzzle() -> void:
 	if room_type != ROOM_TYPE_PUZZLE or _current_puzzle_scene == null:
 		return
+	# Una vez resuelto el puzzle, las puertas quedan abiertas: reiniciar no tendría
+	# sentido y dejaría el estado inconsistente, así que se ignora.
+	if is_puzzled_cleared:
+		return
 	if content == null:
 		return
 
@@ -218,7 +233,12 @@ func reset_current_puzzle() -> void:
 		child.queue_free()
 
 	# Instancia una copia nueva (node_id distinto al hijo anterior).
-	content.add_child(_current_puzzle_scene.instantiate())
+	var instance := _current_puzzle_scene.instantiate()
+	# Reimpone el modo original ANTES de añadirlo al árbol, para que su _ready() no
+	# vuelva a sortear la naturaleza (Pila/Cola) del puzzle.
+	if instance is PuzzleStackQueue and _puzzle_mode != -1:
+		instance.apply_fixed_mode(_puzzle_mode)
+	content.add_child(instance)
 
 	# Notifica el reset para que la UI/sistemas externos se reconecten.
 	puzzle_reset.emit()

@@ -9,6 +9,8 @@ size = Vector2(16, 14)
 
 [node name="PressurePlate" type="Node2D" unique_id=1431680022]
 script = ExtResource("3_6551a")
+metadata/_edit_vertical_guides_ = [8.0]
+metadata/_edit_horizontal_guides_ = [-4.0]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2013366734]
 position = Vector2(8, 8)
