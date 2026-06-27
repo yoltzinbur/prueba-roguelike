@@ -2,23 +2,30 @@
 
 [ext_resource type="Texture2D" uid="uid://chbj6jl8umjcj" path="res://Stages/Art/tileset_camp.png" id="1_uqwym"]
 [ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_0ohxj"]
+[ext_resource type="Script" uid="uid://d2di07m1so4mb" path="res://Stages/Elements/campfire.gd" id="3_cmpfr"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1jvqo"]
 radius = 25.019993
 
 [node name="Campfire" type="StaticBody2D" unique_id=1118568524]
+collision_mask = 72
+script = ExtResource("3_cmpfr")
 metadata/_edit_horizontal_guides_ = [16.0]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=622808171]
-position = Vector2(16, 15)
+position = Vector2(16, 16.5)
 texture = ExtResource("1_uqwym")
+vframes = 2
+frame = 1
 region_enabled = true
-region_rect = Rect2(192, 80, 32, 30)
+region_rect = Rect2(192, 49, 32, 62)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=2003663010]
 polygon = PackedVector2Array(13, 30, 20, 30, 27, 27, 32, 21, 32, 18, 31, 12, 27, 6, 20, 2, 15, 1, 11, 1, 6, 6, 3, 6, 1, 8, 1, 14, 0, 15, 0, 18, 3, 26)
 
 [node name="InteractionArea" type="Area2D" parent="." unique_id=328488359]
+collision_layer = 128
+collision_mask = 96
 script = ExtResource("2_0ohxj")
 metadata/_custom_type_script = "uid://ci008ej21i8t4"
 
