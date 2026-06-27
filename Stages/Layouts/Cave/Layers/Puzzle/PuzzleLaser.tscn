@@ -428,4 +428,10 @@ position = Vector2(-80, 96)
 [node name="Box2" parent="InteractionObjects" unique_id=1559093554 instance=ExtResource("6_grspr")]
 position = Vector2(336, -96)
 
+[node name="Box3" parent="InteractionObjects" unique_id=857620316 instance=ExtResource("6_grspr")]
+position = Vector2(48, -23)
+
+[node name="Box4" parent="InteractionObjects" unique_id=2081521574 instance=ExtResource("6_grspr")]
+position = Vector2(224, 32)
+
 [node name="Triggers" type="Node2D" parent="." unique_id=67619935]

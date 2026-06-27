@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ij5vke6le04n"]
 
 [node name="Laser" type="RayCast2D" unique_id=675074715]
-position = Vector2(16, 16)
+collision_mask = 128
 metadata/_edit_group_ = true
 
 [node name="Line2D" type="Line2D" parent="." unique_id=2275318]

@@ -57,7 +57,7 @@ var _hint_shown: bool = false
 # --- Oleadas de enemigos en salas de tipo Puzzle -----------------------------
 # Mientras el jugador resuelve un puzzle, cada WAVE_INTERVAL_SECONDS aparecen
 # enemigos básicos (pool easy) y cada MEDIUM_EVERY_WAVES oleadas, además, medianos.
-const WAVE_INTERVAL_SECONDS: float = 10.0
+const WAVE_INTERVAL_SECONDS: float = 15.0
 const MEDIUM_EVERY_WAVES: int = 5
 
 # Temporizador de oleadas (creado bajo demanda) y número de oleadas ya lanzadas.
@@ -158,11 +158,13 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 	# reset. En salas Rest queda registrada también, pero reset_current_puzzle()
 	# solo actúa sobre salas de tipo Puzzle.
 	var instance := _spawn_interior(scene_list)
-	# Recuerda modo y secuencia sorteados por el puzzle para conservarlos en los
-	# reinicios.
+	# Recuerda el reto sorteado por el puzzle para conservarlo en los reinicios:
+	# el de Pila/Cola guarda modo + secuencia; el de láser guarda solo su compuerta.
 	if instance is PuzzleStackQueue:
 		_puzzle_mode = instance.mode
 		_puzzle_order = instance.target_order.duplicate()
+	elif instance is PuzzleLaser:
+		_puzzle_mode = instance._current_mode
 
 ## Busca la capa de piso navegable de la sala bajo $Layers. Prioriza la capa
 ## dedicada "navigation_floor" (separada del "floor" visual); si no existe, cae a
@@ -212,15 +214,19 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 	_show_puzzle_hint()
 	_start_enemy_waves()
 
-## Pide al puzzle de la sala que muestre momentáneamente la pista del orden en
-## la UI, solo la primera vez. No hace nada si el contenido no es un
-## PuzzleStackQueue o si la pista ya se mostró antes.
+## Pide al puzzle de la sala que muestre momentáneamente su pista en la UI, solo la
+## primera vez: el de Pila/Cola muestra el orden objetivo; el de láser, la compuerta
+## lógica actual. No hace nada si la pista ya se mostró antes.
 func _show_puzzle_hint() -> void:
 	if _hint_shown:
 		return
 	for child in content.get_children():
 		if child is PuzzleStackQueue:
 			child.show_order_hint()
+			_hint_shown = true
+			return
+		elif child is PuzzleLaser:
+			child.show_gate_hint()
 			_hint_shown = true
 			return
 
@@ -262,6 +268,17 @@ func _puzzle_floor() -> TileMapLayer:
 		if floor_node is TileMapLayer:
 			return floor_node
 	return null
+
+## API pública: penalización para los puzzles (p. ej. la sobrecarga del puzzle láser
+## en modo XOR). Lanza una oleada extra de enemigos básicos sobre el piso del puzzle,
+## reutilizando el spawner. No hace nada si la sala no tiene spawner o piso.
+func spawn_penalty_wave() -> void:
+	if enemy_spawner == null:
+		return
+	var puzzle_floor := _puzzle_floor()
+	if puzzle_floor == null:
+		return
+	enemy_spawner.spawn_pool(easy_combat, puzzle_floor)
 
 ## Al salir de la sala, desvincula al jugador para no resetearla desde fuera y
 ## detiene las oleadas (no deben seguir apareciendo enemigos en una sala vacía).
@@ -310,16 +327,30 @@ func reset_current_puzzle() -> void:
 	if content == null:
 		return
 
+	# El reset suele dispararse desde un callback de física (la placa de presión del
+	# propio puzzle), momento en el que el motor está "flushing queries" y no permite
+	# alterar el árbol ni el monitoring de las Area2D. Se difiere la reconstrucción
+	# para ejecutarla fuera del flush y evitar el error del depurador.
+	_rebuild_puzzle.call_deferred()
+
+## Reconstrucción diferida del puzzle: elimina el contenido actual e instancia una
+## copia limpia con el reto original. No llamar directamente; usar reset_current_puzzle().
+func _rebuild_puzzle() -> void:
+	if content == null:
+		return
+
 	# Marca los hijos actuales para eliminación.
 	for child in content.get_children():
 		child.queue_free()
 
 	# Instancia una copia nueva (node_id distinto al hijo anterior).
 	var instance := _current_puzzle_scene.instantiate()
-	# Reimpone modo y secuencia originales ANTES de añadirlo al árbol, para que su
-	# _ready() no vuelva a sortear el reto (naturaleza Pila/Cola y orden).
+	# Reimpone el reto original ANTES de añadirlo al árbol, para que su _ready() no
+	# vuelva a sortearlo (Pila/Cola y orden; o la compuerta del láser).
 	if instance is PuzzleStackQueue and _puzzle_mode != -1:
 		instance.apply_fixed_config(_puzzle_mode, _puzzle_order)
+	elif instance is PuzzleLaser and _puzzle_mode != -1:
+		instance.apply_fixed_mode(_puzzle_mode)
 	content.add_child(instance)
 
 	# Notifica el reset para que la UI/sistemas externos se reconecten.
