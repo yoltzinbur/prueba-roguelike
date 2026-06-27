@@ -58,6 +58,8 @@ var _hint_shown: bool = false
 # Mientras el jugador resuelve un puzzle, cada WAVE_INTERVAL_SECONDS aparecen
 # enemigos básicos (pool easy) y cada MEDIUM_EVERY_WAVES oleadas, además, medianos.
 const WAVE_INTERVAL_SECONDS: float = 15.0
+## El puzzle de láseres presiona más al jugador: oleadas más frecuentes.
+const LASER_WAVE_INTERVAL_SECONDS: float = 7.0
 const MEDIUM_EVERY_WAVES: int = 5
 
 # Temporizador de oleadas (creado bajo demanda) y número de oleadas ya lanzadas.
@@ -159,12 +161,14 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 	# solo actúa sobre salas de tipo Puzzle.
 	var instance := _spawn_interior(scene_list)
 	# Recuerda el reto sorteado por el puzzle para conservarlo en los reinicios:
-	# el de Pila/Cola guarda modo + secuencia; el de láser guarda solo su compuerta.
+	# el de Pila/Cola guarda modo + secuencia; el de láser guarda compuerta + objetivo
+	# (reutilizando _puzzle_order para el código del objetivo).
 	if instance is PuzzleStackQueue:
 		_puzzle_mode = instance.mode
 		_puzzle_order = instance.target_order.duplicate()
 	elif instance is PuzzleLaser:
 		_puzzle_mode = instance._current_mode
+		_puzzle_order = [instance.get_objective_code()]
 
 ## Busca la capa de piso navegable de la sala bajo $Layers. Prioriza la capa
 ## dedicada "navigation_floor" (separada del "floor" visual); si no existe, cae a
@@ -236,10 +240,19 @@ func _show_puzzle_hint() -> void:
 func _start_enemy_waves() -> void:
 	if _wave_timer == null:
 		_wave_timer = Timer.new()
-		_wave_timer.wait_time = WAVE_INTERVAL_SECONDS
 		_wave_timer.timeout.connect(_on_wave_timer_timeout)
 		add_child(_wave_timer)
+	# El intervalo depende del puzzle de la sala (el de láser es más exigente).
+	_wave_timer.wait_time = _wave_interval()
 	_wave_timer.start()
+
+## Intervalo entre oleadas según el puzzle de la sala: 10 s para el de láseres,
+## el estándar (15 s) para el resto.
+func _wave_interval() -> float:
+	for child in content.get_children():
+		if child is PuzzleLaser:
+			return LASER_WAVE_INTERVAL_SECONDS
+	return WAVE_INTERVAL_SECONDS
 
 ## Detiene las oleadas sin destruir el temporizador ni perder el conteo.
 func _stop_enemy_waves() -> void:
@@ -278,7 +291,9 @@ func spawn_penalty_wave() -> void:
 	var puzzle_floor := _puzzle_floor()
 	if puzzle_floor == null:
 		return
+	reset_current_puzzle()
 	enemy_spawner.spawn_pool(easy_combat, puzzle_floor)
+	enemy_spawner.spawn_pool(medium_combat, puzzle_floor)
 
 ## Al salir de la sala, desvincula al jugador para no resetearla desde fuera y
 ## detiene las oleadas (no deben seguir apareciendo enemigos en una sala vacía).
@@ -350,7 +365,8 @@ func _rebuild_puzzle() -> void:
 	if instance is PuzzleStackQueue and _puzzle_mode != -1:
 		instance.apply_fixed_config(_puzzle_mode, _puzzle_order)
 	elif instance is PuzzleLaser and _puzzle_mode != -1:
-		instance.apply_fixed_mode(_puzzle_mode)
+		var objective_code := _puzzle_order[0] if not _puzzle_order.is_empty() else ""
+		instance.apply_fixed_mode(_puzzle_mode, objective_code)
 	content.add_child(instance)
 
 	# Notifica el reset para que la UI/sistemas externos se reconecten.
