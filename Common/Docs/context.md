@@ -11,7 +11,10 @@ La estructura sigue un patron modular orientado a componentes y escenas reutiliz
 | `Entities/Player/Art/` | Spritesheets del jugador. | `Idle.png`, `Walk.png`, `Attack.png`, `Hit.png` — layout de 4 filas (down, right, up, left) x N columnas, 32x32 por frame. |
 | `Stages/` | Composicion de niveles, generacion procedural y escena raiz. | Tilemaps, layouts (Layout1, Cave), escena principal (`Main/MainBueno.tscn`), generador procedural (`Cave/start_cave.gd`). |
 | `Stages/Layouts/Cave/` | Sistema de cuevas procedurales. | Generador (`start_cave.gd`), plantilla de sala (`layout_1.gd`/`Layout1.tscn`), puertas (`Environment/`), escena entrada (`StartCave.tscn`). |
+| `Stages/Layouts/Cave/Environment/` | Objetos de mundo de las salas. | Puertas (`cave_door.gd`), placas de presion (`pressure_plate.gd`/`PressurePlate`), cajas empujables (`box.gd`/`Box`). |
+| `Stages/Layouts/Cave/Layers/Puzzle/` | Puzzles instanciables en salas de tipo Puzzle. | `PuzzleStackQueue` (`puzzle_stack_queue.gd`/`.tscn`) — puzzle de Pila/Cola. |
 | `Utilities/` | Gestion global, UI y sistemas auxiliares. | Singletons/Autoloads, menus (pausa, principal, game over), barras de vida, contadores, gestion de audio/tutorial. |
+| `Utilities/UI/MessageUI/` | Mensaje reutilizable en pantalla. | `Message.tscn` (Control + Label con la fuente pixel-art). Usado por el jugador para feedback efimero (pistas de puzzle, resultado). |
 
 ## Singletons (Autoloads) Vigentes
 Los siguientes scripts funcionan como nodos raiz globales (`/root/`), registrados en `Project Settings > Autoload`:
@@ -27,10 +30,12 @@ Los siguientes scripts funcionan como nodos raiz globales (`/root/`), registrado
 ## Script del Jugador
 El jugador (`Entities/Player/Player.tscn`) es un `CharacterBody2D` con script raiz `Entities/Player/player.gd`:
 - `var current_interactable: Node` — referencia al objeto interactuable cercano (asignada por los propios interactuables).
-- En `_ready()`, ejecuta `_crear_animaciones_direccionales()` que genera animaciones con sufijo de direccion (`idle_down`, `walk_right`, `attack_up`, etc.) desde los spritesheets usando `AtlasTexture`.
-- En `_process()`, si `input_component.input_action` y `current_interactable` no es nulo, invoca `current_interactable.interact()`.
+- `var current_room: Node` — sala (`RoomLayout`) en la que se encuentra el jugador, asignada por el `RoomTrigger` de la sala. La usa el input de reset para saber que puzzle reiniciar.
+- En `_ready()`, ejecuta `_crear_animaciones_direccionales()` que genera animaciones con sufijo de direccion (`idle_down`, `walk_right`, `attack_up`, etc.) desde los spritesheets usando `AtlasTexture`. Tambien deja oculto el Label de mensajes.
+- En `_process()`, si `input_component.input_action` y `current_interactable` no es nulo, invoca `current_interactable.interact()`; si `input_component.input_reset` y hay `current_room`, llama `current_room.reset_current_puzzle()`.
+- `show_message(text, duration = 3.0)` — muestra texto en el Label de la UI (instancia de `MessageUI/Message.tscn` bajo `UI/Message`) durante unos segundos y luego lo oculta. Usa un token interno para que un temporizador viejo no borre un mensaje mas reciente. Es el canal de feedback que usan los puzzles.
 - Las animaciones originales sin sufijo se mantienen como fallback para entidades sin spritesheets direccionales (enemigos).
-- Ver `architecture.md` para el patron completo de animaciones y el sistema de interacciones.
+- Ver `architecture.md` para el patron completo de animaciones, interacciones y el sistema de puzzles.
 
 ## Convenciones de Desarrollo
 - **Nomenclatura:** `snake_case` para scripts y variables, `PascalCase` para clases/nodos personalizados.
@@ -55,4 +60,4 @@ El jugador (`Entities/Player/Player.tscn`) es un `CharacterBody2D` con script ra
 | 8 | `interactive` | Puertas, cofres |
 
 ---
-*Ultima actualizacion: Animaciones direccionales del Player, directorio Cave procedural, escena principal actualizada a MainBueno.tscn.*
+*Ultima actualizacion: Sistema de puzzles (Cave/Layers/Puzzle, Environment con placas/cajas), mensaje de UI reutilizable (Utilities/UI/MessageUI), current_room e input_reset del jugador, show_message(). Animaciones direccionales, directorio Cave procedural, escena principal MainBueno.tscn.*

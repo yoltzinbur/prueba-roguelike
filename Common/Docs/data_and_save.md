@@ -89,7 +89,8 @@ Layout1 (RoomLayout)
   |     |-- EastDoor
   |     +-- WestDoor
   |-- Content/ (Node2D)                   -- Contenido interior instanciado
-  +-- EnemySpawner (enemy_spawner.gd)     -- Spawner de enemigos
+  |-- EnemySpawner (enemy_spawner.gd)     -- Spawner de enemigos
+  +-- RoomTrigger (Area2D)                -- Detecta entrada/salida del jugador (capa 7)
 ```
 
 ### Configuracion de Sala (`configure_room`)
@@ -116,6 +117,18 @@ El generador llama `configure_room(type, north, south, east, west)` donde los bo
 - `combat_list: Array[PackedScene]` — Layouts internos de combate (obstaculos, decoracion).
 - `puzzle_list: Array[PackedScene]` — Contenido de salas puzzle.
 - `rest_list: Array[PackedScene]` — Contenido de salas de descanso.
+
+### Mecanica de Salas de Puzzle
+Las salas de tipo Puzzle encierran al jugador hasta que resuelve el puzzle. El `RoomTrigger` (un `Area2D` con mascara en la capa 7 = player) gestiona el ciclo:
+
+1. **Entrada** (`_on_room_trigger_entered`): asigna `body.current_room = self`. Si la sala es Puzzle y no esta resuelta, cierra todas las puertas activas (`_close_all_active_doors()`, las vuelve muro con colision) y muestra la pista del orden **una sola vez** (`_show_puzzle_hint()` -> `_hint_shown`).
+2. **Salida** (`_on_room_trigger_exited`): limpia `current_room` (evita reiniciar la sala desde fuera).
+3. **Resolucion** (`complete_puzzle()`, llamada por el propio puzzle al resolverse): marca `is_puzzled_cleared = true` y reabre las puertas restaurando la configuracion original guardada en `configure_room()`.
+4. **Reinicio** (`reset_current_puzzle()`, disparada por el input `reset` del jugador): destruye el contenido actual de `Content` e instancia una copia limpia de `_current_puzzle_scene`. Se ignora si la sala ya esta resuelta.
+
+**Persistencia del reto del puzzle:** al instanciar el puzzle por primera vez (`_setup_peaceful`), si es un `PuzzleStackQueue` la sala guarda su modo y secuencia (`_puzzle_mode`, `_puzzle_order`). En cada reinicio los reimpone con `apply_fixed_config()` ANTES de anadir el nodo al arbol, para que el reto (Pila/Cola y orden) no cambie entre intentos. Ver el detalle del puzzle en `architecture.md`.
+
+**Señal `puzzle_reset`:** emitida tras reinstanciar el contenido en `reset_current_puzzle()`, por si la UI o sistemas externos necesitan reconectarse al nuevo contenido.
 
 ---
 
@@ -213,6 +226,7 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 
 1. **Generacion Procedural:** La logica del generador esta en `start_cave.gd`. Para agregar nuevos tipos de sala: anadir la constante `ROOM_TIPO`, agregar un `@export` para la cantidad, incluir en `_build_room_bag()`, y agregar el case en `layout_1.gd` `configure_room()`.
 2. **Nuevas Salas de Contenido:** Crear una escena `.tscn` con el contenido interior y agregarla a `combat_list`, `puzzle_list` o `rest_list` en el inspector de `Layout1.tscn`.
+   - **Nuevos Puzzles:** seguir el patron de `PuzzleStackQueue` — emitir `puzzle_solved`/`puzzle_failed`, subir por el arbol hasta el `RoomLayout` y llamar `complete_puzzle()` al resolver. Para feedback usar `player.show_message()`. Si el puzzle tiene aleatoriedad, sortearla solo cuando no este fijada y exponer una API tipo `apply_fixed_config()` para que la sala la conserve entre reinicios.
 3. **Modificacion de Tilemaps:** Siempre trabajar sobre copias o escenas duplicadas. No editar tilesets base directamente.
 4. **Balanceo:** Ajustar valores en propiedades `@export` de los componentes (`HealthComponent.MAX_HEALTH`, `VelocityComponent.speed`) dentro de las escenas `.tscn`, no hardcodeados en scripts. Para dificultad de salas, ajustar `easy_max_enemies`, `medium_max_enemies`, etc. en `Layout1.tscn`.
 5. **Nuevos Enemigos:** Crear una escena `.tscn` en `Entities/Enemies/NuevoEnemigo/` siguiendo la estructura de `Chort.tscn` o `Goblin.tscn` (CharacterBody2D + StateMachine + componentes). Agregar como `PackedScene` a una `SpawnCategory` en las pools correspondientes.
@@ -221,4 +235,4 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 8. **Migracion:** Si cambia la estructura de datos, incluir logica de conversion hacia atras en `load_game()`.
 
 ---
-*Ultima actualizacion: Documentacion del sistema de generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo completo MainBueno -> Cave, sistema de puertas procedurales.*
+*Ultima actualizacion: Mecanica de salas de puzzle (bloqueo de puertas via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto entre reinicios, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave, puertas procedurales.*

@@ -55,6 +55,16 @@ var is_puzzled_cleared: bool = false
 # reentrar ni reiniciar el puzzle vuelven a mostrarla. Que sufra el jugador.
 var _hint_shown: bool = false
 
+# --- Oleadas de enemigos en salas de tipo Puzzle -----------------------------
+# Mientras el jugador resuelve un puzzle, cada WAVE_INTERVAL_SECONDS aparecen
+# enemigos básicos (pool easy) y cada MEDIUM_EVERY_WAVES oleadas, además, medianos.
+const WAVE_INTERVAL_SECONDS: float = 10.0
+const MEDIUM_EVERY_WAVES: int = 5
+
+# Temporizador de oleadas (creado bajo demanda) y número de oleadas ya lanzadas.
+var _wave_timer: Timer
+var _wave_count: int = 0
+
 ## Conecta el RoomTrigger (añadido manualmente en el editor) para detectar la
 ## entrada del jugador. Corre antes que configure_room(), así que room_type aún
 ## está vacío aquí: solo se cablea la señal y el tipo se lee de forma diferida.
@@ -193,6 +203,7 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 		return
 	_close_all_active_doors()
 	_show_puzzle_hint()
+	_start_enemy_waves()
 
 ## Pide al puzzle de la sala que muestre momentáneamente la pista del orden en
 ## la UI, solo la primera vez. No hace nada si el contenido no es un
@@ -206,10 +217,57 @@ func _show_puzzle_hint() -> void:
 			_hint_shown = true
 			return
 
-## Al salir de la sala, desvincula al jugador para no resetearla desde fuera.
+## Arranca las oleadas periódicas de enemigos. El temporizador se crea la primera
+## vez y se reutiliza; el conteo de oleadas NO se reinicia, para que la dificultad
+## siga escalando aunque el jugador entre y salga.
+func _start_enemy_waves() -> void:
+	print("Wave")
+	if _wave_timer == null:
+		_wave_timer = Timer.new()
+		_wave_timer.wait_time = WAVE_INTERVAL_SECONDS
+		_wave_timer.timeout.connect(_on_wave_timer_timeout)
+		add_child(_wave_timer)
+	_wave_timer.start()
+
+## Detiene las oleadas sin destruir el temporizador ni perder el conteo.
+func _stop_enemy_waves() -> void:
+	if _wave_timer:
+		_wave_timer.stop()
+
+## Cada oleada lanza enemigos básicos (easy); cada MEDIUM_EVERY_WAVES oleadas,
+## además, enemigos medianos. Que sufra el jugador.
+func _on_wave_timer_timeout() -> void:
+	print("New wave: ", _wave_count)
+	if enemy_spawner == null or is_puzzled_cleared:
+		print("Error 1. New wave: ", _wave_count)
+		return
+	# Reapunta el spawner al piso del puzzle actual (cambia tras cada reinicio).
+	if not _aim_spawner_at_puzzle_floor():
+		print("Error 2. New wave: ", _wave_count)
+		return
+	_wave_count += 1
+	enemy_spawner.spawn_pool(easy_combat)
+	if _wave_count % MEDIUM_EVERY_WAVES == 0:
+		enemy_spawner.spawn_pool(medium_combat)
+
+## Apunta el spawner al piso navegable del puzzle (su corredor) y le pasa el
+## jugador para respetar la distancia mínima de aparición. Devuelve false si no
+## encuentra un FloorLayer donde spawnear.
+func _aim_spawner_at_puzzle_floor() -> bool:
+	for child in content.get_children():
+		var floor_node := child.get_node_or_null("FloorLayer")
+		if floor_node is TileMapLayer:
+			enemy_spawner.floor_layer = floor_node
+			enemy_spawner.player = get_tree().get_first_node_in_group("Player")
+			return true
+	return false
+
+## Al salir de la sala, desvincula al jugador para no resetearla desde fuera y
+## detiene las oleadas (no deben seguir apareciendo enemigos en una sala vacía).
 func _on_room_trigger_exited(body: Node2D) -> void:
 	if body.is_in_group("Player") and body.current_room == self:
 		body.current_room = null
+		_stop_enemy_waves()
 
 ## Recorre las 4 puertas y cierra (vuelve muro con colisión) solo aquellas que
 ## estaban abiertas porque conectaban con un vecino.
@@ -232,6 +290,8 @@ func _close_door_if_active(door: Node2D, was_active: bool) -> void:
 ## con vecinos, restaurando el estado original guardado en configure_room().
 func complete_puzzle() -> void:
 	is_puzzled_cleared = true
+	# Puzzle resuelto: dejan de aparecer enemigos.
+	_stop_enemy_waves()
 	_configure_door(doors.get_node_or_null("NorthDoor"), _n_active)
 	_configure_door(doors.get_node_or_null("SouthDoor"), _s_active)
 	_configure_door(doors.get_node_or_null("EastDoor"), _e_active)
