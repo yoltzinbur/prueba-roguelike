@@ -259,9 +259,11 @@ func _start_enemy_waves() -> void:
 	# El intervalo depende del puzzle de la sala (el de láser es más exigente).
 	_wave_timer.wait_time = _wave_interval()
 	_wave_timer.start()
-	# El puzzle aritmético presiona desde el primer instante: primera oleada ya.
+	# El puzzle aritmético presiona desde el primer instante: primera oleada ya. Se
+	# difiere porque esto corre dentro del callback body_entered (física en pleno
+	# "flushing queries"), donde no se puede crear el Area2D de los enemigos.
 	if _waves_start_immediately():
-		_on_wave_timer_timeout()
+		_on_wave_timer_timeout.call_deferred()
 
 ## Intervalo entre oleadas según el puzzle de la sala: 7 s para el de láseres,
 ## el estándar (15 s) para el resto.
