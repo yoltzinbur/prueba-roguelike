@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://d2nnpso6gfrsw" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleLaser.tscn" id="4_lasr0"]
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="4_w34kc"]
 [ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Common/StateMachine/States/idle.gd" id="5_5ttq7"]
+[ext_resource type="PackedScene" uid="uid://e0v7mgt5nibd" path="res://Stages/Layouts/Cave/Layers/Bosses/BossRoom.tscn" id="5_boss0"]
 [ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="5_h3you"]
 [ext_resource type="PackedScene" uid="uid://d4ley6l1h7oee" path="res://Stages/Layouts/Cave/Layers/Rest/RestRoom.tscn" id="5_quhbb"]
 [ext_resource type="PackedScene" uid="uid://1o5num6yk05" path="res://Stages/Layouts/Cave/Layers/Combat/Combat.tscn" id="6_sag8h"]
@@ -485,6 +486,7 @@ script = ExtResource("1_5x7ud")
 puzzle_list = Array[PackedScene]([ExtResource("4_lasr0")])
 rest_list = Array[PackedScene]([ExtResource("5_quhbb")])
 combat_list = Array[PackedScene]([ExtResource("6_sag8h"), ExtResource("7_sg0bh"), ExtResource("8_1xx8l")])
+boss_list = Array[PackedScene]([ExtResource("5_boss0")])
 easy_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_8beky")])
 medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm"), SubResource("Resource_8beky")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]

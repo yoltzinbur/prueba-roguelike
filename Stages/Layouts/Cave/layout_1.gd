@@ -51,6 +51,12 @@ var _puzzle_order: Array[String] = []
 var room_type: String = ""
 var is_puzzled_cleared: bool = false
 
+# --- Pelea del Jefe (salas Boss) ---------------------------------------------
+# Al entrar el jugador se encierra y se activa al jefe; al morir todos, se reabren las
+# puertas. _boss_active evita reactivar; _bosses_alive vigila las muertes.
+var _boss_active: bool = false
+var _bosses_alive: Array[Node] = []
+
 # --- Combate por encierro (salas Easy/Medium/Hard) ---------------------------
 # Las salas de combate ya NO spawnean al instanciarse: igual que los puzzles,
 # esperan a que el jugador entre. Al entrar se cierran las puertas y aparece la
@@ -171,6 +177,42 @@ func _setup_boss() -> void:
 	_spawn_interior(boss_list)
 	_lock_boss_room()
 
+## Despierta al/los jefe(s) de la sala. El jefe (Samurai) nace inerte (process_mode =
+## DISABLED) y solo procesa —persigue/ataca— tras esta llamada. Se busca en el subárbol de
+## Content (el layer del BossRoom trae al jefe ya colocado dentro) cualquier nodo del grupo
+## "Boss" con método activate(). Idempotente: el propio jefe ignora reactivaciones.
+func _activate_boss() -> void:
+	if content == null or _boss_active:
+		return
+	var bosses := _find_bosses(content)
+	if bosses.is_empty():
+		return
+	# Encierra al jugador para convertir la sala en arena durante la pelea. Al morir el
+	# jefe (sale del árbol), se reabren las puertas para no dejar al jugador encerrado.
+	_boss_active = true
+	_bosses_alive = bosses.duplicate()
+	_close_all_active_doors()
+	for boss in bosses:
+		boss.activate()
+		boss.tree_exited.connect(_on_boss_exited.bind(boss))
+
+## Disparada cuando un jefe abandona el árbol (muerte). Cuando ya no queda ninguno vivo,
+## reabre las puertas que conectan con vecinos.
+func _on_boss_exited(boss: Node) -> void:
+	_bosses_alive.erase(boss)
+	if _bosses_alive.is_empty():
+		_boss_active = false
+		_open_active_doors()
+
+## Búsqueda en profundidad de los nodos del grupo "Boss" dentro del subárbol de `node`.
+func _find_bosses(node: Node) -> Array[Node]:
+	var found: Array[Node] = []
+	for child in node.get_children():
+		if child.is_in_group("Boss") and child.has_method("activate"):
+			found.append(child)
+		found.append_array(_find_bosses(child))
+	return found
+
 ## Sala pacífica (Puzzle/Rest): instancia contenido. No invoca al spawner, así que
 ## la sala queda sin enemigos.
 func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
@@ -212,6 +254,10 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 	# El jugador queda asociado a esta sala para que el input "reset" sepa cuál
 	# reiniciar (reset_current_puzzle() solo actúa sobre salas de tipo Puzzle).
 	body.current_room = self
+	# Sala del Jefe: al entrar el jugador, despierta al jefe (que nace inerte).
+	if room_type == ROOM_TYPE_BOSS:
+		_activate_boss()
+		return
 	# Salas de combate: encierran al jugador y disparan la oleada de enemigos.
 	if _is_combat_room():
 		_enter_combat_room()
