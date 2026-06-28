@@ -8,12 +8,14 @@ extends Node2D
 @export var puzzle_list: Array[PackedScene]
 @export var rest_list: Array[PackedScene]
 @export var combat_list: Array[PackedScene] ## Layouts internos de combate.
+## Layer(s) de la zona del Jefe (BossRoom): traen su propio mapa con el jefe ya
+## colocado dentro. Se instancia uno al azar en las salas de tipo Boss.
+@export var boss_list: Array[PackedScene]
 
 # Pools de enemigos por dificultad, inyectadas al EnemySpawner.
 @export var easy_combat: Array[SpawnCategory]
 @export var medium_combat: Array[SpawnCategory]
 @export var hard_combat: Array[SpawnCategory]
-@export var boss_combat: Array[SpawnCategory]
 
 @onready var doors: Node2D = $Doors
 @onready var content: Node2D = $Content
@@ -104,8 +106,7 @@ func configure_room(type: String, north: bool, south: bool, east: bool, west: bo
 		ROOM_TYPE_HARD:
 			_setup_combat(hard_combat)
 		ROOM_TYPE_BOSS:
-			_setup_combat(boss_combat)
-			_lock_boss_room()
+			_setup_boss()
 		ROOM_TYPE_PUZZLE:
 			_setup_peaceful(puzzle_list)
 		ROOM_TYPE_REST:
@@ -157,6 +158,14 @@ func _setup_combat(pools: Array[SpawnCategory]) -> void:
 	if enemy_spawner == null:
 		return
 	enemy_spawner.call_deferred("spawn_pool", pools, floor_layer)
+
+## Sala del Jefe: instancia su layer dedicado (BossRoom), que trae su propio mapa y
+## al jefe ya colocado dentro, y bloquea las puertas hasta que el nivel desbloquee la
+## sala (al completar los puzzles). No usa el EnemySpawner: el jefe es parte de la
+## escena instanciada, no se spawnea desde una pool.
+func _setup_boss() -> void:
+	_spawn_interior(boss_list)
+	_lock_boss_room()
 
 ## Sala pacífica (Puzzle/Rest): instancia contenido. No invoca al spawner, así que
 ## la sala queda sin enemigos.

@@ -19,6 +19,7 @@ func _ready() -> void:
 	_test_drunkards_walk()
 	_test_boss_coord_single_door()
 	_test_generate_map_boss_single_door()
+	_test_boss_layer_configured()
 	_test_random_value_no_multiplo()
 	_test_residue()
 
@@ -134,6 +135,19 @@ func _test_generate_map_boss_single_door() -> void:
 			break
 		cave.free()
 	_check(siempre_una_puerta, "la Sala de Jefe debe tener siempre una sola puerta (%s)" % detalle)
+
+## Confirma que la plantilla de sala trae configurado el layer del Jefe y que ese
+## layer incluye al jefe ya colocado dentro (no se spawnea desde una pool).
+func _test_boss_layer_configured() -> void:
+	var layout_scene: PackedScene = load("res://Stages/Layouts/Cave/Layout1.tscn")
+	var layout := layout_scene.instantiate()
+	_check(not layout.boss_list.is_empty(), "Layout1 debe tener al menos un layer de Jefe en boss_list")
+	if not layout.boss_list.is_empty():
+		var boss_scene: PackedScene = layout.boss_list[0]
+		var boss := boss_scene.instantiate()
+		_check(boss.get_node_or_null("Samurai") != null, "el layer del Jefe debe traer al jefe (Samurai) ya colocado dentro")
+		boss.free()
+	layout.free()
 
 func _test_random_value_no_multiplo() -> void:
 	var p := PuzzleArithmetic.new()

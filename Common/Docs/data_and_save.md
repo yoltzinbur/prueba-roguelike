@@ -111,7 +111,7 @@ La cantidad de enemigos por sala la define `quantity` de cada `SpawnCategory` de
 | Easy | Si | `easy_combat` | Aleatorio de `combat_list` |
 | Medium | Si | `medium_combat` | Aleatorio de `combat_list` |
 | Hard | Si | `hard_combat` | Aleatorio de `combat_list` |
-| Boss | Si | `boss_combat` | Aleatorio de `combat_list`. Arranca **bloqueada** (`_lock_boss_room()`); se abre al resolver todos los puzzles. |
+| Boss | Si | Ninguno (el jefe viene en el layer) | Layer dedicado de `boss_list` (`BossRoom.tscn`: trae su propio mapa con el jefe ya colocado). Arranca **bloqueada** (`_lock_boss_room()`); se abre al resolver todos los puzzles. |
 | Puzzle | No | Ninguno | Aleatorio de `puzzle_list` (StackQueue / Arithmetic / Laser) |
 | Rest | No | Ninguno | Aleatorio de `rest_list` (`RestRoom.tscn` con la fogata `Campfire`) |
 
@@ -119,10 +119,13 @@ La cantidad de enemigos por sala la define `quantity` de cada `SpawnCategory` de
 
 **Salas de descanso (Rest):** usan `_setup_peaceful(rest_list)` (sin enemigos). El contenido `RestRoom.tscn` incluye una fogata (`campfire.gd`) que al interactuar, una sola vez, restaura vida y frascos del jugador al maximo. Ver el patron del interactuable en `architecture.md`.
 
+**Sala del Jefe (Boss):** usa `_setup_boss()`, que instancia un layer de `boss_list` (`BossRoom.tscn`) en `Content`. Ese layer trae su PROPIO mapa (`TileMapLayer`) y al jefe (`Samurai`) ya colocado dentro, por lo que NO se usa el `EnemySpawner` ni una pool de enemigos: el jefe es parte de la escena. Tras instanciarlo bloquea las puertas con `_lock_boss_room()`. (Reemplaza al antiguo `boss_combat`, ya eliminado.)
+
 **Listas de contenido (@export):**
 - `combat_list: Array[PackedScene]` — Layouts internos de combate (obstaculos, decoracion).
 - `puzzle_list: Array[PackedScene]` — Contenido de salas puzzle.
 - `rest_list: Array[PackedScene]` — Contenido de salas de descanso.
+- `boss_list: Array[PackedScene]` — Layer(s) de la zona del Jefe (`BossRoom.tscn`), con el jefe ya dentro.
 
 ### Mecanica de Salas de Puzzle
 Las salas de tipo Puzzle encierran al jugador hasta que resuelve el puzzle. El `RoomTrigger` (un `Area2D` con mascara en la capa 7 = player) gestiona el ciclo:
@@ -249,7 +252,7 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 ## Directrices para IA en Manipulacion de Datos
 
 1. **Generacion Procedural:** La logica del generador esta en `Cave/CaveMain/start_cave.gd`. Para agregar nuevos tipos de sala: anadir la constante `ROOM_TIPO`, agregar un `@export` para la cantidad, incluir en la "bolsa" de tipos, y agregar el case en `layout_1.gd` `configure_room()`.
-2. **Nuevas Salas de Contenido:** Crear una escena `.tscn` con el contenido interior y agregarla a `combat_list`, `puzzle_list` o `rest_list` en el inspector de `Layout1.tscn`.
+2. **Nuevas Salas de Contenido:** Crear una escena `.tscn` con el contenido interior y agregarla a `combat_list`, `puzzle_list`, `rest_list` o `boss_list` en el inspector de `Layout1.tscn`. Para la zona del Jefe, el layer (`Stages/Layouts/Cave/Layers/Bosses/`) trae su propio mapa y al jefe ya colocado; se instancia con `_setup_boss()` (sin spawner).
    - **Nuevos Puzzles:** seguir el patron de los existentes (`PuzzleStackQueue`/`PuzzleArithmetic`/`PuzzleLaser`) — emitir `puzzle_solved`/`puzzle_failed`, subir por el arbol hasta el `RoomLayout` y llamar `complete_puzzle()` al resolver (esto cuenta para el desbloqueo del Boss via `room_cleared`). Para feedback usar `player.show_message()`. Si el puzzle tiene aleatoriedad, sortearla solo cuando no este fijada y exponer una API para que la sala la conserve entre reinicios. Si necesita temporizador propio, exponer `begin()`/`halt()` y registrarlo en `_begin_timed_puzzles()`/`_halt_timed_puzzles()`. Para penalizaciones por enemigos, preferir `spawn_penalty_enemies(count)` (cantidad controlada) sobre oleadas completas.
 3. **Modificacion de Tilemaps:** Siempre trabajar sobre copias o escenas duplicadas. No editar tilesets base directamente.
 4. **Balanceo:** Ajustar valores en propiedades `@export` de los componentes (`HealthComponent.MAX_HEALTH`, `VelocityComponent.speed`) dentro de las escenas `.tscn`, no hardcodeados en scripts. Para dificultad de salas, ajustar `easy_max_enemies`, `medium_max_enemies`, etc. en `Layout1.tscn`.
