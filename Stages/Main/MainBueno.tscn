@@ -427,8 +427,8 @@ tile_set = SubResource("TileSet_36r0b")
 [node name="CaveDoor1" parent="." unique_id=1405134328 instance=ExtResource("2_y22tv")]
 position = Vector2(192, -24)
 
-[node name="Player" parent="." unique_id=1539473209 instance=ExtResource("3_y22tv")]
-position = Vector2(240, 128)
-
 [node name="Chest" parent="." unique_id=1920526650 instance=ExtResource("4_o28un")]
 position = Vector2(160, 112)
+
+[node name="Player" parent="." unique_id=1539473209 instance=ExtResource("3_y22tv")]
+position = Vector2(240, 128)
