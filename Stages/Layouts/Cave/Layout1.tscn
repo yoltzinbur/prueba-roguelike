@@ -486,7 +486,7 @@ puzzle_list = Array[PackedScene]([ExtResource("4_lasr0")])
 rest_list = Array[PackedScene]([ExtResource("5_quhbb")])
 combat_list = Array[PackedScene]([ExtResource("6_sag8h"), ExtResource("7_sg0bh"), ExtResource("8_1xx8l")])
 easy_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_8beky")])
-medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm")])
+medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm"), SubResource("Resource_8beky")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]
 metadata/_edit_vertical_guides_ = [496.0, 0.0, 224.0, -272.0]
 

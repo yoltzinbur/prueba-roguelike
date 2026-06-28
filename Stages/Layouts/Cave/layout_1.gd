@@ -21,11 +21,6 @@ extends Node2D
 @onready var content: Node2D = $Content
 @onready var enemy_spawner: EnemySpawner = $EnemySpawner
 
-# Piso navegable propio de la sala: sobre sus celdas aparecen los enemigos de las
-# salas de combate. Se resuelve solo desde $Layers (no requiere asignación manual
-# en el inspector), priorizando la capa dedicada "navigation_floor".
-@onready var floor_layer: TileMapLayer = _find_floor_layer()
-
 ## Emitida tras reinstanciar el contenido del puzzle en reset_current_puzzle().
 ## La UI o los sistemas externos pueden reconectarse al nuevo contenido aquí.
 signal puzzle_reset
@@ -55,6 +50,17 @@ var _puzzle_order: Array[String] = []
 # Estado de la sala para la mecánica de bloqueo de puertas.
 var room_type: String = ""
 var is_puzzled_cleared: bool = false
+
+# --- Combate por encierro (salas Easy/Medium/Hard) ---------------------------
+# Las salas de combate ya NO spawnean al instanciarse: igual que los puzzles,
+# esperan a que el jugador entre. Al entrar se cierran las puertas y aparece la
+# oleada; cuando muere el último enemigo, las puertas se reabren.
+# Pool guardada en _setup_combat para spawnear al entrar el jugador.
+var _combat_pools: Array[SpawnCategory] = []
+# True mientras hay enemigos vivos de la oleada (puertas cerradas).
+var _combat_active: bool = false
+# True una vez limpiada la sala: no vuelve a encerrar al jugador si reentra.
+var is_combat_cleared: bool = false
 
 # La pista del orden solo se muestra la primera vez que se entra a la sala; ni
 # reentrar ni reiniciar el puzzle vuelven a mostrarla. Que sufra el jugador.
@@ -149,15 +155,13 @@ func _configure_door(door: Node2D, has_neighbor: bool) -> void:
 		if collision:
 			collision.set_deferred("disabled", false)
 
-## Sala de combate: instancia (si existe) un layout interno de combate y pide al
-## spawner que aparezca la pool sobre el piso de la sala. El spawneo se difiere
-## para que el mapa de navegación ya esté listo cuando aparezcan los enemigos.
+## Sala de combate: instancia (si existe) un layout interno de combate y guarda la
+## pool de enemigos. A diferencia de antes, NO spawnea al instanciar la sala: los
+## enemigos aparecen cuando el jugador entra (_on_room_trigger_entered), igual que
+## los puzzles. Así la sala empieza vacía y se "activa" al cruzar la puerta.
 func _setup_combat(pools: Array[SpawnCategory]) -> void:
 	_spawn_interior(combat_list)
-
-	if enemy_spawner == null:
-		return
-	enemy_spawner.call_deferred("spawn_pool", pools, floor_layer)
+	_combat_pools = pools
 
 ## Sala del Jefe: instancia su layer dedicado (BossRoom), que trae su propio mapa y
 ## al jefe ya colocado dentro, y bloquea las puertas hasta que el nivel desbloquee la
@@ -184,24 +188,6 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 		_puzzle_mode = instance.get_mode()
 		_puzzle_order = [instance.get_objective_code()]
 
-## Busca la capa de piso navegable de la sala bajo $Layers. Prioriza la capa
-## dedicada "navigation_floor" (separada del "floor" visual); si no existe, cae a
-## la primera TileMapLayer cuyo nombre contenga "floor" (escenas antiguas).
-## Devuelve null si no encuentra ninguna.
-func _find_floor_layer() -> TileMapLayer:
-	var layers := get_node_or_null("Layers")
-	if layers == null:
-		push_warning("[RoomLayout] No se encontró el nodo 'Layers' con el piso navegable.")
-		return null
-	var nav := layers.get_node_or_null("navigation_floor")
-	if nav is TileMapLayer:
-		return nav
-	for child in layers.get_children():
-		if child is TileMapLayer and "floor" in String(child.name).to_lower():
-			return child
-	push_warning("[RoomLayout] No se encontró una TileMapLayer de piso ('navigation_floor' o 'floor') bajo 'Layers'.")
-	return null
-
 ## Elige una escena al azar de la lista, la añade como hija de Content (lo que
 ## guarda también la PackedScene en _current_puzzle_scene) y devuelve la instancia
 ## creada (o null si la lista está vacía).
@@ -226,12 +212,102 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 	# El jugador queda asociado a esta sala para que el input "reset" sepa cuál
 	# reiniciar (reset_current_puzzle() solo actúa sobre salas de tipo Puzzle).
 	body.current_room = self
+	# Salas de combate: encierran al jugador y disparan la oleada de enemigos.
+	if _is_combat_room():
+		_enter_combat_room()
+		return
 	if room_type != ROOM_TYPE_PUZZLE or is_puzzled_cleared:
 		return
 	_close_all_active_doors()
 	_show_puzzle_hint()
 	_start_enemy_waves()
 	_begin_timed_puzzles()
+
+## True si la sala es de combate por encierro (Easy/Medium/Hard).
+func _is_combat_room() -> bool:
+	return room_type == ROOM_TYPE_EASY or room_type == ROOM_TYPE_MEDIUM or room_type == ROOM_TYPE_HARD
+
+## Sala de combate: al entrar el jugador (si no la ha limpiado ya y no hay un combate
+## en curso) cierra las puertas y dispara la oleada. El spawneo se difiere porque
+## esto corre dentro del callback body_entered (física en pleno "flushing queries"),
+## donde no se puede crear el Area2D de los enemigos.
+func _enter_combat_room() -> void:
+	if is_combat_cleared or _combat_active:
+		return
+	_close_all_active_doors()
+	_start_combat.call_deferred()
+
+## Spawnea la oleada de combate y empieza a vigilar las muertes para reabrir las
+## puertas cuando no quede ningún enemigo. Spawnea sobre el piso del layout de
+## combate instanciado (no sobre todo el interior de la sala): así el spawner, con su
+## chequeo de navegabilidad por celda, descarta las celdas que ese layout dibujó como
+## obstáculo y solo coloca enemigos sobre el suelo transitable. Si no hay piso de
+## combate, pool vacía o spawn fallido, limpia la sala para no encerrar al jugador.
+func _start_combat() -> void:
+	var combat_floor := _combat_floor()
+	if enemy_spawner == null or combat_floor == null:
+		_clear_combat()
+		return
+	_combat_active = true
+	if not enemy_spawner.child_exiting_tree.is_connected(_on_combat_enemy_exiting):
+		enemy_spawner.child_exiting_tree.connect(_on_combat_enemy_exiting)
+	enemy_spawner.spawn_pool(_combat_pools, combat_floor)
+	# Sin enemigos vivos (pool vacía o spawn fallido): no encerrar al jugador.
+	if _alive_combat_enemies() == 0:
+		_clear_combat()
+
+## Devuelve la TileMapLayer del layout de combate instanciado en Content (la escena
+## raíz de Combat.tscn ES una TileMapLayer con suelo y obstáculos mezclados). El
+## spawner descarta por celda las que no tienen polígono de navegación (los
+## obstáculos), igual que con _puzzle_floor() en las salas de puzzle. Null si no hay.
+func _combat_floor() -> TileMapLayer:
+	return _find_tilemap_layer(content)
+
+## Devuelve la primera TileMapLayer encontrada en el subárbol de `node` (búsqueda en
+## profundidad), o null si no hay ninguna.
+func _find_tilemap_layer(node: Node) -> TileMapLayer:
+	for child in node.get_children():
+		if child is TileMapLayer:
+			return child
+		var found := _find_tilemap_layer(child)
+		if found:
+			return found
+	return null
+
+## Disparada cuando un hijo del spawner abandona el árbol. Si era un enemigo de la
+## oleada, comprueba —de forma diferida, ya retirado del árbol— si era el último.
+func _on_combat_enemy_exiting(child: Node) -> void:
+	if not _combat_active or not child.is_in_group("Enemy"):
+		return
+	_check_combat_cleared.call_deferred()
+
+## Da por limpiada la sala cuando ya no queda ningún enemigo vivo de la oleada.
+func _check_combat_cleared() -> void:
+	if not _combat_active:
+		return
+	if _alive_combat_enemies() > 0:
+		return
+	_clear_combat()
+
+## Marca la sala como limpiada, deja de vigilar muertes y reabre las puertas que
+## conectan con vecinos. Idempotente: reentrar no vuelve a encerrar al jugador.
+func _clear_combat() -> void:
+	_combat_active = false
+	is_combat_cleared = true
+	if enemy_spawner and enemy_spawner.child_exiting_tree.is_connected(_on_combat_enemy_exiting):
+		enemy_spawner.child_exiting_tree.disconnect(_on_combat_enemy_exiting)
+	_open_active_doors()
+
+## Cuenta los enemigos vivos generados por el spawner de la sala (sus hijos del
+## grupo "Enemy"). Permite saber cuándo se limpió el combate.
+func _alive_combat_enemies() -> int:
+	if enemy_spawner == null:
+		return 0
+	var count := 0
+	for child in enemy_spawner.get_children():
+		if child.is_in_group("Enemy"):
+			count += 1
+	return count
 
 ## Arranca los puzzles con temporizador propio (p. ej. el aritmético) al entrar el
 ## jugador, para que su validación no corra con la sala vacía.

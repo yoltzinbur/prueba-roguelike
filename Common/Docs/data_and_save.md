@@ -127,6 +127,16 @@ La cantidad de enemigos por sala la define `quantity` de cada `SpawnCategory` de
 - `rest_list: Array[PackedScene]` — Contenido de salas de descanso.
 - `boss_list: Array[PackedScene]` — Layer(s) de la zona del Jefe (`BossRoom.tscn`), con el jefe ya dentro.
 
+### Mecanica de Salas de Combate
+Las salas de combate (Easy/Medium/Hard) se comportan como las de puzzle: encierran al jugador hasta limpiar la oleada. Ya NO spawnean al instanciarse. El `RoomTrigger` gestiona el ciclo:
+
+1. **Entrada** (`_on_room_trigger_entered` -> `_enter_combat_room`): si la sala es de combate, no esta limpiada (`is_combat_cleared`) y no hay un combate en curso (`_combat_active`), cierra las puertas activas (`_close_all_active_doors()`) y difiere `_start_combat()`.
+2. **Spawn** (`_start_combat`): marca `_combat_active = true`, conecta `enemy_spawner.child_exiting_tree` y spawnea la pool guardada sobre el **piso del layout de combate instanciado** (`_combat_floor()`: la `TileMapLayer` raiz del `Combat.tscn` dentro de `Content`), NO sobre todo el interior de la sala. Ese layout mezcla suelo (tiles con poligono de navegacion) y obstaculos (tiles solo con colision); el spawner descarta por celda las que no son navegables, igual que `_puzzle_floor()` en las salas de puzzle, asi los enemigos solo aparecen sobre suelo transitable. Si no hay piso de combate, la pool esta vacia o no se pudo spawnear a nadie (`_alive_combat_enemies() == 0`), limpia de inmediato para no encerrar al jugador en una sala vacia.
+3. **Muertes** (`_on_combat_enemy_exiting` -> `_check_combat_cleared`): cada vez que un enemigo (grupo "Enemy", hijo del spawner) sale del arbol, comprueba de forma diferida si era el ultimo.
+4. **Limpieza** (`_clear_combat`): cuando no queda ningun enemigo vivo, marca `is_combat_cleared = true`, desconecta el vigilante de muertes y reabre las puertas (`_open_active_doors()`). Reentrar no vuelve a encerrar al jugador.
+
+Las salas de combate NO emiten `room_cleared` (ese contador es solo para puzzles y el desbloqueo del Boss).
+
 ### Mecanica de Salas de Puzzle
 Las salas de tipo Puzzle encierran al jugador hasta que resuelve el puzzle. El `RoomTrigger` (un `Area2D` con mascara en la capa 7 = player) gestiona el ciclo:
 
@@ -193,7 +203,7 @@ spawn_count(pool: Array[SpawnCategory], count: int, floor_layer: TileMapLayer) -
 
 **Integracion con Generacion Procedural:**
 El spawner no sabe que tipo de sala es. `RoomLayout` lo invoca segun el tipo:
-- **Salas de combate** (`_setup_combat`): llama `spawn_pool(pool, floor_layer)` de forma diferida, donde `floor_layer` es la capa navegable propia de la sala, resuelta automaticamente por `_find_floor_layer()` (prioriza `Layers/navigation_floor`).
+- **Salas de combate** (`_setup_combat`): NO spawnea al instanciar la sala; solo guarda la pool en `_combat_pools`. Los enemigos aparecen cuando el jugador entra (ver "Mecanica de Salas de Combate"), via `spawn_pool(pool, _combat_floor())` diferido, donde `_combat_floor()` es la `TileMapLayer` del layout de combate instanciado en `Content` (suelo + obstaculos). El spawner descarta por celda las no navegables, igual que con el piso de los puzzles.
 - **Salas de puzzle** (oleadas): cada `WAVE_INTERVAL_SECONDS`, `_on_wave_timer_timeout()` llama `spawn_pool()` con el piso del puzzle actual (`_puzzle_floor()`, el nodo `FloorLayer` del contenido).
 - **Salas pacificas** (Start, Rest): simplemente no se invoca al spawner.
 
@@ -262,4 +272,4 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 8. **Migracion:** Si cambia la estructura de datos, incluir logica de conversion hacia atras en `load_game()`.
 
 ---
-*Ultima actualizacion: Progreso de puzzles y desbloqueo del Boss (start_cave como administrador del nivel, room_cleared, UI/PuzzlesCounter, _lock/unlock_boss_room). Salas Rest con fogata (Campfire). Spawner con spawn_count (penalizacion controlada). Generador y entrada en Cave/CaveMain/, objetos de mundo en Stages/Elements/. room_type publico. Mecanica de salas de puzzle (bloqueo via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave.*
+*Ultima actualizacion: Salas de combate por encierro (entras -> se cierran las puertas y aparecen los enemigos; al morir todos, se reabren; spawn diferido al entrar, ya no al instanciar; los enemigos aparecen sobre el piso navegable del layout de combate via _combat_floor(), descartando las celdas-obstaculo). Progreso de puzzles y desbloqueo del Boss (start_cave como administrador del nivel, room_cleared, UI/PuzzlesCounter, _lock/unlock_boss_room). Salas Rest con fogata (Campfire). Spawner con spawn_count (penalizacion controlada). Generador y entrada en Cave/CaveMain/, objetos de mundo en Stages/Elements/. room_type publico. Mecanica de salas de puzzle (bloqueo via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave.*
