@@ -9,7 +9,7 @@ Los niveles se componen mediante escenas modulares, tilemaps optimizados y un ge
 |--------|------|-----------|
 | `MainBueno.tscn` | `Stages/Main/MainBueno.tscn` | **Escena raiz del juego** (configurada en project.godot). Area de inicio con tilemap, jugador y puerta de entrada a la cueva. |
 | `Main.tscn` | `Stages/Main/Main.tscn` | Layout legacy del dungeon (pre-procedural). Contiene tilemap estatico, spawner de enemigos, cofre, tutorial y menu de pausa. |
-| `StartCave.tscn` | `Stages/Layouts/Cave/StartCave.tscn` | Punto de entrada al sistema procedural. Ejecuta `start_cave.gd` para generar el mapa de cueva. |
+| `StartCave.tscn` | `Stages/Layouts/Cave/CaveMain/StartCave.tscn` | Punto de entrada al sistema procedural. Ejecuta `start_cave.gd` para generar el mapa de cueva. |
 
 ### Flujo de Juego Completo
 ```
@@ -37,7 +37,7 @@ StartCave.tscn -> start_cave.gd._ready()
 ## Generacion Procedural de Cuevas
 
 ### Arquitectura del Generador (`start_cave.gd`)
-El generador vive en `Stages/Layouts/Cave/start_cave.gd` y extiende `Node2D`. Implementa el algoritmo **Drunkard's Walk** para crear una cuadricula organica de salas conectadas.
+El generador vive en `Stages/Layouts/Cave/CaveMain/start_cave.gd` y extiende `Node2D`. Implementa el algoritmo **Drunkard's Walk** para crear una cuadricula organica de salas conectadas. Ademas de generar el mapa, actua como **administrador del nivel**: lleva el progreso de puzzles y desbloquea la sala del Boss (ver "Progreso de Puzzles y Desbloqueo del Jefe").
 
 ### Configuracion (Propiedades @export)
 ```
@@ -62,9 +62,9 @@ El total de salas es siempre: `easy + medium + hard + puzzle + rest + 2` (Inicio
 El resultado es una region conexa con forma organica — no es un rectangulo perfecto, sino que deja huecos y forma "pasillos" naturales en la cuadricula.
 
 ### Asignacion de Tipos de Sala
-1. **Start**: Siempre en `(0, 0)`. Sala inicial sin enemigos ni contenido.
-2. **Boss**: Se ubica en la coordenada con mayor **distancia Manhattan** desde `(0, 0)`. Garantiza que el jugador recorra el mapa para llegar.
-3. **Resto**: Se construye una "bolsa" con las cantidades exactas de cada tipo (Easy, Medium, Hard, Puzzle, Rest), se mezcla aleatoriamente (`shuffle()`), y se asigna en orden a las coordenadas restantes.
+1. **Start**: Siempre en `(0, 0)`. Sala inicial sin enemigos ni contenido. El recorrido Drunkard's Walk genera la Sala de Inicio + las de relleno (`filler_count + 1` celdas); la Sala de Jefe NO se camina.
+2. **Boss** (`_pick_boss_coord`): es una celda **extra** que asoma del mapa una posicion mas alla de uno de sus bordes (max/min en X o Y). Al quedar fuera del "bounding box" solo puede tener un vecino, por lo que la Sala de Jefe tiene **exactamente una puerta** (un callejon sin salida): nunca es sala de paso, evitando que un puzzle u otra sala quede detras del jefe. Entre las cuatro extensiones posibles (una por borde) se elige la mas lejana del inicio (distancia Manhattan), forzando el recorrido del mapa. El total de salas sigue siendo `filler_count + 2` (Inicio + Jefe).
+3. **Resto**: Se construye una "bolsa" con las cantidades exactas de cada tipo (Easy, Medium, Hard, Puzzle, Rest), se mezcla aleatoriamente (`shuffle()`), y se asigna en orden a las coordenadas caminadas restantes (la celda del jefe no esta entre ellas).
 
 ### Posicionamiento Fisico
 Cada sala se posiciona en el mundo a: `Vector2(coordenada_grid) * room_size`. Con `room_size = (592, 368)`, una sala en la coordenada `(2, -1)` queda en la posicion `(1184, -368)` pixeles.
@@ -111,9 +111,13 @@ La cantidad de enemigos por sala la define `quantity` de cada `SpawnCategory` de
 | Easy | Si | `easy_combat` | Aleatorio de `combat_list` |
 | Medium | Si | `medium_combat` | Aleatorio de `combat_list` |
 | Hard | Si | `hard_combat` | Aleatorio de `combat_list` |
-| Boss | Si | `boss_combat` | Aleatorio de `combat_list` |
-| Puzzle | No | Ninguno | Aleatorio de `puzzle_list` |
-| Rest | No | Ninguno | Aleatorio de `rest_list` |
+| Boss | Si | `boss_combat` | Aleatorio de `combat_list`. Arranca **bloqueada** (`_lock_boss_room()`); se abre al resolver todos los puzzles. |
+| Puzzle | No | Ninguno | Aleatorio de `puzzle_list` (StackQueue / Arithmetic / Laser) |
+| Rest | No | Ninguno | Aleatorio de `rest_list` (`RestRoom.tscn` con la fogata `Campfire`) |
+
+`configure_room()` expone `room_type` como variable publica de `RoomLayout` (se fija al inicio del metodo, antes de configurar puertas/contenido) para que el generador pueda consultar el tipo de cada sala tras instanciarla.
+
+**Salas de descanso (Rest):** usan `_setup_peaceful(rest_list)` (sin enemigos). El contenido `RestRoom.tscn` incluye una fogata (`campfire.gd`) que al interactuar, una sola vez, restaura vida y frascos del jugador al maximo. Ver el patron del interactuable en `architecture.md`.
 
 **Listas de contenido (@export):**
 - `combat_list: Array[PackedScene]` — Layouts internos de combate (obstaculos, decoracion).
@@ -125,12 +129,27 @@ Las salas de tipo Puzzle encierran al jugador hasta que resuelve el puzzle. El `
 
 1. **Entrada** (`_on_room_trigger_entered`): asigna `body.current_room = self`. Si la sala es Puzzle y no esta resuelta, cierra todas las puertas activas (`_close_all_active_doors()`, las vuelve muro con colision) y muestra la pista del orden **una sola vez** (`_show_puzzle_hint()` -> `_hint_shown`).
 2. **Salida** (`_on_room_trigger_exited`): limpia `current_room` (evita reiniciar la sala desde fuera).
-3. **Resolucion** (`complete_puzzle()`, llamada por el propio puzzle al resolverse): marca `is_puzzled_cleared = true` y reabre las puertas restaurando la configuracion original guardada en `configure_room()`.
+3. **Resolucion** (`complete_puzzle()`, llamada por el propio puzzle al resolverse): marca `is_puzzled_cleared = true`, detiene las oleadas de enemigos, reabre las puertas restaurando la configuracion original (`_open_active_doors()`) y emite `room_cleared(self)` para el administrador del nivel.
 4. **Reinicio** (`reset_current_puzzle()`, disparada por el input `reset` del jugador): destruye el contenido actual de `Content` e instancia una copia limpia de `_current_puzzle_scene`. Se ignora si la sala ya esta resuelta.
+
+**Sala del Boss (bloqueo independiente):** `configure_room()` la cierra con `_lock_boss_room()` (`_close_all_active_doors()`). La reabre `unlock_boss_room()` (`_open_active_doors()`), invocada por `start_cave.gd` al completar todos los puzzles. Reutiliza el mismo guardado de configuracion original de puertas que el bloqueo de puzzles.
 
 **Persistencia del reto del puzzle:** al instanciar el puzzle por primera vez (`_setup_peaceful`), si es un `PuzzleStackQueue` la sala guarda su modo y secuencia (`_puzzle_mode`, `_puzzle_order`). En cada reinicio los reimpone con `apply_fixed_config()` ANTES de anadir el nodo al arbol, para que el reto (Pila/Cola y orden) no cambie entre intentos. Ver el detalle del puzzle en `architecture.md`.
 
 **Señal `puzzle_reset`:** emitida tras reinstanciar el contenido en `reset_current_puzzle()`, por si la UI o sistemas externos necesitan reconectarse al nuevo contenido.
+
+---
+
+## Progreso de Puzzles y Desbloqueo del Jefe
+`start_cave.gd` actua como administrador del nivel tras generar el mapa (`_init_puzzle_progress()` en `_ready()`):
+
+1. Recorre las salas: cuenta las de tipo Puzzle (`total_puzzles`), guarda la del Boss (`_boss_room`) y conecta `room_cleared` de cada sala de puzzle a `_on_room_cleared`.
+2. Localiza el contador en la UI del jugador (`UI/PuzzlesCounter`, instancia de `PuzzlesCounter.tscn`), lo hace visible dentro del dungeon y muestra `"Puzzles: X / Y"`.
+3. `_on_room_cleared(room)` cuenta cada sala **una sola vez** (set `_cleared_rooms` por `instance_id`), refresca el contador y, al alcanzar `total_puzzles`, desbloquea el Boss.
+4. `_unlock_boss_room()` llama `_boss_room.unlock_boss_room()` y avisa con `show_message()`. Si el nivel no tiene puzzles, el Boss queda accesible de entrada.
+5. `_exit_tree()` oculta el contador al abandonar el dungeon (protegido con `is_instance_valid`).
+
+> **Guia para IA:** El contador de puzzles vive en la UI del **jugador**, no en el nivel, para sobrevivir a la generacion/destruccion de salas. `start_cave.gd` solo lo localiza y actualiza. Si agregas otro objetivo de nivel (p. ej. llaves), sigue este patron: cuenta tras generar, escucha una señal de la sala y actualiza un nodo de HUD ya existente.
 
 ---
 
@@ -158,19 +177,16 @@ min_player_distance: float = 150.0      -- Distancia minima al jugador para spaw
 **API:**
 ```
 spawn_pool(pool: Array[SpawnCategory], floor_layer: TileMapLayer) -> void
+spawn_count(pool: Array[SpawnCategory], count: int, floor_layer: TileMapLayer) -> void
 ```
+- `spawn_pool`: spawnea la `quantity` de cada `SpawnCategory` de la pool (oleada completa).
+- `spawn_count`: spawnea **exactamente** `count` enemigos tomados al azar de todas las escenas de la pool. Pensado para penalizaciones de cantidad controlada (p. ej. el puzzle aritmetico spawnea `residuo` enemigos via `RoomLayout.spawn_penalty_enemies()`), evitando acumular oleadas enteras.
 
-**Algoritmo de Spawn (`spawn_pool`):**
-1. Valida que `floor_layer` no sea null y que la pool no este vacia.
-2. Fuerza actualizacion del mapa de navegacion: `NavigationServer2D.map_force_update()`.
-3. Obtiene las celdas validas con `floor_layer.get_used_cells()`.
-4. Resuelve al jugador con `get_tree().get_first_node_in_group("Player")`.
-5. Para cada `SpawnCategory` (`_spawn_category`):
-   a. Elige una celda aleatoria y descarta las que no tengan poligono de navegacion.
-   b. Convierte a posicion global con `map_to_local()` + `to_global()`.
-   c. Verifica que la posicion este a mas de `min_player_distance` del jugador.
-   d. Elige una escena aleatoria de `category.scenes` e instancia.
-   e. Limite de intentos: `category.quantity * 5` para evitar bucles.
+**Algoritmo de Spawn:**
+1. `_prepare_cells(floor_layer)`: fuerza la actualizacion del mapa de navegacion (`NavigationServer2D.map_force_update()`) y devuelve las celdas usadas del piso (advertencia si esta vacio).
+2. Resuelve al jugador con `get_tree().get_first_node_in_group("Player")`.
+3. Por cada enemigo a colocar, `_try_spawn_one(scenes, ...)` elige una celda al azar, descarta las que no tengan poligono de navegacion, convierte a global (`map_to_local()` + `to_global()`), verifica `min_player_distance`, instancia una escena aleatoria y devuelve si lo logro.
+4. Limite de intentos: `quantity * 5` (en `spawn_pool`) o `count * 5` (en `spawn_count`) para evitar bucles. La logica de una sola colocacion se comparte entre ambos metodos.
 
 **Integracion con Generacion Procedural:**
 El spawner no sabe que tipo de sala es. `RoomLayout` lo invoca segun el tipo:
@@ -183,7 +199,7 @@ El spawner no sabe que tipo de sala es. `RoomLayout` lo invoca segun el tipo:
 ## Sistema de Puertas
 
 ### Puerta de Entrada (`cave_door.gd`)
-`Stages/Layouts/Cave/Environment/cave_door.gd` — Puerta interactuable en la escena de inicio.
+`Stages/Layouts/Cave/Environment/cave_door.gd` — Puerta interactuable en la escena de inicio. (`Environment/` ya solo contiene puertas; los demas objetos de mundo se movieron a `Stages/Elements/`.)
 
 **Flujo:**
 1. El jugador entra al `InteractionArea` del `Area2D`.
@@ -192,7 +208,7 @@ El spawner no sabe que tipo de sala es. `RoomLayout` lo invoca segun el tipo:
 4. `interact()` -> `open()` -> emite `door_interacted` y llama `GameManager.load_scene("res://.../StartCave.tscn")`.
 
 **Escenas de puertas:**
-- `CaveDoor1.tscn`: Puerta de entrada a la cueva procedural (en MainBueno.tscn).
+- `CaveDoor1.tscn`: Puerta de entrada a la cueva procedural (en MainBueno.tscn). Carga `res://Stages/Layouts/Cave/CaveMain/StartCave.tscn`.
 - `CaveDoor2.tscn`: Puerta interna de cueva (disponible para uso futuro).
 - `CaveWall.tscn`: Muro visual usado como puerta cerrada en salas procedurales.
 
@@ -232,9 +248,9 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 
 ## Directrices para IA en Manipulacion de Datos
 
-1. **Generacion Procedural:** La logica del generador esta en `start_cave.gd`. Para agregar nuevos tipos de sala: anadir la constante `ROOM_TIPO`, agregar un `@export` para la cantidad, incluir en `_build_room_bag()`, y agregar el case en `layout_1.gd` `configure_room()`.
+1. **Generacion Procedural:** La logica del generador esta en `Cave/CaveMain/start_cave.gd`. Para agregar nuevos tipos de sala: anadir la constante `ROOM_TIPO`, agregar un `@export` para la cantidad, incluir en la "bolsa" de tipos, y agregar el case en `layout_1.gd` `configure_room()`.
 2. **Nuevas Salas de Contenido:** Crear una escena `.tscn` con el contenido interior y agregarla a `combat_list`, `puzzle_list` o `rest_list` en el inspector de `Layout1.tscn`.
-   - **Nuevos Puzzles:** seguir el patron de `PuzzleStackQueue` — emitir `puzzle_solved`/`puzzle_failed`, subir por el arbol hasta el `RoomLayout` y llamar `complete_puzzle()` al resolver. Para feedback usar `player.show_message()`. Si el puzzle tiene aleatoriedad, sortearla solo cuando no este fijada y exponer una API tipo `apply_fixed_config()` para que la sala la conserve entre reinicios.
+   - **Nuevos Puzzles:** seguir el patron de los existentes (`PuzzleStackQueue`/`PuzzleArithmetic`/`PuzzleLaser`) — emitir `puzzle_solved`/`puzzle_failed`, subir por el arbol hasta el `RoomLayout` y llamar `complete_puzzle()` al resolver (esto cuenta para el desbloqueo del Boss via `room_cleared`). Para feedback usar `player.show_message()`. Si el puzzle tiene aleatoriedad, sortearla solo cuando no este fijada y exponer una API para que la sala la conserve entre reinicios. Si necesita temporizador propio, exponer `begin()`/`halt()` y registrarlo en `_begin_timed_puzzles()`/`_halt_timed_puzzles()`. Para penalizaciones por enemigos, preferir `spawn_penalty_enemies(count)` (cantidad controlada) sobre oleadas completas.
 3. **Modificacion de Tilemaps:** Siempre trabajar sobre copias o escenas duplicadas. No editar tilesets base directamente.
 4. **Balanceo:** Ajustar valores en propiedades `@export` de los componentes (`HealthComponent.MAX_HEALTH`, `VelocityComponent.speed`) dentro de las escenas `.tscn`, no hardcodeados en scripts. Para dificultad de salas, ajustar `easy_max_enemies`, `medium_max_enemies`, etc. en `Layout1.tscn`.
 5. **Nuevos Enemigos:** Crear una escena `.tscn` en `Entities/Enemies/NuevoEnemigo/` siguiendo la estructura de `Chort.tscn` o `Goblin.tscn` (CharacterBody2D + StateMachine + componentes). Agregar como `PackedScene` a una `SpawnCategory` en las pools correspondientes.
@@ -243,4 +259,4 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 8. **Migracion:** Si cambia la estructura de datos, incluir logica de conversion hacia atras en `load_game()`.
 
 ---
-*Ultima actualizacion: Mecanica de salas de puzzle (bloqueo de puertas via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto entre reinicios, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave, puertas procedurales.*
+*Ultima actualizacion: Progreso de puzzles y desbloqueo del Boss (start_cave como administrador del nivel, room_cleared, UI/PuzzlesCounter, _lock/unlock_boss_room). Salas Rest con fogata (Campfire). Spawner con spawn_count (penalizacion controlada). Generador y entrada en Cave/CaveMain/, objetos de mundo en Stages/Elements/. room_type publico. Mecanica de salas de puzzle (bloqueo via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave.*

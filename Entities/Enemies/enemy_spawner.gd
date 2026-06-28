@@ -7,6 +7,10 @@ extends Node2D
 
 ## Distancia mínima a la que puede aparecer un enemigo respecto del jugador.
 @export var min_player_distance: float = 150.0
+## Máximo de enemigos vivos generados por este spawner a la vez (0 = sin tope).
+## Evita que las oleadas periódicas y las penalizaciones acumulen demasiados
+## enemigos (picos de dificultad y de rendimiento en móvil).
+@export var max_enemies_alive: int = 12
 
 func _ready() -> void:
 	randomize()
@@ -94,18 +98,29 @@ func _spawn_category(category: SpawnCategory, floor_layer: TileMapLayer, valid_c
 		push_warning("EnemySpawner: no se pudo spawnear ningún enemigo de '%s' (intentos agotados o jugador demasiado cerca)." % category.name)
 
 ## Intenta spawnear UN enemigo (de `scenes`) en una celda navegable al azar.
-## Devuelve true si lo logró; false si la celda no es válida o está demasiado cerca
-## del jugador.
+## Devuelve true si lo logró; false si se alcanzó el tope de enemigos, no quedan
+## celdas, la celda no es navegable o está demasiado cerca del jugador. Las celdas
+## consumidas o inservibles se retiran de `valid_cells` para no reutilizarlas en el
+## mismo lote (evita solapar enemigos) ni reintentarlas en balde.
 func _try_spawn_one(scenes: Array[PackedScene], floor_layer: TileMapLayer, valid_cells: Array[Vector2i], player: Node2D) -> bool:
-	var random_cell: Vector2i = valid_cells.pick_random()
-
-	# Descarta celdas sin polígono de navegación (no son piso transitable).
-	var tile_data := floor_layer.get_cell_tile_data(random_cell)
-	if tile_data and tile_data.get_navigation_polygon(0) == null:
+	if _at_capacity() or valid_cells.is_empty():
 		return false
 
+	var idx := randi() % valid_cells.size()
+	var random_cell: Vector2i = valid_cells[idx]
+
+	# Descarta celdas sin polígono de navegación (no son piso transitable) y las
+	# retira: nunca serán válidas.
+	var tile_data := floor_layer.get_cell_tile_data(random_cell)
+	if tile_data and tile_data.get_navigation_polygon(0) == null:
+		valid_cells.remove_at(idx)
+		return false
+
+	# Demasiado cerca del jugador: en un mismo lote el jugador no se mueve, así que
+	# la celda tampoco servirá ahora; se retira para no reintentarla.
 	var spawn_pos := floor_layer.to_global(floor_layer.map_to_local(random_cell))
 	if player and spawn_pos.distance_to(player.global_position) < min_player_distance:
+		valid_cells.remove_at(idx)
 		return false
 
 	var enemy_scene: PackedScene = scenes.pick_random()
@@ -115,4 +130,18 @@ func _try_spawn_one(scenes: Array[PackedScene], floor_layer: TileMapLayer, valid
 	var enemy := enemy_scene.instantiate()
 	add_child(enemy)
 	enemy.global_position = spawn_pos
+	# Celda consumida: no reutilizar en este mismo lote.
+	valid_cells.remove_at(idx)
 	return true
+
+## Cuenta los enemigos vivos generados por este spawner (sus hijos del grupo "Enemy").
+func _alive_enemies() -> int:
+	var count := 0
+	for child in get_children():
+		if child.is_in_group("Enemy"):
+			count += 1
+	return count
+
+## True si se alcanzó el tope de enemigos vivos (con tope activo).
+func _at_capacity() -> bool:
+	return max_enemies_alive > 0 and _alive_enemies() >= max_enemies_alive

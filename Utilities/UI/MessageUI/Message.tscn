@@ -20,6 +20,5 @@ offset_left = -80.0
 offset_top = -16.0
 offset_right = 80.0
 offset_bottom = -8.0
-text = "asd"
 label_settings = SubResource("LabelSettings_on30b")
 horizontal_alignment = 2

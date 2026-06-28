@@ -3,7 +3,7 @@ extends Node2D
 ## Reparte salas (Layout1.tscn) sobre una cuadrícula orgánica y las conecta
 ## entre sí según vecindad. Es la escena principal del juego (CaveMain.tscn).
 
-const ROOM_SCENE: PackedScene = preload("res://Stages/Layouts/Cave/Layout1.tscn")
+const ROOM_SCENE: PackedScene = GameScenes.ROOM_LAYOUT
 
 # Tipos de sala (en inglés, según la convención del proyecto).
 const ROOM_START := "Start"
@@ -41,19 +41,9 @@ var map: Dictionary = {}
 
 @onready var rooms_container: Node2D = $Rooms
 
-# --- Progreso de puzzles y desbloqueo del Boss -------------------------------
-
-## Total de salas de puzzle del nivel (se cuenta tras generar el mapa).
-var total_puzzles: int = 0
-## Puzzles ya resueltos.
-var puzzles_completed: int = 0
-# Set (por instance_id) de salas ya contadas, para no contar un mismo puzzle dos veces.
-var _cleared_rooms: Dictionary = {}
-var _boss_room: RoomLayout = null
-# Contenedor del contador (Control con ícono + Label) y su Label de texto. El
-# contenedor solo se hace visible dentro de un nivel procedural.
-var _puzzle_counter_node: Control = null
-var _puzzle_counter: Label = null
+# Administra el progreso del nivel (contador de puzzles, desbloqueo del Boss). Se
+# instancia tras construir las salas; separa la gestión de progreso de la generación.
+var _level_manager: LevelManager
 
 func _ready() -> void:
 	if generation_seed >= 0:
@@ -62,33 +52,40 @@ func _ready() -> void:
 		randomize()
 	generate_map()
 	build_rooms()
-	_init_puzzle_progress()
+	_level_manager = LevelManager.new()
+	add_child(_level_manager)
+	_level_manager.setup(rooms_container.get_children())
 
 ## Calcula el tamaño total del mapa y reparte los tipos de sala sobre las
 ## coordenadas obtenidas con Drunkard's Walk.
 func generate_map() -> void:
 	map.clear()
 
-	# Suma de salas pedidas + 2 (Sala de Inicio y Sala de Jefe).
+	# Suma de salas pedidas. El recorrido genera la Sala de Inicio + las de relleno;
+	# la Sala de Jefe NO se camina, se añade aparte (ver abajo). El total de salas
+	# sigue siendo filler_count + 2 (Inicio + Jefe).
 	var filler_count: int = easy_room + medium_room + hard_room + puzzle_room + rest_room
-	var total_rooms: int = filler_count + 2
+	var walked_rooms: int = filler_count + 1
 
-	var coordinates: Array[Vector2i] = _drunkards_walk(total_rooms)
+	var coordinates: Array[Vector2i] = _drunkards_walk(walked_rooms)
 
 	# La Sala de Inicio siempre está en (0,0).
 	var start_coord: Vector2i = coordinates[0]
 	map[start_coord] = ROOM_START
 
-	# La Sala de Jefe va en la coordenada más lejana (distancia Manhattan).
-	var boss_coord: Vector2i = _farthest_coord(coordinates, start_coord)
+	# La Sala de Jefe es una celda EXTRA que asoma del mapa por un borde: al quedar
+	# fuera del "bounding box" tiene un único vecino, es decir, una sola puerta. Así
+	# nunca es una sala de paso (evita que un puzzle quede detrás del jefe).
+	var boss_coord: Vector2i = _pick_boss_coord(coordinates, start_coord)
 	map[boss_coord] = ROOM_BOSS
 
-	# "Bolsa" con los tipos solicitados, mezclada y vaciada sobre el resto.
+	# "Bolsa" con los tipos solicitados, mezclada y vaciada sobre las celdas caminadas
+	# restantes (el jefe no está en `coordinates`, así que no se le reasigna).
 	var bag: Array[String] = _build_room_bag()
 	bag.shuffle()
 
 	for coord in coordinates:
-		if coord == start_coord or coord == boss_coord:
+		if coord == start_coord:
 			continue
 		if bag.is_empty():
 			break
@@ -116,18 +113,43 @@ func _drunkards_walk(amount: int) -> Array[Vector2i]:
 
 	return visited
 
-## Devuelve la coordenada con mayor distancia Manhattan respecto a `origin`.
-## En caso de empate prioriza la última generada, garantizando recorrido.
-func _farthest_coord(coordinates: Array[Vector2i], origin: Vector2i) -> Vector2i:
-	var best: Vector2i = origin
+## Elige la coordenada de la Sala de Jefe: una celda EXTRA (no incluida en
+## `coordinates`) que extiende el mapa una posición más allá de uno de sus bordes.
+## Como sobresale del "bounding box", solo puede ser vecina de la celda de la que
+## sale → tendrá EXACTAMENTE una puerta (un callejón sin salida). Entre las cuatro
+## extensiones posibles (una por borde) elige la más lejana del inicio, para forzar
+## el recorrido del mapa hasta el jefe.
+func _pick_boss_coord(coordinates: Array[Vector2i], origin: Vector2i) -> Vector2i:
+	var min_x: int = coordinates[0].x
+	var max_x: int = coordinates[0].x
+	var min_y: int = coordinates[0].y
+	var max_y: int = coordinates[0].y
+	for c in coordinates:
+		min_x = mini(min_x, c.x)
+		max_x = maxi(max_x, c.x)
+		min_y = mini(min_y, c.y)
+		max_y = maxi(max_y, c.y)
+
+	# Candidatas: cada celda de un borde "asoma" una sala hacia afuera del mapa.
+	var candidates: Array[Vector2i] = []
+	for c in coordinates:
+		if c.x == max_x:
+			candidates.append(c + EAST)
+		if c.x == min_x:
+			candidates.append(c + WEST)
+		if c.y == max_y:
+			candidates.append(c + SOUTH)
+		if c.y == min_y:
+			candidates.append(c + NORTH)
+
+	# La candidata más lejana del inicio (distancia Manhattan).
+	var best: Vector2i = candidates[0]
 	var best_distance: int = -1
-	for coord in coordinates:
-		if coord == origin:
-			continue
-		var distance: int = abs(coord.x - origin.x) + abs(coord.y - origin.y)
-		if distance >= best_distance:
+	for cand in candidates:
+		var distance: int = abs(cand.x - origin.x) + abs(cand.y - origin.y)
+		if distance > best_distance:
 			best_distance = distance
-			best = coord
+			best = cand
 	return best
 
 ## Construye la bolsa de tipos de sala según las cantidades @export.
@@ -159,68 +181,3 @@ func build_rooms() -> void:
 		var has_west: bool = map.has(coord + WEST)
 
 		room.configure_room(map[coord], has_north, has_south, has_east, has_west)
-
-## Cuenta las salas de puzzle, localiza la del Boss, conecta sus señales de
-## resolución y prepara el contador de la UI. El Boss arranca bloqueado (lo hace la
-## propia sala en configure_room); aquí solo se desbloquea al completar todo.
-func _init_puzzle_progress() -> void:
-	for room in rooms_container.get_children():
-		if not room is RoomLayout:
-			continue
-		match room.room_type:
-			ROOM_BOSS:
-				_boss_room = room
-			ROOM_PUZZLE:
-				total_puzzles += 1
-				room.room_cleared.connect(_on_room_cleared)
-	_resolve_puzzle_counter()
-	# El contador solo se ve dentro del nivel procedural: aquí se activa al entrar.
-	if _puzzle_counter_node:
-		_puzzle_counter_node.visible = true
-	_update_puzzle_counter_ui()
-	# Sin puzzles que resolver, el Boss queda accesible de entrada.
-	if total_puzzles == 0:
-		_unlock_boss_room()
-
-## Maneja la resolución de una sala de puzzle: la cuenta UNA sola vez (evita dobles
-## si el jugador vuelve a interactuar), refresca la UI y, al completar todas,
-## desbloquea la sala del Boss.
-func _on_room_cleared(room: RoomLayout) -> void:
-	var id := room.get_instance_id()
-	if _cleared_rooms.has(id):
-		return
-	_cleared_rooms[id] = true
-	puzzles_completed += 1
-	_update_puzzle_counter_ui()
-	if puzzles_completed >= total_puzzles:
-		_unlock_boss_room()
-
-## Localiza el contador dentro de la UI del Player: el nodo "PuzzlesCounter"
-## (instancia de PuzzlesCounter.tscn) y su hijo "Label".
-func _resolve_puzzle_counter() -> void:
-	var player := get_tree().get_first_node_in_group("Player")
-	if player == null:
-		return
-	_puzzle_counter_node = player.get_node_or_null("UI/PuzzlesCounter") as Control
-	if _puzzle_counter_node:
-		_puzzle_counter = _puzzle_counter_node.get_node_or_null("Label") as Label
-
-## Actualiza el texto del contador con el formato "Puzzles: X / Y".
-func _update_puzzle_counter_ui() -> void:
-	if _puzzle_counter:
-		_puzzle_counter.text = "Puzzles: %d / %d" % [puzzles_completed, total_puzzles]
-
-## Al salir del nivel procedural (este nodo abandona el árbol), vuelve a ocultar el
-## contador para que no quede visible fuera del dungeon. Se protege con
-## is_instance_valid por si el Player se libera junto con la escena.
-func _exit_tree() -> void:
-	if is_instance_valid(_puzzle_counter_node):
-		_puzzle_counter_node.visible = false
-
-## Desbloquea el acceso físico a la sala del Boss y avisa al jugador.
-func _unlock_boss_room() -> void:
-	if _boss_room:
-		_boss_room.unlock_boss_room()
-	var player := get_tree().get_first_node_in_group("Player")
-	if player and player.has_method("show_message"):
-		player.show_message("¡La sala del Jefe ha sido desbloqueada!", 4.0)

@@ -172,7 +172,7 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 		_puzzle_mode = instance.mode
 		_puzzle_order = instance.target_order.duplicate()
 	elif instance is PuzzleLaser:
-		_puzzle_mode = instance._current_mode
+		_puzzle_mode = instance.get_mode()
 		_puzzle_order = [instance.get_objective_code()]
 
 ## Busca la capa de piso navegable de la sala bajo $Layers. Prioriza la capa

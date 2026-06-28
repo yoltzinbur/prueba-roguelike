@@ -140,10 +140,16 @@ Los objetos interactuables del mundo (puertas, cofres) siguen un patron reactivo
 - En `_on_body_entered(body)`: verificar `body.is_in_group("Player")` y asignar `body.current_interactable = self`.
 - En `_on_body_exited(body)`: verificar grupo y limpiar con `body.current_interactable == self`.
 - **Prohibido:** Leer `Input` directamente o usar `_process()` para polling de acciones en scripts de entorno/objetos.
-- Interactuables actuales: `cave_door.gd` (transicion de escena a cueva procedural), `chest.gd` (apertura + drop de monedas).
+- Interactuables actuales: `cave_door.gd` (transicion de escena a cueva procedural), `chest.gd` (apertura + drop de monedas), `campfire.gd` (restaura vida/frascos en salas de descanso), `interrupter.gd` (alterna estado en el puzzle aritmetico).
+
+### Componente reutilizable `InteractionArea`
+Los objetos de `Stages/Elements/` (fogata, interruptor) usan un `Area2D` con script `InteractionArea` que centraliza el registro `body.current_interactable` y emite la signal `interacted` al pulsar la accion. El objeto solo conecta `interaction_area.interacted` a su handler (`_on_interacted`) y opera su logica; no toca `Input` ni gestiona el registro a mano. La propiedad `enabled` permite desactivar la interaccion (p. ej. la fogata tras usarse, los interruptores al resolverse el puzzle).
+
+### Fogata (`Campfire`)
+`campfire.gd` (`StaticBody2D` + `InteractionArea`) es un interactuable de **un solo uso** de las salas de descanso. Al interactuar restaura `health_component.current_health = MAX_HEALTH` y `health_component.flasks = max_frascos`; luego marca `usada = true`, cambia el sprite a su frame inactivo y desactiva la `InteractionArea`. Resuelve al jugador y su `HealthComponent` por grupo `"Player"`. Vive dentro de `RestRoom.tscn`.
 
 ### Cajas empujables (`Box`)
-Las cajas (`box.gd`, `class_name Box`) **no** usan el sistema de `interact()`. Son `CharacterBody2D` que el jugador empuja por colision fisica: `VelocityComponent._push_colliding_boxes()` detecta las cajas tras `move_and_slide()` y llama a `box.push(velocity)`. La caja avanza con `move_and_slide()` (respeta paredes) y se frena por `friction`. Parametros en `@export`: `friction`, `max_push_speed`.
+Las cajas (`box.gd`, `class_name Box`, en `Stages/Elements/`) **no** usan el sistema de `interact()`. Son `CharacterBody2D` que el jugador empuja por colision fisica: `VelocityComponent._push_colliding_boxes()` detecta las cajas tras `move_and_slide()` y llama a `box.push(velocity)`. La caja avanza con `move_and_slide()` (respeta paredes) y se frena por `friction`. Parametros en `@export`: `friction`, `max_push_speed`.
 
 ---
 
@@ -156,8 +162,29 @@ Feedback efimero centralizado en el jugador, reutilizable para cualquier sistema
 
 ---
 
-## Sistema de Puzzles (PuzzleStackQueue)
-Puzzle instanciable en salas de tipo Puzzle (`Stages/Layouts/Cave/Layers/Puzzle/`). Un pasillo estrecho con tres placas de presion consecutivas y tres cajas con elemento (`Fuego`, `Hielo`, `Rayo`).
+## Sistema de Puzzles
+Las salas de tipo Puzzle instancian al azar uno de varios puzzles (`Stages/Layouts/Cave/Layers/Puzzle/`). Cada puzzle es un `Node2D` con `class_name`, emite `puzzle_solved` (y a veces `puzzle_failed`), y al resolverse sube por el arbol hasta el `RoomLayout` para llamar `complete_puzzle()`. Para feedback usan `player.show_message()`. Tipos actuales:
+
+| Puzzle | Clase | Mecanica | Pista | Temporizador |
+|--------|-------|----------|-------|--------------|
+| Pila/Cola | `PuzzleStackQueue` | Empujar cajas con elemento sobre placas en el orden correcto (modo Pila o Cola sorteado) | `show_order_hint()` (orden objetivo) | No |
+| Aritmetico | `PuzzleArithmetic` | Encender interruptores para que la suma activa tenga residuo 0 modulo `modulo` antes de cada validacion | Aviso "Obten residuo 0" | Si (`begin()`/`halt()`) |
+| Laser | `PuzzleLaser` | Orientar totems/receptores para satisfacer una compuerta logica | `show_gate_hint()` (compuerta) | No |
+
+### Convenciones comunes de un puzzle
+- **Aleatoriedad fijable:** si el puzzle sortea un reto, lo sortea solo cuando no esta fijado y expone una API para que la sala lo conserve entre reinicios. El `RoomLayout` guarda el reto de la primera instancia (`_puzzle_mode`/`_puzzle_order`) leyendo propiedades del puzzle (`mode`+`target_order` en Pila/Cola; `_current_mode`+`get_objective_code()` en Laser) y lo reimpone al reiniciar.
+- **Ciclo de vida temporizado:** los puzzles con reloj propio (el aritmetico) exponen `begin()` y `halt()`. La sala los llama en `_begin_timed_puzzles()`/`_halt_timed_puzzles()` al entrar/salir el jugador, para que la validacion no corra con la sala vacia.
+- **Bloqueo al resolver:** los elementos manipulables se "congelan" tras resolver para que el jugador no altere la solucion (p. ej. `interrupter.lock()`).
+
+### PuzzleArithmetic (residuo modular)
+Un conjunto de interruptores (`Interrupter`), cada uno con un `value` aleatorio que **no** es multiplo de `modulo` (un multiplo seria un interruptor "muerto"). El objetivo: que la suma de los valores encendidos tenga residuo 0 modulo `modulo`.
+- Una etiqueta centrada arriba muestra `"Residuo: N"` (o `"--"` sin interruptores activos), visible solo mientras el jugador esta en la sala.
+- Cada `validation_interval` segundos (`begin()` arranca el conteo) valida: residuo 0 con suma > 0 -> resuelto; residuo != 0 -> penalizacion proporcional. La cuenta regresiva solo se muestra en los ultimos `COUNTDOWN_VISIBLE_FROM` segundos.
+- **Penalizacion controlada:** `_apply_penalty(severity)` pide a la sala `spawn_penalty_enemies(severity)`, que spawnea exactamente `severity` enemigos basicos (no oleadas enteras) via `EnemySpawner.spawn_count()`.
+- Al resolver, `_mark_solved()` bloquea todos los interruptores (`lock()`).
+
+### PuzzleStackQueue (Pila/Cola)
+Un pasillo estrecho con tres placas de presion consecutivas y tres cajas con elemento (`Fuego`, `Hielo`, `Rayo`).
 
 ### Modos de juego
 `enum PuzzleMode { STACK, QUEUE }`. El modo se **sortea al azar** en la primera instanciacion (`_randomize_mode()`), igual que el orden objetivo (`_randomize_order()` baraja `target_order`).
@@ -179,7 +206,19 @@ El reto (modo + secuencia) se sortea una sola vez. Para que reiniciar no lo camb
 
 ### Señales
 - `puzzle_solved` / `puzzle_failed` emitidas por el puzzle.
-- Al resolver, `_mark_solved()` sube por el arbol hasta el `RoomLayout` y llama `complete_puzzle()` (abre puertas). Ver la mecanica de bloqueo de puertas en `data_and_save.md`.
+- Al resolver, el puzzle sube por el arbol hasta el `RoomLayout` y llama `complete_puzzle()`, que detiene oleadas, reabre puertas (`_open_active_doors()`) y emite `room_cleared(self)`.
+- El administrador del nivel (`start_cave.gd`) escucha `room_cleared` para el contador de puzzles y el desbloqueo del Boss (ver abajo). Mecanica de puertas/salas en `data_and_save.md`.
+
+---
+
+## Progreso de Puzzles y Desbloqueo del Jefe
+La sala del Boss arranca **bloqueada** (sus puertas hacia vecinos se cierran como muro en `configure_room()` via `_lock_boss_room()`) y solo se abre tras resolver todos los puzzles del nivel. Lo orquesta `start_cave.gd`:
+
+1. Tras generar el mapa, `_init_puzzle_progress()` recorre las salas: cuenta las de tipo Puzzle (`total_puzzles`), guarda la del Boss (`_boss_room`) y conecta `room_cleared` de cada puzzle a `_on_room_cleared`.
+2. Localiza el contador en la UI del jugador (`UI/PuzzlesCounter`), lo hace visible y muestra `"Puzzles: X / Y"`.
+3. `_on_room_cleared(room)` cuenta cada sala **una sola vez** (set `_cleared_rooms` por `instance_id`, evita dobles si el jugador reinteractua), refresca el contador y, al llegar a `total_puzzles`, llama `_unlock_boss_room()`.
+4. `_unlock_boss_room()` llama `_boss_room.unlock_boss_room()` (reabre sus puertas) y avisa al jugador con `show_message()`. Si no hay puzzles en el nivel, el Boss queda accesible de entrada.
+5. `_exit_tree()` vuelve a ocultar el contador al salir del dungeon (protegido con `is_instance_valid`).
 
 ---
 
@@ -205,12 +244,11 @@ El proyecto prioriza el desacoplamiento y la mantenibilidad. Se aplican las sigu
 ### 4. Patron de Componentes (`Entities/Scripts/Character/`)
 - `hitbox.gd` (`HitBox`) / `hurtbox.gd` (`HurtBox`): Gestion de areas de colision ofensivas/defensivas, deteccion por capas de fisica, emision de signals de impacto.
 - `input_component.gd` (`InputComponent`): Clase base. Expone `input_motion`, `input_attack`, `input_heal`, `input_action`, `input_dodge`, `input_reset`, `last_direction`. Subclases: `PlayerInputComponent` (lee de `Input`; `input_action` = accion `"enter"`, `input_reset` = accion `"reset"`; actualiza `last_direction`), `EnemyInputComponent` (calcula `input_motion` desde la posicion del jugador).
-- `velocity_component.gd` (`VelocityComponent`): ademas del movimiento, tras `move_and_slide()` el del **jugador** empuja las `Box` con las que choca avanzando hacia ellas (`_push_colliding_boxes`), llamando a `box.push(dir * speed)`. Los enemigos no empujan cajas.
+- `velocity_component.gd` (`VelocityComponent`): Movimiento con soporte de avoidance (NavigationAgent2D) y separacion entre enemigos (`SeparationArea`). Ademas, tras `move_and_slide()` el del **jugador** empuja las `Box` con las que choca avanzando hacia ellas (`_push_colliding_boxes`), llamando a `box.push(dir * speed)`. Los enemigos no empujan cajas.
 - `navigation_component.gd` (`NavigationComponent`): Interfaz con `NavigationAgent2D`. Timer periodico actualiza `target_position` hacia el jugador. Metodo `get_next_direction(target)` devuelve vector normalizado.
 - `health_component.gd` (`HealthComponent`): HP con clamp, signals `health_changed`, `damaged`, `muerto`. Gestiona pociones (`flasks`), muerte y game over.
-- `velocity_component.gd` (`VelocityComponent`): Movimiento con soporte de avoidance (NavigationAgent2D) y separacion entre enemigos (`SeparationArea`).
 
 > **Guia para IA:** Al modificar logica de entidad, verifica primero si la responsabilidad corresponde a un componente existente. Si no existe, crea uno nuevo en `Entities/Scripts/Character/Nodes/` o `Classes/`, manteniendo la interfaz limpia y basada en signals. Para nuevos objetos interactuables, seguir el patron de `chest.gd` / `cave_door.gd`. Para animaciones direccionales del Player, seguir el patron de spritesheets 4-filas y registrar en `_crear_animaciones_direccionales()`. Para feedback en pantalla, usar `player.show_message()` en lugar de instanciar Labels en el mundo.
 
 ---
-*Ultima actualizacion: Sistema de puzzles (PuzzleStackQueue: modos Pila/Cola, placas de presion solo-cajas, cajas empujables, persistencia de reto entre reinicios), sistema de mensajes en pantalla (MessageUI/show_message), input de reset. Animaciones direccionales (play_directional_anim), estado Dodge, refactorizacion de FSM.*
+*Ultima actualizacion: Multiples puzzles (PuzzleStackQueue Pila/Cola, PuzzleArithmetic residuo modular con interruptores y penalizacion controlada, PuzzleLaser compuertas), convenciones comunes (begin/halt, fijar reto, lock al resolver). Fogata de descanso (Campfire) e InteractionArea reutilizable. Sistema de progreso de puzzles y desbloqueo del Boss (room_cleared, UI/PuzzlesCounter). Objetos de mundo en Stages/Elements/. Sistema de mensajes (MessageUI/show_message), input de reset, animaciones direccionales (play_directional_anim), estado Dodge, FSM.*
