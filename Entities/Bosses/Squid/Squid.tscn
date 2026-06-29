@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://dw4pd3arllfot" path="res://Entities/Bosses/Squid/States/squid_attack.gd" id="15_atk"]
 [ext_resource type="Script" uid="uid://d3gyh1k4amsvm" path="res://Entities/Bosses/Squid/States/squid_attack_loop.gd" id="16_loop"]
 [ext_resource type="Script" uid="uid://pexwjsuf3dbk" path="res://Entities/Bosses/Squid/States/squid_shoot.gd" id="17_shoot"]
+[ext_resource type="Script" uid="uid://dhanqe8me04y3" path="res://Entities/Bosses/Squid/States/squid_stun.gd" id="18_stun"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2fnxf"]
 atlas = ExtResource("6_vqasv")
@@ -286,6 +287,9 @@ script = ExtResource("17_shoot")
 
 [node name="Hit" type="Node" parent="StateMachine" unique_id=905000028]
 script = ExtResource("12_hit")
+
+[node name="Stun" type="Node" parent="StateMachine" unique_id=575056305]
+script = ExtResource("18_stun")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=504970712]
 script = ExtResource("3_njm3t")

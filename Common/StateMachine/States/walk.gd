@@ -41,6 +41,9 @@ func state_process(delta: float) -> void:
 	if input_component.input_dodge:
 		transitioned.emit(self, "Dodge", {})
 
+	if input_component.input_parry:
+		transitioned.emit(self, "Parry", {})
+
 	adjust_hitbox_position()
 
 func _on_damaged():

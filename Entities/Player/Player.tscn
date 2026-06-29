@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="7_tepoh"]
 [ext_resource type="Script" uid="uid://osrelb7hxxqf" path="res://Entities/Scripts/Character/Nodes/player_input_component.gd" id="8_l2mqv"]
 [ext_resource type="Script" uid="uid://dqhgujueriu8i" path="res://Common/StateMachine/States/dodge.gd" id="9_gbla8"]
+[ext_resource type="Script" path="res://Common/StateMachine/States/parry.gd" id="40_parry"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Nodes/health_component.gd" id="12_laxle"]
 [ext_resource type="Texture2D" uid="uid://diwi2c76c3wb" path="res://Entities/Player/Art/Attack.png" id="12_o8vwu"]
 [ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Character/Nodes/velocity_component.gd" id="14_3wmxr"]
@@ -667,6 +668,9 @@ height = 22.0
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l2mqv"]
 size = Vector2(21, 22)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_parry"]
+radius = 24.0
+
 [node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
 collision_layer = 64
 collision_mask = 17
@@ -703,6 +707,9 @@ script = ExtResource("7_tepoh")
 
 [node name="Dodge" type="Node" parent="StateMachine" unique_id=1717315949]
 script = ExtResource("9_gbla8")
+
+[node name="Parry" type="Node" parent="StateMachine"]
+script = ExtResource("40_parry")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
 script = ExtResource("12_laxle")
@@ -785,6 +792,15 @@ metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="HitBox" unique_id=1778411011]
 shape = SubResource("RectangleShape2D_l2mqv")
 disabled = true
+
+[node name="ParryArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea"]
+shape = SubResource("CircleShape2D_parry")
 
 [node name="Audios" type="Node" parent="." unique_id=774208424]
 

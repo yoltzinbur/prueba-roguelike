@@ -11,6 +11,8 @@ extends HitBox
 @export var lifetime: float = 3.0
 
 var direction: Vector2 = Vector2.ZERO
+# True una vez reflejado por el jugador (parry): cambia de bando y de color.
+var reflected: bool = false
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
@@ -22,6 +24,24 @@ func _ready() -> void:
 func launch(dir: Vector2) -> void:
 	direction = dir.normalized()
 
+## Refleja el proyectil de vuelta hacia `new_target` (el jefe) y lo pasa al bando del jugador.
+## Devuelve true sólo la primera vez (idempotente), para que el parry cuente un reflejo válido.
+func reflect(new_target: Node2D) -> bool:
+	if reflected:
+		return false
+	reflected = true
+	if is_instance_valid(new_target):
+		direction = (new_target.global_position - global_position).normalized()
+	else:
+		direction = -direction
+	# Capa 6 (hitbox_player): la HurtBox del jefe (mask 32) lo detecta; la del jugador no.
+	collision_layer = 32
+	# Se libera al chocar con entorno (1) o con el cuerpo del jefe (enemies, 8), ya no con el jugador.
+	collision_mask = 9
+	speed *= 1.25
+	queue_redraw()
+	return true
+
 func _physics_process(delta: float) -> void:
 	global_position += direction * speed * delta
 
@@ -29,4 +49,4 @@ func _on_body_entered(_body: Node2D) -> void:
 	queue_free()
 
 func _draw() -> void:
-	draw_circle(Vector2.ZERO, radius, Color.RED)
+	draw_circle(Vector2.ZERO, radius, Color.CYAN if reflected else Color.RED)

@@ -21,6 +21,9 @@ func state_process(delta: float) -> void:
 		if input_component.input_dodge:
 			transitioned.emit(self, "Dodge", {})
 
+		if input_component.input_parry:
+			transitioned.emit(self, "Parry", {})
+
 func _on_damaged():
 	transitioned.emit(self, "Hit", {})
 

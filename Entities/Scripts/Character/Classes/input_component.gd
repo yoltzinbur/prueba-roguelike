@@ -7,4 +7,5 @@ var input_attack = false
 var input_heal = false
 var input_dodge = false
 var input_reset = false
+var input_parry = false
 var last_direction: String = "down"
