@@ -4,6 +4,9 @@
 [ext_resource type="PackedScene" uid="uid://dou4sn8syimqo" path="res://Stages/Layouts/Cave/Environment/CaveDoor1.tscn" id="2_y22tv"]
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="3_y22tv"]
 [ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Entities/Chest/Chest.tscn" id="4_o28un"]
+[ext_resource type="PackedScene" uid="uid://dgb250m1o7qj0" path="res://Utilities/UI/PauseMenu/pause_menu.tscn" id="5_36r0b"]
+[ext_resource type="PackedScene" uid="uid://cw68qufp67ifn" path="res://Utilities/Tutorial/tutorialUI.tscn" id="5_kby27"]
+[ext_resource type="AudioStream" uid="uid://bskirhk36qoh5" path="res://Stages/Musica/RPG Never Go Full Bard.mp3" id="7_l3fpd"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -432,3 +435,15 @@ position = Vector2(240, 128)
 
 [node name="Chest" parent="." unique_id=1920526650 instance=ExtResource("4_o28un")]
 position = Vector2(160, 112)
+
+[node name="TutorialUI" parent="." unique_id=847453696 instance=ExtResource("5_kby27")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=28271327]
+process_mode = 3
+layer = 100
+
+[node name="PauseMenu" parent="CanvasLayer" unique_id=1520165393 instance=ExtResource("5_36r0b")]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1882042858]
+stream = ExtResource("7_l3fpd")
+autoplay = true

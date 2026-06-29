@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://o1j6hhh1clsy" path="res://Stages/Elements/Receptor.tscn" id="3_sf5l0"]
 [ext_resource type="PackedScene" uid="uid://ij5vke6le04n" path="res://Stages/Elements/Laser.tscn" id="5_tv4th"]
 [ext_resource type="PackedScene" uid="uid://cbf0uwquaeyrj" path="res://Stages/Elements/Box.tscn" id="6_grspr"]
+[ext_resource type="AudioStream" uid="uid://0c8nx55rdstf" path="res://Stages/Musica/Win sound.wav" id="7_tv4th"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -435,3 +436,6 @@ position = Vector2(48, -23)
 position = Vector2(224, 32)
 
 [node name="Triggers" type="Node2D" parent="." unique_id=67619935]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=322207565]
+stream = ExtResource("7_tv4th")

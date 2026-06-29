@@ -5,7 +5,6 @@
 [ext_resource type="Script" uid="uid://bae2d1lj77wom" path="res://Common/StateMachine/States/heal.gd" id="6_3wmxr"]
 [ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="7_tepoh"]
 [ext_resource type="Script" uid="uid://osrelb7hxxqf" path="res://Entities/Scripts/Character/Nodes/player_input_component.gd" id="8_l2mqv"]
-[ext_resource type="Texture2D" uid="uid://e2m2xfq5detb" path="res://Entities/Player/Art/flask_big_red.png" id="8_l8a7u"]
 [ext_resource type="Script" uid="uid://dqhgujueriu8i" path="res://Common/StateMachine/States/dodge.gd" id="9_gbla8"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Nodes/health_component.gd" id="12_laxle"]
 [ext_resource type="Texture2D" uid="uid://diwi2c76c3wb" path="res://Entities/Player/Art/Attack.png" id="12_o8vwu"]
@@ -13,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dg6ufkl0v34dc" path="res://Entities/Player/Art/Hit.png" id="14_rvtm2"]
 [ext_resource type="Texture2D" uid="uid://bwy03wlus63wr" path="res://Entities/Player/Art/Roll.png" id="14_tepoh"]
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Common/StateMachine/state_machine.gd" id="15_5qe47"]
+[ext_resource type="Texture2D" uid="uid://lmm6jys0mges" path="res://Entities/Player/Art/heal.png" id="15_ewrch"]
 [ext_resource type="Texture2D" uid="uid://ccd8d2ldsqsb5" path="res://Entities/Player/Art/Idle.png" id="15_h03de"]
 [ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Common/StateMachine/States/idle.gd" id="16_ayo8t"]
 [ext_resource type="Texture2D" uid="uid://uu34ouwbj2l2" path="res://Entities/Player/Art/Walk.png" id="16_mgqku"]
@@ -24,8 +24,9 @@
 [ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="24_80tt4"]
 [ext_resource type="AudioStream" uid="uid://bx2o053cufkgb" path="res://Entities/Player/Audio/01._damage_grunt_male.wav" id="24_mgqku"]
 [ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="25_tepoh"]
+[ext_resource type="AudioStream" uid="uid://culr64mcob65m" path="res://Entities/Player/Audio/pasosAudio.mp3" id="26_ewrch"]
 [ext_resource type="PackedScene" uid="uid://ci5gw771vp0c0" path="res://Utilities/UI/CoinsCounter/CoinsCounter.tscn" id="27_h03de"]
-[ext_resource type="AudioStream" uid="uid://doscpw4dgofdc" path="res://Entities/Player/Audio/footstep09.ogg" id="28_e8qxc"]
+[ext_resource type="AudioStream" uid="uid://d17diy5xwqntj" path="res://Entities/Player/Audio/heal.mp3" id="29_e8qxc"]
 [ext_resource type="AudioStream" uid="uid://di1vuqbbcfujj" path="res://Entities/Player/Audio/knifeSlice.ogg" id="29_rvtm2"]
 [ext_resource type="Script" uid="uid://me8fgaw8qowh" path="res://Entities/Player/player.gd" id="31_plyr"]
 
@@ -156,6 +157,14 @@ region = Rect2(32, 48, 32, 24)
 [sub_resource type="AtlasTexture" id="AtlasTexture_ceo14"]
 atlas = ExtResource("14_tepoh")
 region = Rect2(32, 72, 32, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yt5vh"]
+atlas = ExtResource("15_ewrch")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jfyv5"]
+atlas = ExtResource("15_ewrch")
+region = Rect2(0, 32, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yae1s"]
 atlas = ExtResource("14_rvtm2")
@@ -457,9 +466,12 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("8_l8a7u")
+"texture": SubResource("AtlasTexture_yt5vh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jfyv5")
 }],
-"loop": true,
+"loop": false,
 "name": &"heal",
 "speed": 10.0
 }, {
@@ -710,7 +722,9 @@ metadata/_custom_type_script = "uid://do423eahufemx"
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1931187168]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_inc0x")
-animation = &"dodge_left"
+animation = &"heal"
+frame = 1
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=3118235]
 visible = false
@@ -774,9 +788,9 @@ disabled = true
 [node name="Audios" type="Node" parent="." unique_id=774208424]
 
 [node name="Walk" type="AudioStreamPlayer" parent="Audios" unique_id=1061975298]
-stream = ExtResource("28_e8qxc")
-volume_db = -25.0
-pitch_scale = 0.5
+stream = ExtResource("26_ewrch")
+volume_db = -28.09
+parameters/looping = true
 
 [node name="Attack" type="AudioStreamPlayer" parent="Audios" unique_id=280483411]
 stream = ExtResource("29_rvtm2")
@@ -784,5 +798,8 @@ volume_db = -25.0
 
 [node name="Damage" type="AudioStreamPlayer" parent="Audios" unique_id=442858049]
 stream = ExtResource("24_mgqku")
+
+[node name="Heal" type="AudioStreamPlayer" parent="Audios" unique_id=469429396]
+stream = ExtResource("29_e8qxc")
 
 [connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]

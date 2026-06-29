@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_s804e"]
 [ext_resource type="PackedScene" uid="uid://b05wrwft053ic" path="res://Stages/Elements/Interrupter.tscn" id="3_hn7nq"]
 [ext_resource type="PackedScene" uid="uid://b1y0de6mb1cqi" path="res://Utilities/UI/MessageUI/Message.tscn" id="4_x7a50"]
+[ext_resource type="AudioStream" uid="uid://0c8nx55rdstf" path="res://Stages/Musica/Win sound.wav" id="5_sbfph"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -405,3 +406,6 @@ offset_left = 208.0
 offset_top = 16.0
 offset_right = 288.0
 offset_bottom = 48.0
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1552385027]
+stream = ExtResource("5_sbfph")

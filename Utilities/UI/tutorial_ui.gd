@@ -11,7 +11,6 @@ func _ready():
 	
 	# Ahora SÍ pedimos el primer mensaje, porque ya estamos listos
 	TutorialManager.iniciar_tutorial()
-	print("iniciar_tutorial() llamado")
 
 func _on_mostrar_mensaje(texto: String):
 	label.text = texto

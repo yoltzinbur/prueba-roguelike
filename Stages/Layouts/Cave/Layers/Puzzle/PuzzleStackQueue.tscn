@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_e1s8b"]
 [ext_resource type="PackedScene" uid="uid://vfvpbrmhwgu3" path="res://Stages/Elements/PressurePlate.tscn" id="3_ucwk1"]
 [ext_resource type="PackedScene" uid="uid://cbf0uwquaeyrj" path="res://Stages/Elements/Box.tscn" id="4_fhn13"]
+[ext_resource type="AudioStream" uid="uid://0c8nx55rdstf" path="res://Stages/Musica/Win sound.wav" id="5_fhn13"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -400,3 +401,6 @@ position = Vector2(432, 32)
 position = Vector2(400, 224)
 
 [node name="Triggers" type="Node2D" parent="." unique_id=1000789031]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=379329230]
+stream = ExtResource("5_fhn13")

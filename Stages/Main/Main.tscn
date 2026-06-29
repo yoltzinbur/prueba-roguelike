@@ -2,38 +2,18 @@
 
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="2_iqhkp"]
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="3_1hnq0"]
-[ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="3_iqhkp"]
-[ext_resource type="Script" uid="uid://c21nal448snfe" path="res://Entities/Enemies/spawn_category.gd" id="4_bnjes"]
 [ext_resource type="PackedScene" uid="uid://cw68qufp67ifn" path="res://Utilities/Tutorial/tutorialUI.tscn" id="5_3dw71"]
 [ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Entities/Chest/Chest.tscn" id="5_e0a8v"]
 [ext_resource type="AudioStream" uid="uid://cd8m66jogfoll" path="res://Assets/Audio/syncraftianofficial-syncraftian-dungeon-355360.mp3" id="5_j2w0w"]
 [ext_resource type="PackedScene" uid="uid://dgb250m1o7qj0" path="res://Utilities/UI/PauseMenu/pause_menu.tscn" id="6_065o1"]
-[ext_resource type="PackedScene" uid="uid://dxsdn1h8tjr60" path="res://Entities/Enemies/Goblin/Goblin.tscn" id="8_065o1"]
-
-[sub_resource type="Resource" id="Resource_e7w74"]
-script = ExtResource("4_bnjes")
-name = "Pequeñitos"
-quantity = 5
-scenes = Array[PackedScene]([ExtResource("8_065o1")])
-metadata/_custom_type_script = "uid://c21nal448snfe"
-
-[sub_resource type="Resource" id="Resource_pvo2f"]
-script = ExtResource("4_bnjes")
-name = "Mediano"
-scenes = Array[PackedScene]([ExtResource("3_iqhkp")])
-metadata/_custom_type_script = "uid://c21nal448snfe"
 
 [node name="Main" type="Node2D" unique_id=1509926915]
 
 [node name="Chest" parent="." unique_id=1920526650 instance=ExtResource("5_e0a8v")]
 position = Vector2(240, -408)
 
-[node name="Enemies" type="Node2D" parent="." unique_id=1798617882 node_paths=PackedStringArray("node_floor_layer", "player")]
+[node name="Enemies" type="Node2D" parent="." unique_id=1798617882]
 script = ExtResource("3_1hnq0")
-spawn_categories = Array[ExtResource("4_bnjes")]([SubResource("Resource_e7w74"), SubResource("Resource_pvo2f")])
-max_enemies = 8
-node_floor_layer = NodePath("")
-player = NodePath("../Player")
 
 [node name="Player" parent="." unique_id=1539473209 instance=ExtResource("2_iqhkp")]
 position = Vector2(238, 225)

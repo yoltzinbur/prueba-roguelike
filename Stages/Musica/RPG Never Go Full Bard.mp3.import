@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bskirhk36qoh5"
+path="res://.godot/imported/RPG Never Go Full Bard.mp3-6201b895f67dec9c4183e3ffb1c20e7b.mp3str"
+
+[deps]
+
+source_file="res://Stages/Musica/RPG Never Go Full Bard.mp3"
+dest_files=["res://.godot/imported/RPG Never Go Full Bard.mp3-6201b895f67dec9c4183e3ffb1c20e7b.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -8,7 +8,7 @@ func _process(delta: float) -> void:
 
 func _on_start_pressed() -> void:
 	$Control/AudioStart.play()
-	get_tree().change_scene_to_file("res://Stages/Main/Main.tscn")
+	get_tree().change_scene_to_file("res://Stages/Main/MainBueno.tscn")
 
 func _on_options_pressed() -> void:
 	$Control/AudioStart.play()

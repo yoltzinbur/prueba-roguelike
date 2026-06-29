@@ -163,6 +163,7 @@ func _mark_solved() -> void:
 	if _is_solved:
 		return
 	_is_solved = true
+	$AudioStreamPlayer.play()
 	_show_message("PUZZLE RESUELTO")
 	puzzle_solved.emit()
 	# Avisa a la sala para que reabra las puertas, si el puzzle vive dentro de una.

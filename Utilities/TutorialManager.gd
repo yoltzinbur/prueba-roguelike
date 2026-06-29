@@ -5,8 +5,11 @@ signal ocultar_mensaje()
 
 var pasos_completados = {
 	"moverse": false,
+	"rodar":false,
 	"atacar": false,
-	"curar": false
+	"curar": false,
+	"interactuar":false,
+	"entrar":false
 }
 
 func registrar_accion(accion: String):
@@ -17,10 +20,16 @@ func registrar_accion(accion: String):
 func verificar_siguiente_paso():
 	if not pasos_completados["moverse"]:
 		mostrar_mensaje.emit("Usa las flechas o WASD para moverte")
+	elif not pasos_completados["rodar"]:
+		mostrar_mensaje.emit("Usa la barra de espacio para rodar")
 	elif not pasos_completados["atacar"]:
-		mostrar_mensaje.emit("¡Bien! Ahora presiona ATTACK para atacar")
+		mostrar_mensaje.emit("¡Bien! Ahora presiona clic izquierdo para atacar")
 	elif not pasos_completados["curar"]:
 		mostrar_mensaje.emit("Genial. Ahora presiona R para curarte")
+	elif not pasos_completados["interactuar"]:
+		mostrar_mensaje.emit("Presiona la tecla E para abrir el cofre")
+	elif not pasos_completados["entrar"]:
+		mostrar_mensaje.emit("Genial, dirigete a la entrada de la cueva y presiona Enter")
 	else:
 		ocultar_mensaje.emit()
 
