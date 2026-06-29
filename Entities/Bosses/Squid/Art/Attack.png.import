@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://t4xrqk8kbquo"
-path="res://.godot/imported/Idle.png-8064d7ce01ad09504d3bc43a9def9932.ctex"
+uid="uid://bvpsflv23j544"
+path="res://.godot/imported/Attack.png-05fbd4407ea79d7e5994f7f3e1b6a53a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Entities/Bosses/Samurai/Art/Idle.png"
-dest_files=["res://.godot/imported/Idle.png-8064d7ce01ad09504d3bc43a9def9932.ctex"]
+source_file="res://Entities/Bosses/Squid/Art/Attack.png"
+dest_files=["res://.godot/imported/Attack.png-05fbd4407ea79d7e5994f7f3e1b6a53a.ctex"]
 
 [params]
 

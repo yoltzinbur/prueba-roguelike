@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://7k6va0av6a6f"]
+
+[ext_resource type="Texture2D" uid="uid://cu0bretdlom3w" path="res://Stages/Art/Ninja/TilesetHouse.png" id="1_tjtki"]
+[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_f8hph"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c5vc1"]
+size = Vector2(64, 56)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_h7seh"]
+radius = 68.35203
+
+[node name="BossPortal" type="StaticBody2D" unique_id=290800310]
+y_sort_enabled = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1051307105]
+position = Vector2(23, 34)
+scale = Vector2(2, 2)
+texture = ExtResource("1_tjtki")
+region_enabled = true
+region_rect = Rect2(16, 304, 32, 48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=748560219]
+position = Vector2(23, 54)
+shape = SubResource("RectangleShape2D_c5vc1")
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=609643240]
+collision_layer = 128
+collision_mask = 64
+script = ExtResource("2_f8hph")
+metadata/_custom_type_script = "uid://ci008ej21i8t4"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=571105204]
+position = Vector2(23, 34)
+shape = SubResource("CircleShape2D_h7seh")
