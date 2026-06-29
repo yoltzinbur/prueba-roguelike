@@ -56,6 +56,8 @@ var is_puzzled_cleared: bool = false
 # puertas. _boss_active evita reactivar; _bosses_alive vigila las muertes.
 var _boss_active: bool = false
 var _bosses_alive: Array[Node] = []
+# Nombre del jefe para el aviso de victoria; se captura al activarlo.
+var _boss_name: String = "El jefe"
 
 # --- Combate por encierro (salas Easy/Medium/Hard) ---------------------------
 # Las salas de combate ya NO spawnean al instanciarse: igual que los puzzles,
@@ -109,6 +111,10 @@ func configure_room(type: String, north: bool, south: bool, east: bool, west: bo
 	_configure_door(doors.get_node_or_null("SouthDoor"), south)
 	_configure_door(doors.get_node_or_null("EastDoor"), east)
 	_configure_door(doors.get_node_or_null("WestDoor"), west)
+	# Las puertas de avance del Jefe (CaveDoor2) viven en la plantilla, así que están
+	# presentes en TODAS las salas. Se ocultan siempre y solo se revelan al vencer al
+	# jefe en la sala del Jefe (ver _reveal_boss_doors).
+	_hide_boss_doors()
 
 	match type:
 		ROOM_TYPE_EASY:
@@ -191,6 +197,7 @@ func _activate_boss() -> void:
 	# jefe (sale del árbol), se reabren las puertas para no dejar al jugador encerrado.
 	_boss_active = true
 	_bosses_alive = bosses.duplicate()
+	_boss_name = String(bosses[0].name)
 	_close_all_active_doors()
 	for boss in bosses:
 		boss.activate()
@@ -203,6 +210,56 @@ func _on_boss_exited(boss: Node) -> void:
 	if _bosses_alive.is_empty():
 		_boss_active = false
 		_open_active_doors()
+		_reveal_boss_doors()
+
+## Tras la muerte del jefe, revela UNA sola puerta de avance y anuncia la victoria. Se
+## prefiere la del norte: si ese lado no es la entrada (no conecta con un vecino) se abre
+## ahí; si el norte ES la entrada, se abre la del sur. Así el camino desbloqueado nunca
+## se superpone con la entrada por la que llegó el jugador.
+func _reveal_boss_doors() -> void:
+	var door_name := "BossNorthDoor" if not _n_active else "BossSouthDoor"
+	if _reveal_boss_door(doors.get_node_or_null(door_name)):
+		_announce_boss_defeated()
+
+## Oculta y desactiva ambas puertas de avance del Jefe. Se aplica a TODAS las salas al
+## configurarlas, porque las CaveDoor2 viven en la plantilla pero solo deben usarse en
+## la sala del Jefe una vez vencido.
+func _hide_boss_doors() -> void:
+	_set_boss_door_enabled(doors.get_node_or_null("BossNorthDoor"), false)
+	_set_boss_door_enabled(doors.get_node_or_null("BossSouthDoor"), false)
+
+## Activa una puerta de avance del Jefe (visible, con colisión e interacción). Devuelve
+## true si la puerta existía y se reveló.
+func _reveal_boss_door(door: Node2D) -> bool:
+	if door == null:
+		return false
+	_set_boss_door_enabled(door, true)
+	return true
+
+## Activa o desactiva por completo una puerta de avance del Jefe (CaveDoor2):
+## visibilidad, su CollisionPolygon2D y el monitoreo de su InteractionArea.
+func _set_boss_door_enabled(door: Node2D, enabled: bool) -> void:
+	if door == null:
+		return
+	door.visible = enabled
+	var collision := door.get_node_or_null("CollisionPolygon2D") as CollisionPolygon2D
+	if collision:
+		collision.set_deferred("disabled", not enabled)
+	var interaction := door.get_node_or_null("InteractionArea") as Area2D
+	if interaction:
+		interaction.set_deferred("monitoring", enabled)
+		interaction.set_deferred("monitorable", enabled)
+
+## Muestra en la UI del jugador el aviso de que el jefe cayó. La caja de mensaje es de
+## una sola línea, así que el texto se parte en DOS avisos consecutivos: primero la
+## derrota (3 s) y luego el desbloqueo del camino, en vez de un único texto que no cabe.
+func _announce_boss_defeated() -> void:
+	var player := get_tree().get_first_node_in_group("Player")
+	if player == null or not player.has_method("show_message"):
+		return
+	player.show_message("%s derrotado." % _boss_name, 3.0)
+	await get_tree().create_timer(3.0).timeout
+	player.show_message("Se ha desbloqueado el camino...")
 
 ## Búsqueda en profundidad de los nodos del grupo "Boss" dentro del subárbol de `node`.
 func _find_bosses(node: Node) -> Array[Node]:

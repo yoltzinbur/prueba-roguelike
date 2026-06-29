@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://11h4ytvgexnd"
-path="res://.godot/imported/chest_full_open_anim_f2.png-586395e4ddc732cdf4e3877b9c785daf.ctex"
+uid="uid://b3que04ci2mvk"
+path="res://.godot/imported/TilesetWater.png-45139c8f0152febac6ad5a1f80f65a49.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Entities/Chest/Art/chest_full_open_anim_f2.png"
-dest_files=["res://.godot/imported/chest_full_open_anim_f2.png-586395e4ddc732cdf4e3877b9c785daf.ctex"]
+source_file="res://Stages/Art/Ninja/TilesetWater.png"
+dest_files=["res://.godot/imported/TilesetWater.png-45139c8f0152febac6ad5a1f80f65a49.ctex"]
 
 [params]
 

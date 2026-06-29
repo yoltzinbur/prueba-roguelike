@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://1o5num6yk05"]
 
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_upf4a"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="1_upf4a"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)

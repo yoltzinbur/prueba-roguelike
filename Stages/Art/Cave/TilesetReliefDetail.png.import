@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chbj6jl8umjcj"
-path="res://.godot/imported/tileset_camp.png-af79461a0044d42f5825c37c8ddaf784.ctex"
+uid="uid://r65jv0h02lfs"
+path="res://.godot/imported/TilesetReliefDetail.png-70868b6c75eefc0ff815c517bee71d7e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Stages/Art/tileset_camp.png"
-dest_files=["res://.godot/imported/tileset_camp.png-af79461a0044d42f5825c37c8ddaf784.ctex"]
+source_file="res://Stages/Art/Cave/TilesetReliefDetail.png"
+dest_files=["res://.godot/imported/TilesetReliefDetail.png-70868b6c75eefc0ff815c517bee71d7e.ctex"]
 
 [params]
 

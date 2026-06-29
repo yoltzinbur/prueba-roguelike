@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://q6jryekx14r3"
-path="res://.godot/imported/chest_full_open_anim_f1.png-12aa2a45cd4269df0df35f01a492b840.ctex"
+uid="uid://kf7tlocy7mjk"
+path="res://.godot/imported/16x16_Jerom_CC-BY-SA-3.0.png-a1c5309d666e91bed8afa4e7fe7adaa3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Entities/Chest/Art/chest_full_open_anim_f1.png"
-dest_files=["res://.godot/imported/chest_full_open_anim_f1.png-12aa2a45cd4269df0df35f01a492b840.ctex"]
+source_file="res://Stages/Art/Varios/16x16_Jerom_CC-BY-SA-3.0.png"
+dest_files=["res://.godot/imported/16x16_Jerom_CC-BY-SA-3.0.png-a1c5309d666e91bed8afa4e7fe7adaa3.ctex"]
 
 [params]
 

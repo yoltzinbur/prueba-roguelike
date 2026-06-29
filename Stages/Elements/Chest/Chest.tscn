@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://n82eoufcpx44"]
 
-[ext_resource type="Script" uid="uid://b7u8ofe7jdik8" path="res://Entities/Chest/chest.gd" id="1_5ow74"]
-[ext_resource type="Texture2D" uid="uid://b63fq7u0f4u3l" path="res://Entities/Chest/Art/chest_full_open_anim_f0.png" id="2_4ptj7"]
-[ext_resource type="Texture2D" uid="uid://q6jryekx14r3" path="res://Entities/Chest/Art/chest_full_open_anim_f1.png" id="3_x8ih0"]
-[ext_resource type="Texture2D" uid="uid://11h4ytvgexnd" path="res://Entities/Chest/Art/chest_full_open_anim_f2.png" id="4_vw88s"]
-[ext_resource type="AudioStream" uid="uid://clhy1dr81l0rp" path="res://Entities/Chest/Audio/doorOpen_2.ogg" id="5_4ptj7"]
+[ext_resource type="Script" uid="uid://b7u8ofe7jdik8" path="res://Stages/Elements/Chest/chest.gd" id="1_5ow74"]
+[ext_resource type="Texture2D" uid="uid://b63fq7u0f4u3l" path="res://Stages/Elements/Chest/Art/chest_full_open_anim_f0.png" id="2_4ptj7"]
+[ext_resource type="Texture2D" uid="uid://q6jryekx14r3" path="res://Stages/Elements/Chest/Art/chest_full_open_anim_f1.png" id="3_x8ih0"]
+[ext_resource type="Texture2D" uid="uid://11h4ytvgexnd" path="res://Stages/Elements/Chest/Art/chest_full_open_anim_f2.png" id="4_vw88s"]
+[ext_resource type="AudioStream" uid="uid://clhy1dr81l0rp" path="res://Stages/Elements/Chest/Audio/doorOpen_2.ogg" id="5_4ptj7"]
 [ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="5_x8ih0"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_cl07o"]

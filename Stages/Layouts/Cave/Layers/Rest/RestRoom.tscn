@@ -1,8 +1,8 @@
 [gd_scene format=4 uid="uid://d4ley6l1h7oee"]
 
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_8hlkp"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="1_8hlkp"]
 [ext_resource type="PackedScene" uid="uid://daloergtnmyc2" path="res://Stages/Elements/Campfire.tscn" id="2_csjkb"]
-[ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Entities/Chest/Chest.tscn" id="3_snk3u"]
+[ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Stages/Elements/Chest/Chest.tscn" id="3_snk3u"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)

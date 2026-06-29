@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://daloergtnmyc2"]
 
-[ext_resource type="Texture2D" uid="uid://chbj6jl8umjcj" path="res://Stages/Art/tileset_camp.png" id="1_uqwym"]
+[ext_resource type="Texture2D" uid="uid://chbj6jl8umjcj" path="res://Stages/Art/Ninja/tileset_camp.png" id="1_uqwym"]
 [ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_0ohxj"]
 [ext_resource type="Script" uid="uid://d2di07m1so4mb" path="res://Stages/Elements/campfire.gd" id="3_cmpfr"]
 

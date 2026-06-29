@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1algrlwq04d4"
-path="res://.godot/imported/cave.png-5131d393f7511bd9994498b8d3d6b7bf.ctex"
+uid="uid://cu0bretdlom3w"
+path="res://.godot/imported/TilesetHouse.png-7074fb5200799a9a02e04aab8340c82c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Stages/Art/cave.png"
-dest_files=["res://.godot/imported/cave.png-5131d393f7511bd9994498b8d3d6b7bf.ctex"]
+source_file="res://Stages/Art/Ninja/TilesetHouse.png"
+dest_files=["res://.godot/imported/TilesetHouse.png-7074fb5200799a9a02e04aab8340c82c.ctex"]
 
 [params]
 

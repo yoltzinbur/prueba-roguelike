@@ -6,30 +6,29 @@
 load_path = "res://.godot/imported/cave.png-5131d393f7511bd9994498b8d3d6b7bf.ctex"
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x0hbm"]
-radius = 10.000002
-height = 32.0
+radius = 13.000002
+height = 38.0
 
 [node name="CaveDoor2" type="StaticBody2D" unique_id=1757479827]
 script = ExtResource("1_x0hbm")
-metadata/_edit_group_ = true
+metadata/_edit_vertical_guides_ = [48.0]
+metadata/_edit_horizontal_guides_ = [40.0]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1393791196]
-position = Vector2(24.000002, 24)
-scale = Vector2(0.9999998, 0.99999964)
+position = Vector2(24.000002, 28)
+scale = Vector2(0.9999998, 1)
 texture = SubResource("CompressedTexture2D_eiv63")
 region_enabled = true
 region_rect = Rect2(48, 56, 48, 56)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1173658607]
-visible = false
 position = Vector2(0, -4)
 polygon = PackedVector2Array(0, 40, 7, 40, 7, 33, 17, 20, 35, 20, 42, 31, 42, 40, 48, 40, 48, 4, 0, 4)
 
 [node name="InteractionArea" type="Area2D" parent="." unique_id=1810504323]
-visible = false
 collision_mask = 72
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=199469378]
-position = Vector2(26, 26)
+position = Vector2(25, 29)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_x0hbm")

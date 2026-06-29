@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://x6f1dngpyde6"]
 
 [ext_resource type="Script" uid="uid://cj7tt2yaax68o" path="res://Stages/Layouts/Cave/layout_1.gd" id="1_5x7ud"]
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_w34kc"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="2_w34kc"]
 [ext_resource type="Script" uid="uid://c21nal448snfe" path="res://Entities/Enemies/spawn_category.gd" id="3_65yas"]
 [ext_resource type="PackedScene" uid="uid://cp272m3pwpwat" path="res://Stages/Layouts/Cave/Environment/CaveWall.tscn" id="3_w34kc"]
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Common/StateMachine/state_machine.gd" id="4_eyjty"]
@@ -32,6 +32,7 @@
 [ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="21_hol30"]
 [ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="22_gb22r"]
 [ext_resource type="Script" uid="uid://chsj2udmaply6" path="res://Entities/Scripts/Character/Classes/navigation_component.gd" id="23_fse4n"]
+[ext_resource type="PackedScene" uid="uid://flno0vimiwv4" path="res://Stages/Layouts/Cave/Environment/CaveDoor2.tscn" id="32_ftxgm"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_p4l53"]
 animations = [{
@@ -518,6 +519,13 @@ rotation = 3.1415927
 [node name="WestDoor" parent="Doors" unique_id=20791848 instance=ExtResource("3_w34kc")]
 position = Vector2(-48, 176)
 rotation = 4.712389
+
+[node name="BossNorthDoor" parent="Doors" unique_id=1757479827 instance=ExtResource("32_ftxgm")]
+position = Vector2(224, -40)
+
+[node name="BossSouthDoor" parent="Doors" unique_id=1541504191 instance=ExtResource("32_ftxgm")]
+position = Vector2(272, 312)
+rotation = -3.1415925
 
 [node name="Content" type="Node2D" parent="." unique_id=25439851]
 

@@ -9,5 +9,8 @@ extends RefCounted
 ## Escena de entrada al nivel procedural (se carga por ruta vía GameManager.load_scene).
 const STARTCAVE := "res://Stages/Layouts/Cave/CaveMain/StartCave.tscn"
 
-## Plantilla de sala que instancia el generador.
-const ROOM_LAYOUT: PackedScene = preload("res://Stages/Layouts/Cave/Layout1.tscn")
+## Plantilla de sala que instancia el generador (ruta; se carga con load() donde se use).
+## NO usar preload aquí: arrastraría todo el árbol de la sala —incluidas las puertas con
+## script (cave_door.gd)— dentro de la compilación de GameScenes, y como cave_door.gd
+## referencia a GameScenes se forma una dependencia circular que rompe la carga.
+const ROOM_LAYOUT := "res://Stages/Layouts/Cave/Layout1.tscn"

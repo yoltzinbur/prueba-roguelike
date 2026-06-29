@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b63fq7u0f4u3l"
-path="res://.godot/imported/chest_full_open_anim_f0.png-f7715ed49b47a8324175e82398449f57.ctex"
+uid="uid://bykxm87l7v3h1"
+path="res://.godot/imported/TilesetFloorDetail.png-5af0df216967ee13bc3b45436e9e43ec.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Entities/Chest/Art/chest_full_open_anim_f0.png"
-dest_files=["res://.godot/imported/chest_full_open_anim_f0.png-f7715ed49b47a8324175e82398449f57.ctex"]
+source_file="res://Stages/Art/Ninja/TilesetFloorDetail.png"
+dest_files=["res://.godot/imported/TilesetFloorDetail.png-5af0df216967ee13bc3b45436e9e43ec.ctex"]
 
 [params]
 

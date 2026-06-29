@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://kf7tlocy7mjk"
-path="res://.godot/imported/16x16_Jerom_CC-BY-SA-3.0.png-fa6505a85ca1fb260cb9d2153fce6a86.ctex"
+uid="uid://chbj6jl8umjcj"
+path="res://.godot/imported/tileset_camp.png-cd9ed1b32c1648c100d8c82a84deea7f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Stages/Art/16x16_Jerom_CC-BY-SA-3.0.png"
-dest_files=["res://.godot/imported/16x16_Jerom_CC-BY-SA-3.0.png-fa6505a85ca1fb260cb9d2153fce6a86.ctex"]
+source_file="res://Stages/Art/Ninja/tileset_camp.png"
+dest_files=["res://.godot/imported/tileset_camp.png-cd9ed1b32c1648c100d8c82a84deea7f.ctex"]
 
 [params]
 

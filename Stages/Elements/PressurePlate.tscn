@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://vfvpbrmhwgu3"]
 
-[ext_resource type="Texture2D" uid="uid://banegaxxxbowd" path="res://Stages/Art/TilesetDungeon.png" id="1_0d3ts"]
+[ext_resource type="Texture2D" uid="uid://banegaxxxbowd" path="res://Stages/Art/Cave/TilesetDungeon.png" id="1_0d3ts"]
 [ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_8xy6y"]
 [ext_resource type="Script" uid="uid://rll2icxg6rnq" path="res://Stages/Elements/pressure_plate.gd" id="3_6551a"]
 

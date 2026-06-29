@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cbrjtd7s756ac"
-path="res://.godot/imported/cave_wall.png-a0e4b1b433441b72cd35086266a3447a.ctex"
+uid="uid://cffdyf6qs7kia"
+path="res://.godot/imported/TilesetLogic.png-f1dc6482a6aa18a7a7b21dfc9337e3e1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Stages/Art/cave_wall.png"
-dest_files=["res://.godot/imported/cave_wall.png-a0e4b1b433441b72cd35086266a3447a.ctex"]
+source_file="res://Stages/Art/Varios/TilesetLogic.png"
+dest_files=["res://.godot/imported/TilesetLogic.png-f1dc6482a6aa18a7a7b21dfc9337e3e1.ctex"]
 
 [params]
 

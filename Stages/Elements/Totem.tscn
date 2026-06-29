@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbky0ospmu4s3"]
 
-[ext_resource type="Texture2D" uid="uid://cu0bretdlom3w" path="res://Stages/Art/TilesetHouse.png" id="1_ktio6"]
+[ext_resource type="Texture2D" uid="uid://cu0bretdlom3w" path="res://Stages/Art/Ninja/TilesetHouse.png" id="1_ktio6"]
 
 [node name="Totem" type="StaticBody2D" unique_id=934829289]
 collision_mask = 72

@@ -3,7 +3,9 @@ extends Node2D
 ## Reparte salas (Layout1.tscn) sobre una cuadrícula orgánica y las conecta
 ## entre sí según vecindad. Es la escena principal del juego (CaveMain.tscn).
 
-const ROOM_SCENE: PackedScene = GameScenes.ROOM_LAYOUT
+# Se carga por ruta (no preload) para evitar la dependencia circular descrita en
+# GameScenes.ROOM_LAYOUT; load() cachea el recurso igual que preload.
+var room_scene: PackedScene = load(GameScenes.ROOM_LAYOUT)
 
 # Tipos de sala (en inglés, según la convención del proyecto).
 const ROOM_START := "Start"
@@ -170,7 +172,7 @@ func _build_room_bag() -> Array[String]:
 ## Instancia una sala por coordenada y la configura según sus vecinos.
 func build_rooms() -> void:
 	for coord in map:
-		var room := ROOM_SCENE.instantiate() as RoomLayout
+		var room := room_scene.instantiate() as RoomLayout
 		room.position = Vector2(coord) * room_size
 		rooms_container.add_child(room)
 

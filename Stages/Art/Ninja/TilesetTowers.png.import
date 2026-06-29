@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cffdyf6qs7kia"
-path="res://.godot/imported/TilesetLogic.png-3e2cbcf780b1fc9ad08a9c4f375be406.ctex"
+uid="uid://c6yheclqaj677"
+path="res://.godot/imported/TilesetTowers.png-233efc5fb73c19b2c41abd5d7f822a0c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Stages/Art/TilesetLogic.png"
-dest_files=["res://.godot/imported/TilesetLogic.png-3e2cbcf780b1fc9ad08a9c4f375be406.ctex"]
+source_file="res://Stages/Art/Ninja/TilesetTowers.png"
+dest_files=["res://.godot/imported/TilesetTowers.png-233efc5fb73c19b2c41abd5d7f822a0c.ctex"]
 
 [params]
 

@@ -1,9 +1,9 @@
 [gd_scene format=4 uid="uid://ct65si7mxaosr"]
 
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_gr1qe"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="1_gr1qe"]
 [ext_resource type="PackedScene" uid="uid://dou4sn8syimqo" path="res://Stages/Layouts/Cave/Environment/CaveDoor1.tscn" id="2_y22tv"]
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="3_y22tv"]
-[ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Entities/Chest/Chest.tscn" id="4_o28un"]
+[ext_resource type="PackedScene" uid="uid://n82eoufcpx44" path="res://Stages/Elements/Chest/Chest.tscn" id="4_o28un"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)

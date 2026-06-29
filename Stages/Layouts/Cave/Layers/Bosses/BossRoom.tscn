@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://e0v7mgt5nibd"]
 
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="1_1ulfh"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="1_1ulfh"]
 [ext_resource type="PackedScene" uid="uid://cpit4en5nr1u7" path="res://Entities/Bosses/Samurai/Samurai.tscn" id="2_gib0v"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
