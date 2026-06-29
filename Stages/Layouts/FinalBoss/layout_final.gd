@@ -60,6 +60,9 @@ func _on_boss_defeated() -> void:
 	if _victory:
 		return
 	_victory = true
+	# Persistir la derrota del jefe: el BossPortal desaparece y la arena ya no es accesible.
+	SaveManager.boss_defeated = true
+	SaveManager.save_game()
 	var player := get_tree().get_first_node_in_group("Player")
 	if player != null and player.has_method("show_message"):
 		player.show_message("¡Has derrotado al Tótem!", 3.0)

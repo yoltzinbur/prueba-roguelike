@@ -11,7 +11,7 @@ var _message_token: int = 0
 ## Reflejos necesarios para provocar un Guard Break.
 const REFLECTS_PER_BREAK := 3
 ## Multiplicador de daño del golpe crítico durante la ventana de Guard Break.
-@export var crit_multiplier: int = 5
+@export var crit_multiplier: int = 3
 ## Duración del aturdimiento del jefe y de la ventana de crítico, en segundos.
 @export var guard_break_seconds: float = 3.0
 

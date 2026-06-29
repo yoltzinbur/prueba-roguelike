@@ -26,6 +26,8 @@ var _next_forest_spawn: String = ""
 ## IDs de cofres ya abiertos (persistentes). Sólo los cofres con save_id se guardan.
 ## Sin tipar a propósito: ConfigFile devuelve Array genérico al cargar.
 var opened_chests: Array = []
+## True una vez derrotado el jefe final: el BossPortal desaparece y la arena ya no es accesible.
+var boss_defeated: bool = false
 
 func _ready() -> void:
 	if has_save():
@@ -43,6 +45,7 @@ func save_game() -> void:
 	config.set_value(SECTION, "save_location", save_location)
 	config.set_value(SECTION, "forest_spawn", forest_spawn)
 	config.set_value(SECTION, "opened_chests", opened_chests)
+	config.set_value(SECTION, "boss_defeated", boss_defeated)
 	config.set_value(SECTION, "coins", GameManager.coins)
 	var error := config.save(SAVE_PATH)
 	if error != OK:
@@ -62,6 +65,7 @@ func load_game() -> void:
 	save_location = config.get_value(SECTION, "save_location", save_location)
 	forest_spawn = config.get_value(SECTION, "forest_spawn", forest_spawn)
 	opened_chests = config.get_value(SECTION, "opened_chests", opened_chests)
+	boss_defeated = config.get_value(SECTION, "boss_defeated", boss_defeated)
 	GameManager.coins = config.get_value(SECTION, "coins", GameManager.coins)
 
 ## Muestra el aviso de guardado en la UI del jugador, si hay uno en escena. Se llama
