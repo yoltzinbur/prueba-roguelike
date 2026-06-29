@@ -45,9 +45,14 @@ func _spawn_marker(spawn_key: String) -> Marker2D:
 		_:
 			return $Sorting/SpawnLevel1
 
-## Muestra el BossPortal sólo si se completaron todos los niveles y el jefe final aún no ha
-## sido derrotado (una vez vencido, el tótem desaparece y la arena no vuelve a ser accesible).
+## Configura el BossPortal según el progreso: si el jefe ya fue derrotado, queda "purificado"
+## (oculto, sólo avisa al pasar); si se completaron los niveles y sigue vivo, queda activo;
+## en otro caso, bloqueado.
 func _update_boss_portal() -> void:
-	if boss_portal and boss_portal.has_method("set_active"):
-		var unlocked := SaveManager.levels_completed >= SaveManager.TOTAL_LEVELS and not SaveManager.boss_defeated
-		boss_portal.set_active(unlocked)
+	if boss_portal == null:
+		return
+	if SaveManager.boss_defeated:
+		if boss_portal.has_method("set_purified"):
+			boss_portal.set_purified()
+	elif boss_portal.has_method("set_active"):
+		boss_portal.set_active(SaveManager.levels_completed >= SaveManager.TOTAL_LEVELS)

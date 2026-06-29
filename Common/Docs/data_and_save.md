@@ -7,30 +7,40 @@ Los niveles se componen mediante escenas modulares, tilemaps optimizados y un ge
 
 | Escena | Ruta | Proposito |
 |--------|------|-----------|
-| `MainBueno.tscn` | `Stages/Main/MainBueno.tscn` | **Escena raiz del juego** (configurada en project.godot). Area de inicio con tilemap, jugador y puerta de entrada a la cueva. |
-| `Main.tscn` | `Stages/Main/Main.tscn` | Layout legacy del dungeon (pre-procedural). Contiene tilemap estatico, spawner de enemigos, cofre, tutorial y menu de pausa. |
-| `StartCave.tscn` | `Stages/Layouts/Cave/CaveMain/StartCave.tscn` | Punto de entrada al sistema procedural. Ejecuta `start_cave.gd` para generar el mapa de cueva. |
+| `Boot.tscn` | `Stages/Boot/Boot.tscn` | **Escena raiz del juego** (debe configurarse en project.godot -> `run/main_scene`). Router de arranque: `boot.gd` lee el guardado y entra al bosque (`save_location == "forest"`) o a `MainBueno`. |
+| `MainBueno.tscn` | `Stages/Main/MainBueno.tscn` | Area de inicio (ya no es la escena raiz; la abre Boot cuando no hay partida en el bosque). Tilemap, jugador y `CaveDoor1` que entra a la cueva. |
+| `Main.tscn` | `Stages/Main/Main.tscn` | Layout legacy del dungeon (pre-procedural). Ignorado por el flujo actual. |
+| `StartCave.tscn` | `Stages/Layouts/Cave/CaveMain/StartCave.tscn` | Nivel jugable (cueva procedural). `start_cave.gd` genera el mapa. Al vencer al jefe, la puerta de avance lleva al bosque. |
+| `ForestMain.tscn` | `Stages/Layouts/Forest/ForestMain.tscn` | **Hub central.** `forest_main.gd` instancia al jugador bajo `Sorting`, guarda la partida, gestiona `SavePoint`, `Chest` persistente, la entrada `Cave` (siguiente nivel) y el `BossPortal`. |
+| `LayoutFinal.tscn` | `Stages/Layouts/FinalBoss/LayoutFinal.tscn` | Arena del jefe final (Squid). `layout_final.gd` instancia al jugador, activa al jefe y, al vencerlo, marca `boss_defeated` y vuelve al bosque. |
 
 ### Flujo de Juego Completo
 ```
-MainBueno.tscn (area de inicio)
-       |
-       | Jugador interactua con CaveDoor1
-       v
-GameManager.load_scene("res://Stages/Layouts/Cave/StartCave.tscn")
-       |
-       v
-StartCave.tscn -> start_cave.gd._ready()
-       |
-       |-- seed(generation_seed) o randomize()
-       |-- generate_map()  -> Drunkard's Walk + asignacion de tipos
-       +-- build_rooms()   -> Instancia N copias de Layout1.tscn
-              |
-              +-- Cada Layout1: configure_room(tipo, N, S, E, W)
-                     |-- Abre/cierra puertas segun vecinos
-                     |-- Inyecta pools de enemigos al spawner
-                     +-- Instancia contenido interior (combat/puzzle/rest)
+Boot.tscn (boot.gd) -> lee SaveManager
+   |-- save_location == "forest" -> ForestMain.tscn
+   +-- si no                     -> MainBueno.tscn
+                                        |
+                                        | CaveDoor1.interact()
+                                        v
+                              StartCave.tscn (nivel)  -> start_cave.gd genera la cueva
+                                        |
+                                        | vencer al jefe -> CaveDoor2 (completes_level)
+                                        v
+                              SaveManager.complete_level()
+                                 (levels_completed +=1, max_flasks +=1, guarda) -> ForestMain
+                                        |
+   ForestMain.tscn (hub) <-------------- llegada: instancia Player bajo Sorting + guarda
+      |-- SavePoint            -> cura + guarda (fija el punto de reanudacion)
+      |-- Cave (entrada)       -> niveles<2: StartCave (siguiente nivel); niveles>=2: "puzzle completado"
+      +-- BossPortal (Totem)   -> aparece con todos los niveles hechos -> LayoutFinal
+                                        |
+                              LayoutFinal.tscn -> al vencer al Squid: boss_defeated=true,
+                                                  guarda y vuelve al bosque (el Totem queda purificado)
 ```
+
+Detalle de la generacion de la cueva (`StartCave -> start_cave.gd._ready()`): `seed/randomize`,
+`generate_map()` (Drunkard's Walk + tipos), `build_rooms()` (N copias de `Layout1.tscn`, cada una
+`configure_room(tipo, N,S,E,W)` -> puertas segun vecinos + pools + contenido interior).
 
 ---
 
@@ -218,11 +228,13 @@ El spawner no sabe que tipo de sala es. `RoomLayout` lo invoca segun el tipo:
 1. El jugador entra al `InteractionArea` del `Area2D`.
 2. `body_entered` -> asigna `body.current_interactable = self`.
 3. El jugador presiona la accion de interaccion.
-4. `interact()` -> `open()` -> emite `door_interacted` y llama `GameManager.load_scene("res://.../StartCave.tscn")`.
+4. `interact()` -> `open()` -> emite `door_interacted`. Si `@export completes_level` es `true`,
+   llama `SaveManager.complete_level()` (cuenta el nivel, sube frascos, va al bosque); si no,
+   `GameManager.load_scene(GameScenes.STARTCAVE)`.
 
 **Escenas de puertas:**
-- `CaveDoor1.tscn`: Puerta de entrada a la cueva procedural (en MainBueno.tscn). Carga `res://Stages/Layouts/Cave/CaveMain/StartCave.tscn`.
-- `CaveDoor2.tscn`: Puerta interna de cueva (disponible para uso futuro).
+- `CaveDoor1.tscn`: Puerta de entrada a la cueva (en MainBueno.tscn). `completes_level = false`: carga `StartCave`.
+- `CaveDoor2.tscn`: **Puerta de avance del Jefe.** `completes_level = true`: al vencer al jefe se revela y, al cruzarla, completa el nivel y lleva al bosque.
 - `CaveWall.tscn`: Muro visual usado como puerta cerrada en salas procedurales.
 
 ### Puertas Procedurales (dentro de Layout1)
@@ -237,25 +249,47 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 - **Uso:** Stats de enemigos (HP y velocidad en `@export` de `HealthComponent` y `VelocityComponent`), categorias de spawn, parametros de fisica.
 - **Ubicacion:** Configurados directamente en las escenas `.tscn` de cada entidad o como sub-recursos en las escenas de nivel.
 
-### 2. Datos Dinamicos y Persistencia
-- **Formato:** `ConfigFile` para ajustes del usuario, `JSON` o serializacion binaria para progreso.
-- **Ruta de Guardado:** `user://save_data/` (accesible via `OS.get_user_data_dir()`).
-- **Gestion:** `GameManager` centraliza el estado de monedas en runtime (signal `coins_updated`).
-- **Estructura JSON sugerida:**
-  ```json
-  {
-    "player": { "position": [x, y], "health": 100, "coins": 50 },
-    "flags": { "tutorial_completed": true, "boss_defeated": false },
-    "stage": "Cave",
-    "seed": 12345
-  }
-  ```
+### 2. Sistema de Guardado (`SaveManager`)
+Autoload `SaveManager` (`Utilities/save_manager.gd`) — fuente de verdad del progreso, persistido
+con `ConfigFile` en `user://savegame.cfg` (seccion `[game]`). **Debe registrarse como autoload
+DESPUES de `GameManager`** (lee/escribe `GameManager.coins`).
+
+**Estado persistido:**
+```
+max_flasks: int = 3        -- Frascos maximos (sube +1 por cada jefe de cueva vencido)
+levels_completed: int = 0  -- Niveles de cueva completados (0..TOTAL_LEVELS); TOTAL_LEVELS = 2
+save_location: String      -- "cave" (arranca en MainBueno) o "forest" (arranca en el bosque)
+forest_spawn: String       -- Punto de reanudacion en el bosque: "level1" | "savepoint"
+opened_chests: Array       -- save_id de los cofres ya abiertos (cofres con save_id)
+boss_defeated: bool        -- Jefe final derrotado: el BossPortal desaparece (purificado)
+coins: int                 -- Se lee/escribe desde GameManager.coins (no se duplica)
+```
+> `forest_spawn` transitorio: `complete_level()` del nivel 2 usa un `_next_forest_spawn = "level2"`
+> en memoria (NO persistido) para aparecer una vez frente a la cueva; el punto guardado real solo
+> lo cambia el SavePoint.
+
+**API principal:**
+- `save_game()` — vuelca todo al `ConfigFile`; tras guardar muestra "Partida guardada" en la UI
+  del jugador (`_announce_saved`). Se llama en cada guardado real.
+- `load_game()` / `has_save()` — `_ready()` carga si existe el archivo (deja `GameManager.coins`
+  listo antes de que arranque `Boot`).
+- `complete_level()` — al vencer al jefe de cueva: `levels_completed += 1` (cap `TOTAL_LEVELS`),
+  `max_flasks += 1`, `save_location = "forest"`, guarda y carga `ForestMain`.
+- `register_forest_arrival(player)` — al llegar al bosque: fija `save_location`, rellena frascos
+  (`apply_player_state`) y guarda.
+- `consume_forest_spawn()` — devuelve el marcador de aparicion (transitorio una vez, si no el
+  persistido). Lo usa `forest_main.gd`.
+- `is_chest_opened(id)` / `mark_chest_opened(id)` — estado de cofres persistentes
+  (`chest.gd` con `@export save_id`). `mark_chest_opened` **solo** marca en memoria; se persiste
+  en el proximo `save_game` real (asi no se guarda el cofre abierto sin las monedas que solto).
+
+**Puntos de guardado:** llegada al bosque, `SavePoint` (interactuar), abrir un cofre persistente
+(en el siguiente guardado), fin de nivel (`complete_level`) y derrota del jefe final.
 
 ### 3. Reglas de Serializacion
-- Nunca guardar referencias a nodos o escenas. Solo datos primitivos o estructuras convertibles.
-- Usar `var_to_str()` / `str_to_var()` para objetos complejos si es necesario, pero preferir JSON legible para depuracion.
-- Validar integridad del archivo al cargar (version de save, checksum basico).
-- Para reproducibilidad de mapas procedurales, guardar la `generation_seed` usada.
+- Nunca guardar referencias a nodos o escenas. Solo datos primitivos (lo que hace `SaveManager`).
+- El run de cueva NO se persiste (es procedural): si el jugador sale a mitad, reanuda en el bosque.
+- Validar el resultado de `ConfigFile.load()/save()` (codigo de error) antes de continuar.
 
 ---
 
@@ -272,4 +306,4 @@ Las 4 puertas de cada sala (NorthDoor, SouthDoor, EastDoor, WestDoor) **no** tra
 8. **Migracion:** Si cambia la estructura de datos, incluir logica de conversion hacia atras en `load_game()`.
 
 ---
-*Ultima actualizacion: Salas de combate por encierro (entras -> se cierran las puertas y aparecen los enemigos; al morir todos, se reabren; spawn diferido al entrar, ya no al instanciar; los enemigos aparecen sobre el piso navegable del layout de combate via _combat_floor(), descartando las celdas-obstaculo). Progreso de puzzles y desbloqueo del Boss (start_cave como administrador del nivel, room_cleared, UI/PuzzlesCounter, _lock/unlock_boss_room). Salas Rest con fogata (Campfire). Spawner con spawn_count (penalizacion controlada). Generador y entrada en Cave/CaveMain/, objetos de mundo en Stages/Elements/. room_type publico. Mecanica de salas de puzzle (bloqueo via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave.*
+*Ultima actualizacion: Sistema de guardado real (autoload SaveManager + ConfigFile en user://savegame.cfg: max_flasks, levels_completed, save_location, forest_spawn, opened_chests, boss_defeated, coins). Router de arranque (Stages/Boot/boot.gd como main_scene). Hub del bosque (ForestMain/forest_main.gd: spawn del jugador bajo Sorting, SavePoint, cofre persistente con save_id, entrada Cave al siguiente nivel, BossPortal/Totem). Jefe final Squid + arena LayoutFinal (layout_final.gd). Puerta de avance del Jefe (cave_door.completes_level -> complete_level). GameScenes: FORESTMAIN/MAINBUENO/FINALBOSS. (Lo previo:) Salas de combate por encierro (entras -> se cierran las puertas y aparecen los enemigos; al morir todos, se reabren; spawn diferido al entrar, ya no al instanciar; los enemigos aparecen sobre el piso navegable del layout de combate via _combat_floor(), descartando las celdas-obstaculo). Progreso de puzzles y desbloqueo del Boss (start_cave como administrador del nivel, room_cleared, UI/PuzzlesCounter, _lock/unlock_boss_room). Salas Rest con fogata (Campfire). Spawner con spawn_count (penalizacion controlada). Generador y entrada en Cave/CaveMain/, objetos de mundo en Stages/Elements/. room_type publico. Mecanica de salas de puzzle (bloqueo via RoomTrigger, complete_puzzle/reset_current_puzzle, persistencia del reto, señal puzzle_reset). Generacion procedural (Drunkard's Walk), plantilla RoomLayout, flujo MainBueno -> Cave.*

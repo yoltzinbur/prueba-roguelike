@@ -46,6 +46,13 @@ Los estados acceden a los componentes directamente como propiedades heredadas (e
 | `IdleAttack` | Si | Si | Ataque desde reposo |
 | `MoveAttack` | Si | No | Ataque con impulso en movimiento |
 | `Dodge` | Si | No | Esquive con invulnerabilidad temporal |
+| `Parry` | Si | No | Ventana corta que refleja proyectiles del jefe (ver seccion de combate) |
+
+> Jefes: el **Samurai** (cueva) usa `Idle/Chase/Attack/Charge/Hit`; el **Squid** (jefe final) usa
+> `Idle/Chase/Attack/AttackLoop/Shoot/Hit/Stun`. Sus estados extienden una base propia
+> (`SamuraiState` / `SquidState`) sobre `State`, orientan con rotacion del sprite (Samurai) o
+> `anim.flip_h` (Squid), y nacen inertes (`process_mode = DISABLED`) hasta que la sala/arena llama
+> `activate()`.
 
 ---
 
@@ -222,6 +229,39 @@ La sala del Boss arranca **bloqueada** (sus puertas hacia vecinos se cierran com
 
 ---
 
+## Jefe Final (Squid), Parry y Guard Break
+El jefe final vive en `Entities/Bosses/Squid/` y se pelea en la arena `LayoutFinal.tscn`
+(`layout_final.gd` instancia al jugador, activa al jefe al entrar y, al vencerlo, marca
+`SaveManager.boss_defeated`, muestra la victoria y vuelve al bosque).
+
+### Ataques del Squid (`squid_chase.gd` decide segun distancia y cooldowns)
+- **Attack** (`squid_attack.gd`): melee corto; activa/desactiva el `HitBox` con `disabled`.
+- **AttackLoop** (`squid_attack_loop.gd`): persecucion agresiva con el HitBox "pulsado" cada
+  `hit_interval` para volver a aplicar dano por contacto.
+- **Shoot** (`squid_shoot.gd`): instancia `SquidProjectile.tscn` (un `HitBox` Area2D que se dibuja
+  con `_draw` y avanza en `_physics_process`) hacia el jugador.
+- **Stun** (`squid_stun.gd`): aturdimiento por Guard Break; queda quieto unos segundos y reproduce
+  la animacion `hit` en cada golpe recibido (indicador visual) sin interrumpirse.
+- Hay un `detection_delay` (~5 s) en `squid_idle.gd` y un `attack_cooldown` global en chase para dar
+  respiro al jugador.
+
+### Parry (estado `Parry` del jugador, `Common/StateMachine/States/parry.gd`)
+Con clic derecho (accion `parry`) el jugador entra a `Parry`: abre una ventana corta y habilita la
+`ParryArea` (un `Area2D` hijo del Player con `mask` en la capa 3). Cada frame refleja los
+**proyectiles** dentro de la zona (objetos con metodo `reflect()`); el melee del jefe se ignora.
+`squid_projectile.reflect(boss)` apunta el proyectil al jefe **sin fallar**, lo pasa a la capa 6
+(`hitbox_player`, asi la HurtBox del jefe lo detecta y la del jugador no) y lo pinta cian.
+
+### Guard Break + critico (en `player.gd`)
+`on_projectile_reflected()` cuenta reflejos; cada `REFLECTS_PER_BREAK` (3) llama
+`_trigger_guard_break()`: abre una ventana de `guard_break_seconds` (3 s), avisa "¡Guard Break!" y
+aturde al jefe (`boss.stun()`, que fuerza el estado `Stun` via `StateMachine.change_state`). Durante
+la ventana, `consume_crit_multiplier()` devuelve `crit_multiplier` (×3) una vez: los estados de
+ataque (`idle_attack.gd`/`move_attack.gd`) multiplican el `damage` del `HitBox` para ese golpe y lo
+restauran al salir. Todo protegido con `has_method` para no afectar a otras entidades.
+
+---
+
 ## Reglas de Comunicacion del Arbol de Nodos
 El proyecto prioriza el desacoplamiento y la mantenibilidad. Se aplican las siguientes directrices:
 
@@ -243,7 +283,7 @@ El proyecto prioriza el desacoplamiento y la mantenibilidad. Se aplican las sigu
 
 ### 4. Patron de Componentes (`Entities/Scripts/Character/`)
 - `hitbox.gd` (`HitBox`) / `hurtbox.gd` (`HurtBox`): Gestion de areas de colision ofensivas/defensivas, deteccion por capas de fisica, emision de signals de impacto.
-- `input_component.gd` (`InputComponent`): Clase base. Expone `input_motion`, `input_attack`, `input_heal`, `input_action`, `input_dodge`, `input_reset`, `last_direction`. Subclases: `PlayerInputComponent` (lee de `Input`; `input_action` = accion `"enter"`, `input_reset` = accion `"reset"`; actualiza `last_direction`), `EnemyInputComponent` (calcula `input_motion` desde la posicion del jugador).
+- `input_component.gd` (`InputComponent`): Clase base. Expone `input_motion`, `input_attack`, `input_heal`, `input_action`, `input_dodge`, `input_reset`, `input_parry`, `last_direction`. Subclases: `PlayerInputComponent` (lee de `Input`; `input_action` = accion `"enter"`, `input_reset` = `"reset"`, `input_parry` = `"parry"` = clic derecho; actualiza `last_direction`), `EnemyInputComponent` (calcula `input_motion` desde la posicion del jugador; nunca activa `input_parry`).
 - `velocity_component.gd` (`VelocityComponent`): Movimiento con soporte de avoidance (NavigationAgent2D) y separacion entre enemigos (`SeparationArea`). Ademas, tras `move_and_slide()` el del **jugador** empuja las `Box` con las que choca avanzando hacia ellas (`_push_colliding_boxes`), llamando a `box.push(dir * speed)`. Los enemigos no empujan cajas.
 - `navigation_component.gd` (`NavigationComponent`): Interfaz con `NavigationAgent2D`. Timer periodico actualiza `target_position` hacia el jugador. Metodo `get_next_direction(target)` devuelve vector normalizado.
 - `health_component.gd` (`HealthComponent`): HP con clamp, signals `health_changed`, `damaged`, `muerto`. Gestiona pociones (`flasks`), muerte y game over.
@@ -251,4 +291,4 @@ El proyecto prioriza el desacoplamiento y la mantenibilidad. Se aplican las sigu
 > **Guia para IA:** Al modificar logica de entidad, verifica primero si la responsabilidad corresponde a un componente existente. Si no existe, crea uno nuevo en `Entities/Scripts/Character/Nodes/` o `Classes/`, manteniendo la interfaz limpia y basada en signals. Para nuevos objetos interactuables, seguir el patron de `chest.gd` / `cave_door.gd`. Para animaciones direccionales del Player, seguir el patron de spritesheets 4-filas y registrar en `_crear_animaciones_direccionales()`. Para feedback en pantalla, usar `player.show_message()` en lugar de instanciar Labels en el mundo.
 
 ---
-*Ultima actualizacion: Multiples puzzles (PuzzleStackQueue Pila/Cola, PuzzleArithmetic residuo modular con interruptores y penalizacion controlada, PuzzleLaser compuertas), convenciones comunes (begin/halt, fijar reto, lock al resolver). Fogata de descanso (Campfire) e InteractionArea reutilizable. Sistema de progreso de puzzles y desbloqueo del Boss (room_cleared, UI/PuzzlesCounter). Objetos de mundo en Stages/Elements/. Sistema de mensajes (MessageUI/show_message), input de reset, animaciones direccionales (play_directional_anim), estado Dodge, FSM.*
+*Ultima actualizacion: Jefe final Squid (estados Idle/Chase/Attack/AttackLoop/Shoot/Hit/Stun, base SquidState, proyectil SquidProjectile, detection_delay + attack_cooldown). Parry (estado Parry + ParryArea, refleja proyectiles con reflect()). Guard Break (cada 3 reflejos aturde al jefe 3s + golpe critico x3 via consume_crit_multiplier en los estados de ataque). input_parry. (Lo previo:) Multiples puzzles (PuzzleStackQueue Pila/Cola, PuzzleArithmetic residuo modular con interruptores y penalizacion controlada, PuzzleLaser compuertas), convenciones comunes (begin/halt, fijar reto, lock al resolver). Fogata de descanso (Campfire) e InteractionArea reutilizable. Sistema de progreso de puzzles y desbloqueo del Boss (room_cleared, UI/PuzzlesCounter). Objetos de mundo en Stages/Elements/. Sistema de mensajes (MessageUI/show_message), input de reset, animaciones direccionales (play_directional_anim), estado Dodge, FSM.*
