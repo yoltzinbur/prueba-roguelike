@@ -736,6 +736,7 @@ position_smoothing_enabled = true
 position_smoothing_speed = 20.0
 
 [node name="UI" type="Node2D" parent="." unique_id=956681797]
+z_index = 100
 
 [node name="HealthBar" parent="UI" unique_id=942822893 instance=ExtResource("22_ayo8t")]
 offset_left = -156.0

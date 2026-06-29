@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://b43mqe76a4lfe"]
 
 [ext_resource type="Script" uid="uid://dvc53ch1p1fm1" path="res://Stages/Layouts/Cave/Layers/Puzzle/puzzle_arithmetic.gd" id="1_5t0ef"]
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_s804e"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="2_s804e"]
 [ext_resource type="PackedScene" uid="uid://b05wrwft053ic" path="res://Stages/Elements/Interrupter.tscn" id="3_hn7nq"]
 [ext_resource type="PackedScene" uid="uid://b1y0de6mb1cqi" path="res://Utilities/UI/MessageUI/Message.tscn" id="4_x7a50"]
 [ext_resource type="AudioStream" uid="uid://0c8nx55rdstf" path="res://Stages/Musica/Win sound.wav" id="5_sbfph"]

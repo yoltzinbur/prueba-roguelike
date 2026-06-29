@@ -105,6 +105,11 @@ func apply_fixed_mode(fixed_mode: int, fixed_objective: String) -> void:
 		_obj_group = parts[1]
 	_config_fixed = true
 
+## Código del modo (compuerta) para que la sala lo persista entre reinicios, sin
+## exponer el atributo interno. Equivale al `mode` público del puzzle de Pila/Cola.
+func get_mode() -> int:
+	return _current_mode
+
 ## Código compacto del objetivo para que la sala lo guarde ("TAPAR:AMBOS", etc.).
 func get_objective_code() -> String:
 	return "%s:%s" % [_obj_action, _obj_group]

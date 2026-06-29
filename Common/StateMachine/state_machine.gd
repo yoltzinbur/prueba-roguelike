@@ -34,7 +34,7 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if current_state:
 		current_state.state_physics_process(delta)
-		
+
 func change_state(state: State, new_state_name: String, args: Dictionary) -> void:
 	if state != current_state:
 		return

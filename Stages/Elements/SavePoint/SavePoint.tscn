@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://vp8wgio2qp0p"]
+
+[ext_resource type="Script" uid="uid://g82go8uo32ca" path="res://Stages/Elements/SavePoint/save_point.gd" id="1_0yw6e"]
+[ext_resource type="Texture2D" uid="uid://c6yheclqaj677" path="res://Stages/Art/Ninja/TilesetTowers.png" id="1_rkxhf"]
+[ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_0yw6e"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ml6vy"]
+radius = 25.019993
+
+[node name="SavePoint" type="StaticBody2D" unique_id=1001482801]
+z_index = 1
+script = ExtResource("1_0yw6e")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=509666798]
+texture = ExtResource("1_rkxhf")
+hframes = 2
+region_enabled = true
+region_rect = Rect2(288, 64, 64, 32)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=67060127]
+visible = false
+polygon = PackedVector2Array(-5, 16, 5, 16, 8, 13, 12, 13, 14, 10, 14, -2, 13, -3, 10, -3, 8, -9, 1, -16, -1, -16, -8, -9, -10, -3, -13, -3, -14, -2, -14, 10, -12, 13, -8, 13)
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=202757509]
+visible = false
+collision_layer = 128
+collision_mask = 64
+script = ExtResource("2_0yw6e")
+metadata/_custom_type_script = "uid://ci008ej21i8t4"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=834847987]
+shape = SubResource("CircleShape2D_ml6vy")

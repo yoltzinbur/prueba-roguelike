@@ -1,19 +1,21 @@
 [gd_scene format=4 uid="uid://x6f1dngpyde6"]
 
 [ext_resource type="Script" uid="uid://cj7tt2yaax68o" path="res://Stages/Layouts/Cave/layout_1.gd" id="1_5x7ud"]
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_w34kc"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="2_w34kc"]
 [ext_resource type="Script" uid="uid://c21nal448snfe" path="res://Entities/Enemies/spawn_category.gd" id="3_65yas"]
 [ext_resource type="PackedScene" uid="uid://cp272m3pwpwat" path="res://Stages/Layouts/Cave/Environment/CaveWall.tscn" id="3_w34kc"]
-[ext_resource type="PackedScene" uid="uid://c5005hcgimv6q" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleStackQueue.tscn" id="4_0w4ut"]
-[ext_resource type="PackedScene" uid="uid://b43mqe76a4lfe" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleArithmetic.tscn" id="4_arith"]
 [ext_resource type="Script" uid="uid://c7agcf6y1awqi" path="res://Common/StateMachine/state_machine.gd" id="4_eyjty"]
 [ext_resource type="PackedScene" uid="uid://d2nnpso6gfrsw" path="res://Stages/Layouts/Cave/Layers/Puzzle/PuzzleLaser.tscn" id="4_lasr0"]
 [ext_resource type="Script" uid="uid://b0dk75r1emvfb" path="res://Entities/Enemies/enemy_spawner.gd" id="4_w34kc"]
 [ext_resource type="Script" uid="uid://dponne3bqxqa0" path="res://Common/StateMachine/States/idle.gd" id="5_5ttq7"]
+[ext_resource type="PackedScene" uid="uid://e0v7mgt5nibd" path="res://Stages/Layouts/Cave/Layers/Bosses/BossRoom.tscn" id="5_boss0"]
 [ext_resource type="PackedScene" uid="uid://dcqv5i8h7jf77" path="res://Entities/Enemies/Chort/Chort.tscn" id="5_h3you"]
 [ext_resource type="PackedScene" uid="uid://d4ley6l1h7oee" path="res://Stages/Layouts/Cave/Layers/Rest/RestRoom.tscn" id="5_quhbb"]
+[ext_resource type="PackedScene" uid="uid://1o5num6yk05" path="res://Stages/Layouts/Cave/Layers/Combat/Combat.tscn" id="6_sag8h"]
 [ext_resource type="Script" uid="uid://b1yclm2oly8ny" path="res://Common/StateMachine/States/idle_attack.gd" id="6_xfp8t"]
 [ext_resource type="Script" uid="uid://c3fy77nvlndtn" path="res://Common/StateMachine/States/chase.gd" id="7_quhbb"]
+[ext_resource type="PackedScene" uid="uid://b2j70sqcyc5an" path="res://Stages/Layouts/Cave/Layers/Combat/Combat2.tscn" id="7_sg0bh"]
+[ext_resource type="PackedScene" uid="uid://c8gxrw6deo1u8" path="res://Stages/Layouts/Cave/Layers/Combat/Combat3.tscn" id="8_1xx8l"]
 [ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="8_gyikr"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Nodes/health_component.gd" id="9_hjogo"]
 [ext_resource type="Script" uid="uid://ctnnopoy830jx" path="res://Entities/Scripts/Character/Nodes/enemy_input_component.gd" id="10_ftxgm"]
@@ -30,6 +32,7 @@
 [ext_resource type="Script" uid="uid://c0tyncrgwvwai" path="res://Entities/Scripts/Character/Classes/hitbox.gd" id="21_hol30"]
 [ext_resource type="Script" uid="uid://du0cpqxnjs3fe" path="res://Entities/Scripts/Character/Classes/hurtbox.gd" id="22_gb22r"]
 [ext_resource type="Script" uid="uid://chsj2udmaply6" path="res://Entities/Scripts/Character/Classes/navigation_component.gd" id="23_fse4n"]
+[ext_resource type="PackedScene" uid="uid://flno0vimiwv4" path="res://Stages/Layouts/Cave/Environment/CaveDoor2.tscn" id="32_ftxgm"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_p4l53"]
 animations = [{
@@ -481,10 +484,12 @@ size = Vector2(464, 240)
 
 [node name="Layout" type="Node2D" unique_id=951008621]
 script = ExtResource("1_5x7ud")
-puzzle_list = Array[PackedScene]([ExtResource("4_arith"), ExtResource("4_lasr0"), ExtResource("4_0w4ut")])
+puzzle_list = Array[PackedScene]([ExtResource("4_lasr0")])
 rest_list = Array[PackedScene]([ExtResource("5_quhbb")])
+combat_list = Array[PackedScene]([ExtResource("6_sag8h"), ExtResource("7_sg0bh"), ExtResource("8_1xx8l")])
+boss_list = Array[PackedScene]([ExtResource("5_boss0")])
 easy_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_8beky")])
-medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm")])
+medium_combat = Array[ExtResource("3_65yas")]([SubResource("Resource_ybrtm"), SubResource("Resource_8beky")])
 metadata/_edit_horizontal_guides_ = [0.0, 320.0, 272.0]
 metadata/_edit_vertical_guides_ = [496.0, 0.0, 224.0, -272.0]
 
@@ -514,6 +519,13 @@ rotation = 3.1415927
 [node name="WestDoor" parent="Doors" unique_id=20791848 instance=ExtResource("3_w34kc")]
 position = Vector2(-48, 176)
 rotation = 4.712389
+
+[node name="BossNorthDoor" parent="Doors" unique_id=1757479827 instance=ExtResource("32_ftxgm")]
+position = Vector2(224, -40)
+
+[node name="BossSouthDoor" parent="Doors" unique_id=1541504191 instance=ExtResource("32_ftxgm")]
+position = Vector2(272, 312)
+rotation = -3.1415925
 
 [node name="Content" type="Node2D" parent="." unique_id=25439851]
 

@@ -8,21 +8,18 @@ extends Node2D
 @export var puzzle_list: Array[PackedScene]
 @export var rest_list: Array[PackedScene]
 @export var combat_list: Array[PackedScene] ## Layouts internos de combate.
+## Layer(s) de la zona del Jefe (BossRoom): traen su propio mapa con el jefe ya
+## colocado dentro. Se instancia uno al azar en las salas de tipo Boss.
+@export var boss_list: Array[PackedScene]
 
 # Pools de enemigos por dificultad, inyectadas al EnemySpawner.
 @export var easy_combat: Array[SpawnCategory]
 @export var medium_combat: Array[SpawnCategory]
 @export var hard_combat: Array[SpawnCategory]
-@export var boss_combat: Array[SpawnCategory]
 
 @onready var doors: Node2D = $Doors
 @onready var content: Node2D = $Content
 @onready var enemy_spawner: EnemySpawner = $EnemySpawner
-
-# Piso navegable propio de la sala: sobre sus celdas aparecen los enemigos de las
-# salas de combate. Se resuelve solo desde $Layers (no requiere asignación manual
-# en el inspector), priorizando la capa dedicada "navigation_floor".
-@onready var floor_layer: TileMapLayer = _find_floor_layer()
 
 ## Emitida tras reinstanciar el contenido del puzzle en reset_current_puzzle().
 ## La UI o los sistemas externos pueden reconectarse al nuevo contenido aquí.
@@ -53,6 +50,25 @@ var _puzzle_order: Array[String] = []
 # Estado de la sala para la mecánica de bloqueo de puertas.
 var room_type: String = ""
 var is_puzzled_cleared: bool = false
+
+# --- Pelea del Jefe (salas Boss) ---------------------------------------------
+# Al entrar el jugador se encierra y se activa al jefe; al morir todos, se reabren las
+# puertas. _boss_active evita reactivar; _bosses_alive vigila las muertes.
+var _boss_active: bool = false
+var _bosses_alive: Array[Node] = []
+# Nombre del jefe para el aviso de victoria; se captura al activarlo.
+var _boss_name: String = "El jefe"
+
+# --- Combate por encierro (salas Easy/Medium/Hard) ---------------------------
+# Las salas de combate ya NO spawnean al instanciarse: igual que los puzzles,
+# esperan a que el jugador entre. Al entrar se cierran las puertas y aparece la
+# oleada; cuando muere el último enemigo, las puertas se reabren.
+# Pool guardada en _setup_combat para spawnear al entrar el jugador.
+var _combat_pools: Array[SpawnCategory] = []
+# True mientras hay enemigos vivos de la oleada (puertas cerradas).
+var _combat_active: bool = false
+# True una vez limpiada la sala: no vuelve a encerrar al jugador si reentra.
+var is_combat_cleared: bool = false
 
 # La pista del orden solo se muestra la primera vez que se entra a la sala; ni
 # reentrar ni reiniciar el puzzle vuelven a mostrarla. Que sufra el jugador.
@@ -95,6 +111,10 @@ func configure_room(type: String, north: bool, south: bool, east: bool, west: bo
 	_configure_door(doors.get_node_or_null("SouthDoor"), south)
 	_configure_door(doors.get_node_or_null("EastDoor"), east)
 	_configure_door(doors.get_node_or_null("WestDoor"), west)
+	# Las puertas de avance del Jefe (CaveDoor2) viven en la plantilla, así que están
+	# presentes en TODAS las salas. Se ocultan siempre y solo se revelan al vencer al
+	# jefe en la sala del Jefe (ver _reveal_boss_doors).
+	_hide_boss_doors()
 
 	match type:
 		ROOM_TYPE_EASY:
@@ -104,8 +124,7 @@ func configure_room(type: String, north: bool, south: bool, east: bool, west: bo
 		ROOM_TYPE_HARD:
 			_setup_combat(hard_combat)
 		ROOM_TYPE_BOSS:
-			_setup_combat(boss_combat)
-			_lock_boss_room()
+			_setup_boss()
 		ROOM_TYPE_PUZZLE:
 			_setup_peaceful(puzzle_list)
 		ROOM_TYPE_REST:
@@ -148,15 +167,108 @@ func _configure_door(door: Node2D, has_neighbor: bool) -> void:
 		if collision:
 			collision.set_deferred("disabled", false)
 
-## Sala de combate: instancia (si existe) un layout interno de combate y pide al
-## spawner que aparezca la pool sobre el piso de la sala. El spawneo se difiere
-## para que el mapa de navegación ya esté listo cuando aparezcan los enemigos.
+## Sala de combate: instancia (si existe) un layout interno de combate y guarda la
+## pool de enemigos. A diferencia de antes, NO spawnea al instanciar la sala: los
+## enemigos aparecen cuando el jugador entra (_on_room_trigger_entered), igual que
+## los puzzles. Así la sala empieza vacía y se "activa" al cruzar la puerta.
 func _setup_combat(pools: Array[SpawnCategory]) -> void:
 	_spawn_interior(combat_list)
+	_combat_pools = pools
 
-	if enemy_spawner == null:
+## Sala del Jefe: instancia su layer dedicado (BossRoom), que trae su propio mapa y
+## al jefe ya colocado dentro, y bloquea las puertas hasta que el nivel desbloquee la
+## sala (al completar los puzzles). No usa el EnemySpawner: el jefe es parte de la
+## escena instanciada, no se spawnea desde una pool.
+func _setup_boss() -> void:
+	_spawn_interior(boss_list)
+	_lock_boss_room()
+
+## Despierta al/los jefe(s) de la sala. El jefe (Samurai) nace inerte (process_mode =
+## DISABLED) y solo procesa —persigue/ataca— tras esta llamada. Se busca en el subárbol de
+## Content (el layer del BossRoom trae al jefe ya colocado dentro) cualquier nodo del grupo
+## "Boss" con método activate(). Idempotente: el propio jefe ignora reactivaciones.
+func _activate_boss() -> void:
+	if content == null or _boss_active:
 		return
-	enemy_spawner.call_deferred("spawn_pool", pools, floor_layer)
+	var bosses := _find_bosses(content)
+	if bosses.is_empty():
+		return
+	# Encierra al jugador para convertir la sala en arena durante la pelea. Al morir el
+	# jefe (sale del árbol), se reabren las puertas para no dejar al jugador encerrado.
+	_boss_active = true
+	_bosses_alive = bosses.duplicate()
+	_boss_name = String(bosses[0].name)
+	_close_all_active_doors()
+	for boss in bosses:
+		boss.activate()
+		boss.tree_exited.connect(_on_boss_exited.bind(boss))
+
+## Disparada cuando un jefe abandona el árbol (muerte). Cuando ya no queda ninguno vivo,
+## reabre las puertas que conectan con vecinos.
+func _on_boss_exited(boss: Node) -> void:
+	_bosses_alive.erase(boss)
+	if _bosses_alive.is_empty():
+		_boss_active = false
+		_open_active_doors()
+		_reveal_boss_doors()
+
+## Tras la muerte del jefe, revela UNA sola puerta de avance y anuncia la victoria. Se
+## prefiere la del norte: si ese lado no es la entrada (no conecta con un vecino) se abre
+## ahí; si el norte ES la entrada, se abre la del sur. Así el camino desbloqueado nunca
+## se superpone con la entrada por la que llegó el jugador.
+func _reveal_boss_doors() -> void:
+	var door_name := "BossNorthDoor" if not _n_active else "BossSouthDoor"
+	if _reveal_boss_door(doors.get_node_or_null(door_name)):
+		_announce_boss_defeated()
+
+## Oculta y desactiva ambas puertas de avance del Jefe. Se aplica a TODAS las salas al
+## configurarlas, porque las CaveDoor2 viven en la plantilla pero solo deben usarse en
+## la sala del Jefe una vez vencido.
+func _hide_boss_doors() -> void:
+	_set_boss_door_enabled(doors.get_node_or_null("BossNorthDoor"), false)
+	_set_boss_door_enabled(doors.get_node_or_null("BossSouthDoor"), false)
+
+## Activa una puerta de avance del Jefe (visible, con colisión e interacción). Devuelve
+## true si la puerta existía y se reveló.
+func _reveal_boss_door(door: Node2D) -> bool:
+	if door == null:
+		return false
+	_set_boss_door_enabled(door, true)
+	return true
+
+## Activa o desactiva por completo una puerta de avance del Jefe (CaveDoor2):
+## visibilidad, su CollisionPolygon2D y el monitoreo de su InteractionArea.
+func _set_boss_door_enabled(door: Node2D, enabled: bool) -> void:
+	if door == null:
+		return
+	door.visible = enabled
+	var collision := door.get_node_or_null("CollisionPolygon2D") as CollisionPolygon2D
+	if collision:
+		collision.set_deferred("disabled", not enabled)
+	var interaction := door.get_node_or_null("InteractionArea") as Area2D
+	if interaction:
+		interaction.set_deferred("monitoring", enabled)
+		interaction.set_deferred("monitorable", enabled)
+
+## Muestra en la UI del jugador el aviso de que el jefe cayó. La caja de mensaje es de
+## una sola línea, así que el texto se parte en DOS avisos consecutivos: primero la
+## derrota (3 s) y luego el desbloqueo del camino, en vez de un único texto que no cabe.
+func _announce_boss_defeated() -> void:
+	var player := get_tree().get_first_node_in_group("Player")
+	if player == null or not player.has_method("show_message"):
+		return
+	player.show_message("%s derrotado." % _boss_name, 3.0)
+	await get_tree().create_timer(3.0).timeout
+	player.show_message("Se ha desbloqueado el camino...")
+
+## Búsqueda en profundidad de los nodos del grupo "Boss" dentro del subárbol de `node`.
+func _find_bosses(node: Node) -> Array[Node]:
+	var found: Array[Node] = []
+	for child in node.get_children():
+		if child.is_in_group("Boss") and child.has_method("activate"):
+			found.append(child)
+		found.append_array(_find_bosses(child))
+	return found
 
 ## Sala pacífica (Puzzle/Rest): instancia contenido. No invoca al spawner, así que
 ## la sala queda sin enemigos.
@@ -172,26 +284,8 @@ func _setup_peaceful(scene_list: Array[PackedScene]) -> void:
 		_puzzle_mode = instance.mode
 		_puzzle_order = instance.target_order.duplicate()
 	elif instance is PuzzleLaser:
-		_puzzle_mode = instance._current_mode
+		_puzzle_mode = instance.get_mode()
 		_puzzle_order = [instance.get_objective_code()]
-
-## Busca la capa de piso navegable de la sala bajo $Layers. Prioriza la capa
-## dedicada "navigation_floor" (separada del "floor" visual); si no existe, cae a
-## la primera TileMapLayer cuyo nombre contenga "floor" (escenas antiguas).
-## Devuelve null si no encuentra ninguna.
-func _find_floor_layer() -> TileMapLayer:
-	var layers := get_node_or_null("Layers")
-	if layers == null:
-		push_warning("[RoomLayout] No se encontró el nodo 'Layers' con el piso navegable.")
-		return null
-	var nav := layers.get_node_or_null("navigation_floor")
-	if nav is TileMapLayer:
-		return nav
-	for child in layers.get_children():
-		if child is TileMapLayer and "floor" in String(child.name).to_lower():
-			return child
-	push_warning("[RoomLayout] No se encontró una TileMapLayer de piso ('navigation_floor' o 'floor') bajo 'Layers'.")
-	return null
 
 ## Elige una escena al azar de la lista, la añade como hija de Content (lo que
 ## guarda también la PackedScene en _current_puzzle_scene) y devuelve la instancia
@@ -217,12 +311,106 @@ func _on_room_trigger_entered(body: Node2D) -> void:
 	# El jugador queda asociado a esta sala para que el input "reset" sepa cuál
 	# reiniciar (reset_current_puzzle() solo actúa sobre salas de tipo Puzzle).
 	body.current_room = self
+	# Sala del Jefe: al entrar el jugador, despierta al jefe (que nace inerte).
+	if room_type == ROOM_TYPE_BOSS:
+		_activate_boss()
+		return
+	# Salas de combate: encierran al jugador y disparan la oleada de enemigos.
+	if _is_combat_room():
+		_enter_combat_room()
+		return
 	if room_type != ROOM_TYPE_PUZZLE or is_puzzled_cleared:
 		return
 	_close_all_active_doors()
 	_show_puzzle_hint()
 	_start_enemy_waves()
 	_begin_timed_puzzles()
+
+## True si la sala es de combate por encierro (Easy/Medium/Hard).
+func _is_combat_room() -> bool:
+	return room_type == ROOM_TYPE_EASY or room_type == ROOM_TYPE_MEDIUM or room_type == ROOM_TYPE_HARD
+
+## Sala de combate: al entrar el jugador (si no la ha limpiado ya y no hay un combate
+## en curso) cierra las puertas y dispara la oleada. El spawneo se difiere porque
+## esto corre dentro del callback body_entered (física en pleno "flushing queries"),
+## donde no se puede crear el Area2D de los enemigos.
+func _enter_combat_room() -> void:
+	if is_combat_cleared or _combat_active:
+		return
+	_close_all_active_doors()
+	_start_combat.call_deferred()
+
+## Spawnea la oleada de combate y empieza a vigilar las muertes para reabrir las
+## puertas cuando no quede ningún enemigo. Spawnea sobre el piso del layout de
+## combate instanciado (no sobre todo el interior de la sala): así el spawner, con su
+## chequeo de navegabilidad por celda, descarta las celdas que ese layout dibujó como
+## obstáculo y solo coloca enemigos sobre el suelo transitable. Si no hay piso de
+## combate, pool vacía o spawn fallido, limpia la sala para no encerrar al jugador.
+func _start_combat() -> void:
+	var combat_floor := _combat_floor()
+	if enemy_spawner == null or combat_floor == null:
+		_clear_combat()
+		return
+	_combat_active = true
+	if not enemy_spawner.child_exiting_tree.is_connected(_on_combat_enemy_exiting):
+		enemy_spawner.child_exiting_tree.connect(_on_combat_enemy_exiting)
+	enemy_spawner.spawn_pool(_combat_pools, combat_floor)
+	# Sin enemigos vivos (pool vacía o spawn fallido): no encerrar al jugador.
+	if _alive_combat_enemies() == 0:
+		_clear_combat()
+
+## Devuelve la TileMapLayer del layout de combate instanciado en Content (la escena
+## raíz de Combat.tscn ES una TileMapLayer con suelo y obstáculos mezclados). El
+## spawner descarta por celda las que no tienen polígono de navegación (los
+## obstáculos), igual que con _puzzle_floor() en las salas de puzzle. Null si no hay.
+func _combat_floor() -> TileMapLayer:
+	return _find_tilemap_layer(content)
+
+## Devuelve la primera TileMapLayer encontrada en el subárbol de `node` (búsqueda en
+## profundidad), o null si no hay ninguna.
+func _find_tilemap_layer(node: Node) -> TileMapLayer:
+	for child in node.get_children():
+		if child is TileMapLayer:
+			return child
+		var found := _find_tilemap_layer(child)
+		if found:
+			return found
+	return null
+
+## Disparada cuando un hijo del spawner abandona el árbol. Si era un enemigo de la
+## oleada, comprueba —de forma diferida, ya retirado del árbol— si era el último.
+func _on_combat_enemy_exiting(child: Node) -> void:
+	if not _combat_active or not child.is_in_group("Enemy"):
+		return
+	_check_combat_cleared.call_deferred()
+
+## Da por limpiada la sala cuando ya no queda ningún enemigo vivo de la oleada.
+func _check_combat_cleared() -> void:
+	if not _combat_active:
+		return
+	if _alive_combat_enemies() > 0:
+		return
+	_clear_combat()
+
+## Marca la sala como limpiada, deja de vigilar muertes y reabre las puertas que
+## conectan con vecinos. Idempotente: reentrar no vuelve a encerrar al jugador.
+func _clear_combat() -> void:
+	_combat_active = false
+	is_combat_cleared = true
+	if enemy_spawner and enemy_spawner.child_exiting_tree.is_connected(_on_combat_enemy_exiting):
+		enemy_spawner.child_exiting_tree.disconnect(_on_combat_enemy_exiting)
+	_open_active_doors()
+
+## Cuenta los enemigos vivos generados por el spawner de la sala (sus hijos del
+## grupo "Enemy"). Permite saber cuándo se limpió el combate.
+func _alive_combat_enemies() -> int:
+	if enemy_spawner == null:
+		return 0
+	var count := 0
+	for child in enemy_spawner.get_children():
+		if child.is_in_group("Enemy"):
+			count += 1
+	return count
 
 ## Arranca los puzzles con temporizador propio (p. ej. el aritmético) al entrar el
 ## jugador, para que su validación no corra con la sala vacía.

@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://d2nnpso6gfrsw"]
 
 [ext_resource type="Script" uid="uid://douwlilagbp2i" path="res://Stages/Layouts/Cave/Layers/Puzzle/puzzle_laser.gd" id="1_aajh6"]
-[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/cave.png" id="2_l8w63"]
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="2_l8w63"]
 [ext_resource type="PackedScene" uid="uid://cbky0ospmu4s3" path="res://Stages/Elements/Totem.tscn" id="3_grspr"]
 [ext_resource type="PackedScene" uid="uid://o1j6hhh1clsy" path="res://Stages/Elements/Receptor.tscn" id="3_sf5l0"]
 [ext_resource type="PackedScene" uid="uid://ij5vke6le04n" path="res://Stages/Elements/Laser.tscn" id="5_tv4th"]
