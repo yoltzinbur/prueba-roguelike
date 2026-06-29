@@ -219,6 +219,7 @@ func _mark_solved() -> void:
 	# Bloquea los interruptores para que el jugador no pueda alterar la solución.
 	for interrupter in _interrupters:
 		interrupter.lock()
+	$AudioStreamPlayer.play()
 	_show_message("PUZZLE RESUELTO", 3.0)
 	puzzle_solved.emit()
 	# Avisa a la sala para que reabra las puertas, si el puzzle vive dentro de una.

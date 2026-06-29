@@ -3,6 +3,8 @@ extends Control
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = true
+	$GameOverMusic.process_mode = Node.PROCESS_MODE_ALWAYS
+	$GameOverMusic.play()
 
 func _on_reiniciar_pressed():
 	get_tree().paused = false
@@ -12,4 +14,4 @@ func _on_reiniciar_pressed():
 func _on_menu_pressed():
 	get_tree().paused = false
 	queue_free()  # ← también aquí
-	get_tree().change_scene_to_file("res://Utilities/MainMenu/MainMenu.tscn")
+	get_tree().change_scene_to_file("res://Utilities/UI/MainMenu/MainMenu.tscn")

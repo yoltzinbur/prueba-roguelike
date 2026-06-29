@@ -259,6 +259,7 @@ func _mark_solved() -> void:
 	set_physics_process(false)
 	# Bloquea las cajas para que el jugador no pueda deshacer la solución moviéndolas.
 	_lock_boxes()
+	$AudioStreamPlayer.play()
 	_show_message("PUZZLE RESUELTO")
 	puzzle_solved.emit()
 	# Avisa a la sala para que reabra las puertas, si el puzzle vive dentro de una.
