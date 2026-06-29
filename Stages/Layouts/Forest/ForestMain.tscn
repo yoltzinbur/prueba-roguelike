@@ -946,6 +946,7 @@ tile_map_data = PackedByteArray("AAAHAH3/AAAOAAAAAAAPAHD/AAAOAAAAAADm/1z/AAAOAAA
 tile_set = SubResource("TileSet_4bemk")
 
 [node name="BossPortal" parent="Sorting" unique_id=290800310 instance=ExtResource("8_42cta")]
+visible = false
 position = Vector2(-190, -2549)
 
 [node name="walls" type="TileMapLayer" parent="." unique_id=1789778521]

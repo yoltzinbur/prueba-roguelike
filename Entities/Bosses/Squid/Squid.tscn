@@ -14,6 +14,12 @@
 [ext_resource type="Texture2D" uid="uid://dn4fgjknhmfol" path="res://Entities/Bosses/Squid/Art/Idle.png" id="9_sldia"]
 [ext_resource type="Texture2D" uid="uid://1gybs8fjsmca" path="res://Entities/Bosses/Squid/Art/Shoot.png" id="10_us6y7"]
 [ext_resource type="Texture2D" uid="uid://cu5b40fmhvmpt" path="res://Entities/Bosses/Squid/Art/Walk.png" id="11_ox1un"]
+[ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="12_hit"]
+[ext_resource type="Script" uid="uid://ui2jwjnr0yi5" path="res://Entities/Bosses/Squid/States/squid_idle.gd" id="13_idle"]
+[ext_resource type="Script" uid="uid://jgrq8vtdqgc5" path="res://Entities/Bosses/Squid/States/squid_chase.gd" id="14_chase"]
+[ext_resource type="Script" uid="uid://dw4pd3arllfot" path="res://Entities/Bosses/Squid/States/squid_attack.gd" id="15_atk"]
+[ext_resource type="Script" uid="uid://d3gyh1k4amsvm" path="res://Entities/Bosses/Squid/States/squid_attack_loop.gd" id="16_loop"]
+[ext_resource type="Script" uid="uid://pexwjsuf3dbk" path="res://Entities/Bosses/Squid/States/squid_shoot.gd" id="17_shoot"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2fnxf"]
 atlas = ExtResource("6_vqasv")
@@ -241,21 +247,45 @@ animations = [{
 radius = 19.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yeydr"]
-radius = 17.0
-height = 54.0
+radius = 21.0
+height = 58.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d2llr"]
 radius = 29.017237
 
-[node name="Squid" type="CharacterBody2D" unique_id=1350099525]
+[node name="Squid" type="CharacterBody2D" unique_id=1350099525 groups=["Boss", "Enemy"]]
+process_mode = 4
+collision_layer = 8
+collision_mask = 9
 script = ExtResource("1_34pbs")
 metadata/_edit_horizontal_guides_ = [32.0, 16.0, -22.0, -32.0]
 
-[node name="StateMachine" type="Node" parent="." unique_id=190589904 node_paths=PackedStringArray("animation_sprite", "target")]
+[node name="StateMachine" type="Node" parent="." unique_id=190589904 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("2_2y2kj")
+initial_state = NodePath("Idle")
 animation_sprite = NodePath("../AnimatedSprite2D")
 target = NodePath("..")
 metadata/_custom_type_script = "uid://c7agcf6y1awqi"
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=834526890]
+script = ExtResource("13_idle")
+
+[node name="Chase" type="Node" parent="StateMachine" unique_id=1437732544]
+script = ExtResource("14_chase")
+
+[node name="Attack" type="Node" parent="StateMachine" unique_id=940943596 node_paths=PackedStringArray("hitbox")]
+script = ExtResource("15_atk")
+hitbox = NodePath("../../HitBox/CollisionShape2D")
+
+[node name="AttackLoop" type="Node" parent="StateMachine" unique_id=232976929 node_paths=PackedStringArray("hitbox")]
+script = ExtResource("16_loop")
+hitbox = NodePath("../../HitBox/CollisionShape2D")
+
+[node name="Shoot" type="Node" parent="StateMachine" unique_id=1371858178]
+script = ExtResource("17_shoot")
+
+[node name="Hit" type="Node" parent="StateMachine" unique_id=905000028]
+script = ExtResource("12_hit")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=504970712]
 script = ExtResource("3_njm3t")
@@ -265,52 +295,61 @@ metadata/_custom_type_script = "uid://b35nh43yww5xt"
 
 [node name="VelocityComponent" type="Node" parent="." unique_id=819140238]
 script = ExtResource("4_au0ju")
-speed = 75.0
+speed = 50.0
 metadata/_custom_type_script = "uid://do423eahufemx"
 
-[node name="EnemyInputComponent" type="Node" parent="." unique_id=1924636236]
+[node name="InputComponent" type="Node" parent="." unique_id=1924636236]
 script = ExtResource("5_lv45x")
 attack_range = 75.0
 metadata/_custom_type_script = "uid://ctnnopoy830jx"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2084932781]
 sprite_frames = SubResource("SpriteFrames_4435p")
-animation = &"attack_loop"
-frame_progress = 0.6421089
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1245924067]
 position = Vector2(0, -3)
 shape = SubResource("CircleShape2D_q8aht")
 
 [node name="HitBox" type="Area2D" parent="." unique_id=697598433]
+collision_layer = 4
+collision_mask = 0
 script = ExtResource("6_cp032")
+damage = 20
 metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox" unique_id=1871531085]
-position = Vector2(0, 14)
+position = Vector2(0, 11)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_yeydr")
+disabled = true
 
-[node name="HurtBox" type="Area2D" parent="." unique_id=527315171]
+[node name="HurtBox" type="Area2D" parent="." unique_id=527315171 node_paths=PackedStringArray("health")]
+collision_layer = 2
+collision_mask = 32
 script = ExtResource("7_qmcca")
+health = NodePath("../HealthComponent")
 metadata/_custom_type_script = "uid://du0cpqxnjs3fe"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=1753020190]
 position = Vector2(0, -3)
 shape = SubResource("CircleShape2D_d2llr")
 
-[node name="NavigationComponent" type="Node2D" parent="." unique_id=1381432624]
+[node name="NavigationComponent" type="Node2D" parent="." unique_id=1381432624 node_paths=PackedStringArray("navigation_agent", "timer")]
 script = ExtResource("8_vqasv")
+navigation_agent = NodePath("NavigationAgent2D")
+timer = NodePath("Timer")
 metadata/_custom_type_script = "uid://chsj2udmaply6"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=572612045]
-avoidance_enabled = true
 
 [node name="Timer" type="Timer" parent="NavigationComponent" unique_id=1447586301]
 wait_time = 0.5
 autostart = true
 
 [node name="SeparationArea" type="Area2D" parent="." unique_id=1060437216]
+collision_layer = 8
+collision_mask = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SeparationArea" unique_id=98166515]
 position = Vector2(0, -3)

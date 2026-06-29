@@ -16,6 +16,9 @@ const FORESTMAIN := "res://Stages/Layouts/Forest/ForestMain.tscn"
 ## partida guardada en el bosque.
 const MAINBUENO := "res://Stages/Main/MainBueno.tscn"
 
+## Arena del jefe final. Se entra por el BossPortal del bosque al completar todos los niveles.
+const FINALBOSS := "res://Stages/Layouts/FinalBoss/LayoutFinal.tscn"
+
 ## Plantilla de sala que instancia el generador (ruta; se carga con load() donde se use).
 ## NO usar preload aquí: arrastraría todo el árbol de la sala —incluidas las puertas con
 ## script (cave_door.gd)— dentro de la compilación de GameScenes, y como cave_door.gd

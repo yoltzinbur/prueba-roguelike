@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cu0bretdlom3w" path="res://Stages/Art/Ninja/TilesetHouse.png" id="1_tjtki"]
 [ext_resource type="Script" uid="uid://ci008ej21i8t4" path="res://Entities/Scripts/Others/interaction_area.gd" id="2_f8hph"]
+[ext_resource type="Script" path="res://Stages/Layouts/Forest/BossPortal/boss_portal.gd" id="3_bp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c5vc1"]
 size = Vector2(64, 56)
@@ -11,6 +12,7 @@ radius = 68.35203
 
 [node name="BossPortal" type="StaticBody2D" unique_id=290800310]
 y_sort_enabled = true
+script = ExtResource("3_bp")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1051307105]
 position = Vector2(23, 34)
