@@ -11,6 +11,7 @@ height = 38.0
 
 [node name="CaveDoor2" type="StaticBody2D" unique_id=1757479827]
 script = ExtResource("1_x0hbm")
+completes_level = true
 metadata/_edit_vertical_guides_ = [48.0]
 metadata/_edit_horizontal_guides_ = [40.0]
 

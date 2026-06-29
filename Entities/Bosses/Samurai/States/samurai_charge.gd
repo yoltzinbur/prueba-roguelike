@@ -20,8 +20,8 @@ var _dashing: bool = false
 
 func enter(args := {}):
 	super.enter(args)
-	if health_component and not health_component.damaged.is_connected(_on_damaged):
-		health_component.damaged.connect(_on_damaged)
+	# La embestida NO se interrumpe al recibir daño: el Jefe sigue su ataque hasta el final
+	# (por eso no se conecta a health_component.damaged como hacen Idle/Chase).
 
 	_dir = direction_to_player()
 	_to_right = _dir.x >= 0.0
@@ -58,11 +58,6 @@ func state_physics_process(delta: float) -> void:
 	target.velocity = _dir * dash_speed
 	target.move_and_slide()
 
-func _on_damaged() -> void:
-	transitioned.emit(self, "Hit", {})
-
 func exit():
 	if hitbox:
 		hitbox.disabled = true
-	if health_component and health_component.damaged.is_connected(_on_damaged):
-		health_component.damaged.disconnect(_on_damaged)

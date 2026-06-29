@@ -58,6 +58,11 @@ func _ready() -> void:
 	add_child(_level_manager)
 	_level_manager.setup(rooms_container.get_children())
 
+	# Entra a la cueva con los frascos al máximo guardado (sube tras cada jefe).
+	var player := get_tree().get_first_node_in_group("Player")
+	if player != null:
+		SaveManager.apply_player_state(player)
+
 ## Calcula el tamaño total del mapa y reparte los tipos de sala sobre las
 ## coordenadas obtenidas con Drunkard's Walk.
 func generate_map() -> void:

@@ -9,6 +9,9 @@ extends RefCounted
 ## Escena de entrada al nivel procedural (se carga por ruta vía GameManager.load_scene).
 const STARTCAVE := "res://Stages/Layouts/Cave/CaveMain/StartCave.tscn"
 
+## Escena del bosque (hub). Se carga al vencer al jefe y al reanudar partida guardada.
+const FORESTMAIN := "res://Stages/Layouts/Forest/ForestMain.tscn"
+
 ## Plantilla de sala que instancia el generador (ruta; se carga con load() donde se use).
 ## NO usar preload aquí: arrastraría todo el árbol de la sala —incluidas las puertas con
 ## script (cave_door.gd)— dentro de la compilación de GameScenes, y como cave_door.gd
