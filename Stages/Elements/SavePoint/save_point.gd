@@ -13,6 +13,7 @@ func _on_interacted() -> void:
 		return
 	SaveManager.apply_player_state(player)
 	SaveManager.save_location = "forest"
+	# Reaparecer frente al SavePoint al reanudar. El aviso "Partida guardada" lo emite
+	# save_game() (se muestra en cada guardado real, no sólo aquí).
+	SaveManager.forest_spawn = "savepoint"
 	SaveManager.save_game()
-	if player.has_method("show_message"):
-		player.show_message("Partida guardada")

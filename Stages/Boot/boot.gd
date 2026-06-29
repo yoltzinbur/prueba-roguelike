@@ -12,4 +12,4 @@ func _route() -> void:
 	if SaveManager.save_location == "forest":
 		GameManager.load_scene(GameScenes.FORESTMAIN)
 	else:
-		GameManager.load_scene(GameScenes.STARTCAVE)
+		GameManager.load_scene(GameScenes.MAINBUENO)

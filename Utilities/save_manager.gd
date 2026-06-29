@@ -17,6 +17,15 @@ var max_flasks: int = 3
 var levels_completed: int = 0
 ## Dónde reanudar al abrir el juego: "cave" o "forest".
 var save_location: String = "cave"
+## Dónde reaparece el jugador en el bosque al REANUDAR: "level1" o "savepoint". Sólo lo
+## cambia el SavePoint (y la llegada inicial del nivel 1). Se persiste.
+var forest_spawn: String = "level1"
+## Punto de aparición transitorio para la siguiente entrada al bosque (p. ej. "level2",
+## frente a la cueva). NO se persiste: se consume una sola vez en consume_forest_spawn().
+var _next_forest_spawn: String = ""
+## IDs de cofres ya abiertos (persistentes). Sólo los cofres con save_id se guardan.
+## Sin tipar a propósito: ConfigFile devuelve Array genérico al cargar.
+var opened_chests: Array = []
 
 func _ready() -> void:
 	if has_save():
@@ -32,10 +41,14 @@ func save_game() -> void:
 	config.set_value(SECTION, "max_flasks", max_flasks)
 	config.set_value(SECTION, "levels_completed", levels_completed)
 	config.set_value(SECTION, "save_location", save_location)
+	config.set_value(SECTION, "forest_spawn", forest_spawn)
+	config.set_value(SECTION, "opened_chests", opened_chests)
 	config.set_value(SECTION, "coins", GameManager.coins)
 	var error := config.save(SAVE_PATH)
 	if error != OK:
 		push_error("No se pudo guardar la partida (código %d)" % error)
+		return
+	_announce_saved()
 
 ## Lee el archivo de guardado a memoria y aplica las monedas a GameManager.
 func load_game() -> void:
@@ -47,7 +60,39 @@ func load_game() -> void:
 	max_flasks = config.get_value(SECTION, "max_flasks", max_flasks)
 	levels_completed = config.get_value(SECTION, "levels_completed", levels_completed)
 	save_location = config.get_value(SECTION, "save_location", save_location)
+	forest_spawn = config.get_value(SECTION, "forest_spawn", forest_spawn)
+	opened_chests = config.get_value(SECTION, "opened_chests", opened_chests)
 	GameManager.coins = config.get_value(SECTION, "coins", GameManager.coins)
+
+## Muestra el aviso de guardado en la UI del jugador, si hay uno en escena. Se llama
+## tras cada guardado real (save_game), no sólo desde el SavePoint.
+func _announce_saved() -> void:
+	var player := get_tree().get_first_node_in_group("Player")
+	if player != null and player.has_method("show_message"):
+		player.show_message("Partida guardada")
+
+## True si el cofre con ese id ya fue abierto en una sesión previa.
+func is_chest_opened(id: String) -> bool:
+	return id in opened_chests
+
+## Marca un cofre como abierto SÓLO en memoria (idempotente). No persiste por sí mismo:
+## el estado se escribirá en el próximo save_game real (SavePoint, llegada al bosque, fin
+## de nivel), junto con las monedas ya recogidas. Así nunca se guarda el cofre abierto sin
+## guardar también las monedas que soltó.
+func mark_chest_opened(id: String) -> void:
+	if id in opened_chests:
+		return
+	opened_chests.append(id)
+
+## Punto de aparición para la siguiente entrada al bosque. Si hay uno transitorio (nivel 2,
+## frente a la cueva) lo devuelve una sola vez y lo limpia; si no, devuelve el punto de
+## reanudación persistido (lo fija el SavePoint).
+func consume_forest_spawn() -> String:
+	if _next_forest_spawn != "":
+		var spawn := _next_forest_spawn
+		_next_forest_spawn = ""
+		return spawn
+	return forest_spawn
 
 ## Vencido un jefe: sube un frasco máximo, cuenta el nivel, fija el bosque como
 ## punto de guardado, persiste y lleva al jugador al bosque.
@@ -55,6 +100,13 @@ func complete_level() -> void:
 	levels_completed = mini(levels_completed + 1, TOTAL_LEVELS)
 	max_flasks += 1
 	save_location = "forest"
+	# El punto del nivel 2 (frente a la cueva) es transitorio: NO se guarda como punto de
+	# reanudación. Para reestablecerlo hay que volver al SavePoint. El nivel 1 sí fija su
+	# punto de reanudación.
+	if levels_completed >= TOTAL_LEVELS:
+		_next_forest_spawn = "level2"
+	else:
+		forest_spawn = "level1"
 	save_game()
 	GameManager.load_scene(GameScenes.FORESTMAIN)
 
