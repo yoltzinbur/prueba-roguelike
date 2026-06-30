@@ -15,7 +15,7 @@ func _process(delta: float) -> void:
 	input_heal = false
 	input_motion = Vector2.ZERO
 	
-	if not player and not is_instance_valid(player):
+	if not is_instance_valid(player):
 		return
 	
 	var distance_to_player = target.global_position.distance_to(player.global_position)

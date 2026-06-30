@@ -133,11 +133,13 @@ metadata/_custom_type_script = "uid://chsj2udmaply6"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="NavigationComponent" unique_id=1267764081]
 path_desired_distance = 8.0
+target_desired_distance = 8.0
 radius = 8.5
 neighbor_distance = 30.0
+debug_use_custom = true
 
 [node name="Timer" type="Timer" parent="NavigationComponent" unique_id=2006351377]
-wait_time = 0.5
+wait_time = 0.25
 autostart = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=314416093]
@@ -151,7 +153,6 @@ position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_f1o35")
 
 [node name="HitBox" type="Area2D" parent="." unique_id=794687379]
-visible = false
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("16_s2bv3")
@@ -163,7 +164,6 @@ position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_byj0p")
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=289664271 node_paths=PackedStringArray("health")]
-visible = false
 collision_layer = 2
 collision_mask = 32
 script = ExtResource("17_dumt4")

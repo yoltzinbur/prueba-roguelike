@@ -20,6 +20,10 @@ extends Node2D
 @onready var doors: Node2D = $Doors
 @onready var content: Node2D = $Content
 @onready var enemy_spawner: EnemySpawner = $EnemySpawner
+## Piso base de la sala. Su navmesh cubre toda la sala; al instanciar un overlay con
+## obstáculos (combate/jefe) se recortan de aquí las celdas-obstáculo (ver
+## _carve_overlay_obstacles) para que el navmesh no atraviese esos obstáculos.
+@onready var floor_layer: TileMapLayer = $Layers/floor
 
 ## Emitida tras reinstanciar el contenido del puzzle en reset_current_puzzle().
 ## La UI o los sistemas externos pueden reconectarse al nuevo contenido aquí.
@@ -176,7 +180,11 @@ func _configure_door(door: Node2D, has_neighbor: bool) -> void:
 ## enemigos aparecen cuando el jugador entra (_on_room_trigger_entered), igual que
 ## los puzzles. Así la sala empieza vacía y se "activa" al cruzar la puerta.
 func _setup_combat(pools: Array[SpawnCategory]) -> void:
-	_spawn_interior(combat_list)
+	var interior := _spawn_interior(combat_list)
+	# El overlay de combate trae sus obstáculos como tiles sin navegación. Recortamos
+	# del piso base esas celdas para que el navmesh (unión de capas) no las rellene.
+	if interior:
+		_carve_overlay_obstacles.call_deferred(interior)
 	_combat_pools = pools
 
 ## Sala del Jefe: instancia su layer dedicado (BossRoom), que trae su propio mapa y
@@ -184,7 +192,11 @@ func _setup_combat(pools: Array[SpawnCategory]) -> void:
 ## sala (al completar los puzzles). No usa el EnemySpawner: el jefe es parte de la
 ## escena instanciada, no se spawnea desde una pool.
 func _setup_boss() -> void:
-	_spawn_interior(boss_list)
+	var interior := _spawn_interior(boss_list)
+	# Igual que el combate: el mapa del jefe puede traer obstáculos-tile que deben
+	# recortarse del piso base para que el jefe no intente atravesarlos.
+	if interior:
+		_carve_overlay_obstacles.call_deferred(interior)
 	_lock_boss_room()
 
 ## Despierta al/los jefe(s) de la sala. El jefe (Samurai) nace inerte (process_mode =
@@ -385,6 +397,49 @@ func _find_tilemap_layer(node: Node) -> TileMapLayer:
 		if found:
 			return found
 	return null
+
+## Recorta del piso base las celdas que el overlay recién instanciado marca como
+## obstáculo, para que el navmesh del mundo (unión de todas las TileMapLayer) no las
+## rellene y los enemigos no intenten atravesarlas. Es independiente de cuánto cubra el
+## overlay: solo toca celdas-obstáculo reales; las no pintadas conservan el navmesh base.
+## Una celda es obstáculo bloqueante si su tile NO es navegable (sin polígono de
+## navegación, igual que el predicado de enemy_spawner.gd) PERO sí bloquea físicamente
+## (tiene polígono de colisión), descartando así tiles meramente decorativos.
+func _carve_overlay_obstacles(overlay_root: Node) -> void:
+	if overlay_root == null or floor_layer == null:
+		return
+	var overlay_layers: Array[TileMapLayer] = []
+	_collect_tilemap_layers(overlay_root, overlay_layers)
+	var carved := false
+	for layer in overlay_layers:
+		if layer == floor_layer:
+			continue
+		for cell in layer.get_used_cells():
+			var tile_data := layer.get_cell_tile_data(cell)
+			if tile_data == null:
+				continue
+			if tile_data.get_navigation_polygon(0) != null:
+				continue
+			if tile_data.get_collision_polygons_count(0) <= 0:
+				continue
+			# Mapea la celda del overlay a la del piso base vía coordenadas de mundo,
+			# soportando offsets entre nodos, y borra esa celda del piso base.
+			var world := layer.to_global(layer.map_to_local(cell))
+			var base_cell := floor_layer.local_to_map(floor_layer.to_local(world))
+			floor_layer.erase_cell(base_cell)
+			carved = true
+	# Fuerza la actualización del mapa de navegación para que las rutas se recomputen
+	# con los huecos ya aplicados (solo si estamos en el árbol y hubo recortes).
+	if carved and is_inside_tree():
+		NavigationServer2D.map_force_update(get_world_2d().get_navigation_map())
+
+## Recolecta (DFS) todas las TileMapLayer del subárbol de `node`, incluyéndolo a él
+## mismo si lo es (la raíz de Combat.tscn ES una TileMapLayer).
+func _collect_tilemap_layers(node: Node, out: Array[TileMapLayer]) -> void:
+	if node is TileMapLayer:
+		out.append(node)
+	for child in node.get_children():
+		_collect_tilemap_layers(child, out)
 
 ## Disparada cuando un hijo del spawner abandona el árbol. Si era un enemigo de la
 ## oleada, comprueba —de forma diferida, ya retirado del árbol— si era el último.
