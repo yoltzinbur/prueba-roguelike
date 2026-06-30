@@ -12,9 +12,12 @@ func _on_start_pressed() -> void:
 	# el guardado. Antes saltaba directo a MainBueno y se brincaba ese ruteo.
 	GameManager.load_scene(GameScenes.BOOT)
 
-func _on_options_pressed() -> void:
+func _on_new_game_pressed() -> void:
 	$Control/AudioStart.play()
-	pass # Replace with function body.
+	# Empezar de cero: borra el guardado y reinicia el estado en memoria, luego entra al
+	# router de boot (que, sin progreso, llevará a la cueva inicial).
+	SaveManager.reset_save()
+	GameManager.load_scene(GameScenes.BOOT)
 
 func _on_quit_pressed() -> void:
 	$Control/AudioStart.play()

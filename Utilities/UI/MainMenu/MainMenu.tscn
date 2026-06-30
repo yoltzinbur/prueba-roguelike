@@ -168,7 +168,7 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_hxh00")
 theme_override_styles/hover = SubResource("StyleBoxTexture_qr3ii")
 text = "START"
 
-[node name="Options" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=2059196340]
+[node name="NewGame" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=2059196340]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.050980393, 0.16862746, 0.20784314, 1)
@@ -179,7 +179,7 @@ theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxTexture_qoqlk")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_lviwe")
 theme_override_styles/hover = SubResource("StyleBoxTexture_chw8y")
-text = "CREDITOS"
+text = "NEW GAME"
 
 [node name="Quit" type="Button" parent="Control/CenterContainer/VBoxContainer" unique_id=1023002173]
 custom_minimum_size = Vector2(0, 40)
@@ -204,5 +204,5 @@ parameters/looping = true
 stream = ExtResource("8_vgxt1")
 
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/NewGame" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

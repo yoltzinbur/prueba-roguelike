@@ -37,6 +37,22 @@ func _ready() -> void:
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
+## Borra la partida guardada del disco y devuelve TODO el estado en memoria a sus
+## valores por defecto, para empezar de cero. La usa el botón NEW GAME del menú: como
+## SaveManager es autoload, no basta con borrar el archivo (el estado ya está cargado
+## en memoria), así que también se reinicia aquí, incluidas las monedas de GameManager.
+func reset_save() -> void:
+	if FileAccess.file_exists(SAVE_PATH):
+		DirAccess.remove_absolute(SAVE_PATH)
+	max_flasks = 3
+	levels_completed = 0
+	save_location = "cave"
+	forest_spawn = "level1"
+	_next_forest_spawn = ""
+	opened_chests = []
+	boss_defeated = false
+	GameManager.coins = 0
+
 ## Vuelca el estado actual (incluidas las monedas de GameManager) a disco.
 func save_game() -> void:
 	var config := ConfigFile.new()
