@@ -10,7 +10,8 @@ var _base_damage: int = 0
 
 func enter(args := {}):
 	audioAttack = target.get_node_or_null("Audios/Attack")
-
+	if weapon_anim:
+		weapon_anim.visible = true
 	if args.has("direction"):
 		play_directional_anim("attack")
 		args["velocity_component"].move(0, args["direction"] * args["force"])
@@ -26,6 +27,8 @@ func enter(args := {}):
 	transitioned.emit(self, "Idle", {})
 
 func exit():
+	if weapon_anim:
+		weapon_anim.visible = false
 	if hitbox:
 		hitbox.disabled = true
 	_restore_crit()

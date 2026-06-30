@@ -4,6 +4,7 @@ extends Node
 @export var initial_state: State
 @export var animation_sprite: AnimatedSprite2D
 @export var target: Node2D
+@export var weapon_sprite: AnimatedSprite2D 
 
 var states: Dictionary
 var current_state: State
@@ -17,6 +18,7 @@ func _ready():
 	for child in get_children():
 		child.target = target
 		child.anim = animation_sprite
+		child.weapon_anim = weapon_sprite  # nuevo
 		child.input_component = _input
 		child.velocity_component = _velocity
 		child.health_component = _health
