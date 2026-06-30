@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8mapoverlay01x"]
+
+[ext_resource type="Script" path="res://Utilities/UI/MapOverlay/map_overlay.gd" id="1_mapov"]
+
+[node name="MapOverlay" type="Control"]
+process_mode = 3
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mapov")

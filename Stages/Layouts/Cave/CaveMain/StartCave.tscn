@@ -1,9 +1,10 @@
-[gd_scene format=3 uid="uid://d0slvxbu2rsoe"]
+[gd_scene load_steps=6 format=3 uid="uid://d0slvxbu2rsoe"]
 
 [ext_resource type="Script" uid="uid://bpyfr6n80qkdm" path="res://Stages/Layouts/Cave/CaveMain/start_cave.gd" id="1_n66si"]
 [ext_resource type="PackedScene" uid="uid://dnug6omvsodpm" path="res://Entities/Player/Player.tscn" id="2_jcrri"]
 [ext_resource type="AudioStream" uid="uid://bskirhk36qoh5" path="res://Stages/Musica/RPG Never Go Full Bard.mp3" id="3_q5sha"]
 [ext_resource type="PackedScene" uid="uid://dgb250m1o7qj0" path="res://Utilities/UI/PauseMenu/pause_menu.tscn" id="4_ywmj8"]
+[ext_resource type="PackedScene" uid="uid://b8mapoverlay01x" path="res://Utilities/UI/MapOverlay/MapOverlay.tscn" id="5_mapov"]
 
 [node name="CaveMain" type="Node2D" unique_id=1789932892]
 script = ExtResource("1_n66si")
@@ -23,3 +24,5 @@ process_mode = 3
 layer = 100
 
 [node name="PauseMenu" parent="CanvasLayer" unique_id=1520165393 instance=ExtResource("4_ywmj8")]
+
+[node name="MapOverlay" parent="CanvasLayer" instance=ExtResource("5_mapov")]
