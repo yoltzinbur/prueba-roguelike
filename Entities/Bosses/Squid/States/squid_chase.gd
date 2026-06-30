@@ -19,6 +19,11 @@ extends SquidState
 ## Descanso entre CUALQUIER par de ataques (cuenta desde que termina uno). Da respiro al
 ## jugador para que no sea un machacabotones imparable.
 @export var attack_cooldown: float = 1.0
+## Super armadura (poise): tiempo mínimo entre reacciones de Hit. Tras encajar un golpe, el
+## jefe SIGUE recibiendo daño pero IGNORA la interrupción durante este margen. Evita el
+## bloqueo en el que machacando el ataque pegado al jefe (p. ej. desde arriba) nunca llega a
+## contraatacar porque cada golpe lo reinicia a Hit.
+@export var hit_poise_cooldown: float = 1.5
 
 # Marcas de tiempo (ms) del último uso de cada ataque, para respetar sus cooldowns. Persisten
 # porque el nodo State se reutiliza entre transiciones.
@@ -27,6 +32,9 @@ var _last_shoot_ms: float = -1.0e9
 # Tiempo acumulado en Chase desde el último ataque (se reinicia al entrar, es decir, al volver
 # de un ataque): el jefe no vuelve a atacar hasta superar attack_cooldown.
 var _rest_t: float = 0.0
+# Marca de tiempo (ms) de la última reacción de Hit, para aplicar la super armadura. Persiste
+# entre transiciones (el nodo State se reutiliza), así el poise se respeta al volver de Hit.
+var _last_hit_react_ms: float = -1.0e9
 
 func enter(args := {}):
 	super.enter(args)
@@ -81,6 +89,12 @@ func _pursue(delta: float, dir: Vector2) -> void:
 	velocity_component.move(delta, dir)
 
 func _on_damaged() -> void:
+	# Super armadura: si encajó un golpe hace poco, absorbe este sin interrumpirse (el daño ya
+	# se aplicó en HealthComponent). Así puede contraatacar aunque lo machaquen pegado a él.
+	var now := float(Time.get_ticks_msec())
+	if now - _last_hit_react_ms < hit_poise_cooldown * 1000.0:
+		return
+	_last_hit_react_ms = now
 	transitioned.emit(self, "Hit", {})
 
 func exit():
