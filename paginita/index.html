@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cristal Heart — Roguelike de cuevas procedurales</title>
+  <meta name="description" content="Desciende a cuevas de cristal que nunca son iguales, resuelve sus pruebas, vence a sus jefes y restaura el corazón de cristal. Un roguelike para Android." />
+
+  <!-- Tailwind CSS (CDN, segun el brief: archivo auto-contenido) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tipografias gaming: Orbitron (titulos) + Rajdhani (cuerpo / UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Iconos: Phosphor (CDN, una sola familia) -->
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            abyss:  '#05060f',
+            abyss2: '#080a18',
+            cryo:   '#4ee5ff',   // cian cristal (acento primario)
+            myst:   '#a78bfa',   // morado mistico (acento secundario en gradientes)
+            azure:  '#5b8cff',   // azul brillante
+          },
+          fontFamily: {
+            display: ['Orbitron', 'sans-serif'],
+            body:    ['Rajdhani', 'sans-serif'],
+          },
+          maxWidth: { content: '1180px' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    :root { color-scheme: dark; }
+    html { scroll-behavior: smooth; }
+    body { background-color: #05060f; }
+
+    /* ---------- Fondo: glows de cristal + grano ---------- */
+    .bg-field { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+    .glow {
+      position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .55;
+      animation: drift 18s ease-in-out infinite;
+    }
+    .glow-a { width: 46vw; height: 46vw; top: -14vw; left: -8vw;
+      background: radial-gradient(circle, rgba(78,229,255,.40), transparent 68%); }
+    .glow-b { width: 50vw; height: 50vw; bottom: -18vw; right: -10vw;
+      background: radial-gradient(circle, rgba(167,139,250,.38), transparent 70%);
+      animation-delay: -6s; }
+    .glow-c { width: 34vw; height: 34vw; top: 32%; left: 38%;
+      background: radial-gradient(circle, rgba(91,140,255,.28), transparent 72%);
+      animation-delay: -11s; }
+    @keyframes drift {
+      0%,100% { transform: translate3d(0,0,0) scale(1); }
+      50%     { transform: translate3d(2vw,-3vh,0) scale(1.08); }
+    }
+    .grain {
+      position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: .05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ---------- Particulas (destellos de cristal) ---------- */
+    #sparkles { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+    .shard {
+      position: absolute; width: 3px; height: 3px; border-radius: 9999px;
+      background: #cdf6ff;
+      box-shadow: 0 0 6px 1px rgba(78,229,255,.9);
+      animation: twinkle var(--dur,6s) ease-in-out var(--del,0s) infinite;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(.4); }
+      45%, 55% { opacity: .85; transform: scale(1); }
+    }
+
+    /* ---------- Cristal / Glassmorphism ---------- */
+    .glass {
+      background: linear-gradient(150deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      border: 1px solid rgba(173,216,255,.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10),
+                  inset 0 -1px 0 rgba(78,229,255,.05),
+                  0 24px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+    .glass-card {
+      position: relative; overflow: hidden;
+      transition: transform .45s cubic-bezier(.16,1,.3,1), border-color .45s, box-shadow .45s;
+    }
+    .glass-card::after {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: radial-gradient(420px circle at var(--mx,50%) var(--my,0%), rgba(78,229,255,.16), transparent 45%);
+      opacity: 0; transition: opacity .4s;
+    }
+    .glass-card:hover { transform: translateY(-6px); border-color: rgba(78,229,255,.40);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 30px 70px rgba(0,0,0,.55), 0 0 40px rgba(78,229,255,.10); }
+    .glass-card:hover::after { opacity: 1; }
+
+    /* ---------- Titulo con gradiente cristal animado ---------- */
+    .crystal-text {
+      background: linear-gradient(100deg, #4ee5ff, #a78bfa, #5b8cff, #4ee5ff);
+      background-size: 280% auto;
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      animation: shine 9s linear infinite;
+      filter: drop-shadow(0 0 22px rgba(78,229,255,.28));
+    }
+    @keyframes shine { to { background-position: 280% center; } }
+
+    /* ---------- Boton de descarga: shimmer + hover ---------- */
+    .btn-apk {
+      position: relative; isolation: isolate; overflow: hidden;
+      background: linear-gradient(100deg, #4ee5ff, #6aa6ff 45%, #a78bfa);
+      box-shadow: 0 14px 40px rgba(78,229,255,.28), inset 0 1px 0 rgba(255,255,255,.5);
+      transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s;
+    }
+    .btn-apk:hover { transform: scale(1.045); box-shadow: 0 18px 54px rgba(78,229,255,.45), inset 0 1px 0 rgba(255,255,255,.6); }
+    .btn-apk:active { transform: scale(.99); }
+    .btn-apk::before {
+      content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.65), transparent);
+      transform: skewX(-18deg) translateX(-260%);
+      animation: shimmer 4.5s ease-in-out infinite; z-index: 2; pointer-events: none;
+    }
+    @keyframes shimmer {
+      0%, 62% { transform: skewX(-18deg) translateX(-260%); }
+      82%, 100% { transform: skewX(-18deg) translateX(360%); }
+    }
+
+    /* ---------- Emblema corazon de cristal ---------- */
+    .float { animation: float 7s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+    /* ---------- Reveal on scroll ---------- */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    .hairline { background: linear-gradient(90deg, transparent, rgba(173,216,255,.35), transparent); }
+
+    /* ---------- Reduced motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      .glow, .shard, .crystal-text, .btn-apk::before, .float, html { animation: none !important; scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .crystal-text { background-position: 0 center; }
+    }
+  </style>
+</head>
+
+<body class="font-body text-slate-200 antialiased selection:bg-cryo/30 selection:text-white">
+
+  <!-- Fondo -->
+  <div class="bg-field" aria-hidden="true">
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <div class="glow glow-c"></div>
+  </div>
+  <div id="sparkles" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Barra superior minima -->
+  <header class="relative z-30 mx-auto flex max-w-content items-center justify-between px-5 py-5 sm:px-8">
+    <a href="#top" class="flex items-center gap-2.5">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 21S4 14.5 4 8.8C4 6 6.2 4 8.7 4c1.7 0 3 .9 3.3 1.9C12.3 4.9 13.6 4 15.3 4 17.8 4 20 6 20 8.8 20 14.5 12 21 12 21Z"
+          fill="url(#hg)" stroke="rgba(205,246,255,.55)" stroke-width="1"/>
+        <path d="M12 6.5 9.5 11 12 18l2.5-7L12 6.5Z" fill="rgba(255,255,255,.30)"/>
+        <defs><linearGradient id="hg" x1="4" y1="4" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#4ee5ff"/><stop offset=".5" stop-color="#5b8cff"/><stop offset="1" stop-color="#a78bfa"/>
+        </linearGradient></defs>
+      </svg>
+      <span class="font-display text-sm font-700 tracking-[.22em] text-slate-100">CRISTAL HEART</span>
+    </a>
+    <a href="#caracteristicas" class="hidden text-sm font-600 tracking-wide text-slate-300 transition hover:text-cryo sm:inline">
+      Características
+    </a>
+  </header>
+
+  <main id="top" class="relative z-10">
+
+    <!-- ===================== HERO ===================== -->
+    <section class="mx-auto flex min-h-[88dvh] max-w-content flex-col items-center justify-center px-5 pb-16 pt-6 text-center sm:px-8">
+
+      <!-- Emblema corazon de cristal -->
+      <div class="float mb-8 sm:mb-10" aria-hidden="true">
+        <svg width="132" height="132" viewBox="0 0 120 120" class="drop-shadow-[0_0_40px_rgba(78,229,255,.35)]">
+          <defs>
+            <linearGradient id="cryFace" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#7ff0ff"/><stop offset=".55" stop-color="#5b8cff"/><stop offset="1" stop-color="#a78bfa"/>
+            </linearGradient>
+            <radialGradient id="cryCore" cx="50%" cy="42%" r="60%">
+              <stop offset="0" stop-color="#eafcff"/><stop offset="1" stop-color="#4ee5ff" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g stroke="rgba(234,252,255,.65)" stroke-width="1.2" stroke-linejoin="round">
+            <path d="M60 104C28 80 16 60 16 42 16 28 26 20 37 20c9 0 18 6 23 16 5-10 14-16 23-16 11 0 21 8 21 22 0 18-12 38-44 60Z"
+              fill="url(#cryFace)" fill-opacity=".30"/>
+            <path d="M60 36 38 50l8 26 14 22 14-22 8-26-22-14Z" fill="url(#cryFace)" fill-opacity=".85"/>
+            <path d="M60 36 46 76l14 22V36Z" fill="#ffffff" fill-opacity=".22"/>
+            <path d="M60 36 74 76 60 98V36Z" fill="#000010" fill-opacity=".12"/>
+            <path d="M38 50 60 60l22-10M46 76l14-16 14 16" fill="none"/>
+          </g>
+          <circle cx="60" cy="58" r="34" fill="url(#cryCore)"/>
+        </svg>
+      </div>
+
+      <p class="reveal mb-5 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-600 uppercase tracking-[.28em] text-cryo/90">
+        Roguelike de cuevas procedurales
+      </p>
+
+      <h1 class="reveal font-display text-5xl font-900 leading-[0.95] tracking-tight sm:text-7xl lg:text-[5.6rem]">
+        <span class="crystal-text">CRISTAL HEART</span>
+      </h1>
+
+      <p class="reveal mt-6 max-w-2xl font-display text-lg font-500 tracking-[.04em] text-slate-100 sm:text-2xl">
+        Desciende. Resuelve. Purifica el corazón que aún late en lo profundo.
+      </p>
+
+      <p class="reveal mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg">
+        Cada expedición talla una caverna distinta. Sus salas te encierran hasta vencer la oleada
+        o resolver el enigma, su hoguera te devuelve la vida y su jefe guarda el camino al bosque.
+        Llega al fondo y restaura el Tótem corrompido.
+      </p>
+
+      <!-- CTA principal -->
+      <div class="reveal mt-9 flex flex-col items-center gap-4">
+        <a href="#" class="btn-apk group inline-flex items-center gap-3 rounded-2xl px-9 py-4 font-display text-base font-700 uppercase tracking-[.14em] text-[#05060f]">
+          <i class="ph-duotone ph-download-simple text-2xl"></i>
+          <span class="relative z-[3]">Descargar APK</span>
+        </a>
+        <span class="text-xs font-500 uppercase tracking-[.2em] text-slate-500">
+          Android · Hecho con Godot 4.6
+        </span>
+      </div>
+    </section>
+
+    <!-- ===================== FEATURES ===================== -->
+    <section id="caracteristicas" class="mx-auto max-w-content px-5 pb-16 sm:px-8">
+      <div class="reveal mb-10 max-w-2xl">
+        <h2 class="font-display text-3xl font-700 tracking-tight text-slate-100 sm:text-4xl">
+          Nada se repite dos veces
+        </h2>
+        <p class="mt-3 text-base leading-relaxed text-slate-400 sm:text-lg">
+          Generación procedural, salas que te ponen a prueba y una progresión que crece con cada jefe caído.
+        </p>
+      </div>
+
+      <!-- Bento asimetrico: 1 destacada ancha + 4 tarjetas -->
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+        <!-- Destacada (ocupa 2 columnas en desktop) -->
+        <article class="glass glass-card reveal rounded-3xl p-7 md:col-span-2 md:p-9">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cryo/10 text-cryo ring-1 ring-cryo/30">
+                <i class="ph-duotone ph-path text-2xl"></i>
+              </span>
+              <h3 class="font-display text-2xl font-700 tracking-tight text-slate-100">Cuevas que se dibujan solas</h3>
+              <p class="mt-3 max-w-md text-[15px] leading-relaxed text-slate-400">
+                Un algoritmo de Drunkard's Walk teje una red orgánica de salas conectadas en cada partida.
+                Sin pasillos calcados, sin mapa memorizable: la siguiente expedición siempre es territorio nuevo.
+              </p>
+            </div>
+          </div>
+          <div class="mt-7 grid grid-cols-3 gap-3 font-display">
+            <div class="rounded-xl border border-white/5 bg-white/[.03] px-3 py-3 text-center">
+              <p class="text-xl font-700 text-cryo">Easy</p><p class="text-[11px] uppercase tracking-wider text-slate-500">combate</p>
+            </div>
+            <div class="rounded-xl border border-white/5 bg-white/[.03] px-3 py-3 text-center">
+              <p class="text-xl font-700 text-azure">Puzzle</p><p class="text-[11px] uppercase tracking-wider text-slate-500">enigma</p>
+            </div>
+            <div class="rounded-xl border border-white/5 bg-white/[.03] px-3 py-3 text-center">
+              <p class="text-xl font-700 text-myst">Rest</p><p class="text-[11px] uppercase tracking-wider text-slate-500">hoguera</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Encierro -->
+        <article class="glass glass-card reveal rounded-3xl p-7">
+          <span class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-azure/10 text-azure ring-1 ring-azure/30">
+            <i class="ph-duotone ph-lock-key text-2xl"></i>
+          </span>
+          <h3 class="font-display text-xl font-700 tracking-tight text-slate-100">Salas que te encierran</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-slate-400">
+            Cruzas el umbral y las puertas se sellan. Limpia la oleada o resuelve el enigma para volver a abrirlas.
+          </p>
+        </article>
+
+        <!-- Puzzles -->
+        <article class="glass glass-card reveal rounded-3xl p-7">
+          <span class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-myst/10 text-myst ring-1 ring-myst/30">
+            <i class="ph-duotone ph-puzzle-piece text-2xl"></i>
+          </span>
+          <h3 class="font-display text-xl font-700 tracking-tight text-slate-100">Enigmas con lógica</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-slate-400">
+            Pilas y colas, aritmética y láseres. Fallar invoca enemigos; resolverlos acerca la sala del jefe.
+          </p>
+        </article>
+
+        <!-- Jefes -->
+        <article class="glass glass-card reveal rounded-3xl p-7">
+          <span class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cryo/10 text-cryo ring-1 ring-cryo/30">
+            <i class="ph-duotone ph-skull text-2xl"></i>
+          </span>
+          <h3 class="font-display text-xl font-700 tracking-tight text-slate-100">Jefes que cierran el paso</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-slate-400">
+            El Samurái guarda la salida de la cueva. Más al fondo, el Squid protege el Tótem que debes purificar.
+          </p>
+        </article>
+
+        <!-- Progresion -->
+        <article class="glass glass-card reveal rounded-3xl p-7">
+          <span class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-azure/10 text-azure ring-1 ring-azure/30">
+            <i class="ph-duotone ph-flask text-2xl"></i>
+          </span>
+          <h3 class="font-display text-xl font-700 tracking-tight text-slate-100">Avanza y resiste</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-slate-400">
+            Cada jefe vencido suma un frasco de vida. Hogueras, puntos de guardado y monedas sostienen tu descenso.
+          </p>
+        </article>
+
+        <!-- Movil -->
+        <article class="glass glass-card reveal rounded-3xl p-7">
+          <span class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-myst/10 text-myst ring-1 ring-myst/30">
+            <i class="ph-duotone ph-device-mobile text-2xl"></i>
+          </span>
+          <h3 class="font-display text-xl font-700 tracking-tight text-slate-100">Pensado para el bolsillo</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-slate-400">
+            Control en cuatro direcciones, pixel art nítido y un APK ligero. Tu mazmorra cabe en la palma de la mano.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== CIERRE / DESCARGA ===================== -->
+    <section class="mx-auto max-w-content px-5 pb-20 sm:px-8">
+      <div class="glass reveal relative overflow-hidden rounded-[2rem] px-7 py-14 text-center sm:px-10 sm:py-16">
+        <div class="mx-auto max-w-xl">
+          <h2 class="font-display text-3xl font-800 tracking-tight text-slate-100 sm:text-5xl">
+            El corazón sigue latiendo
+          </h2>
+          <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-slate-400 sm:text-lg">
+            Toma tu frasco, enciende la hoguera y baja a la oscuridad. Nadie ha purificado el Tótem todavía.
+          </p>
+          <a href="#" class="btn-apk mt-9 inline-flex items-center gap-3 rounded-2xl px-10 py-4 font-display text-base font-700 uppercase tracking-[.14em] text-[#05060f]">
+            <i class="ph-duotone ph-download-simple text-2xl"></i>
+            <span class="relative z-[3]">Descargar APK</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="relative z-10 mx-auto max-w-content px-5 pb-10 sm:px-8">
+    <div class="hairline mb-6 h-px w-full"></div>
+    <div class="flex flex-col items-center justify-between gap-3 text-sm text-slate-500 sm:flex-row">
+      <span class="font-display tracking-[.18em] text-slate-400">CRISTAL HEART</span>
+      <span>Roguelike de cuevas procedurales · Hecho con Godot 4.6</span>
+    </div>
+  </footer>
+
+  <script>
+    // ---------- Destellos de cristal (discretos) ----------
+    (function () {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
+      const field = document.getElementById('sparkles');
+      const N = window.innerWidth < 640 ? 26 : 46;
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < N; i++) {
+        const s = document.createElement('span');
+        s.className = 'shard';
+        s.style.left = Math.random() * 100 + 'vw';
+        s.style.top = Math.random() * 100 + 'vh';
+        s.style.setProperty('--dur', (4 + Math.random() * 6).toFixed(2) + 's');
+        s.style.setProperty('--del', (Math.random() * 7).toFixed(2) + 's');
+        const scale = 0.6 + Math.random() * 1.6;
+        s.style.transform = 'scale(' + scale + ')';
+        frag.appendChild(s);
+      }
+      field.appendChild(frag);
+    })();
+
+    // ---------- Reveal on scroll ----------
+    (function () {
+      const els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(e => io.observe(e));
+    })();
+
+    // ---------- Spotlight que sigue el cursor en las tarjetas ----------
+    (function () {
+      const cards = document.querySelectorAll('.glass-card');
+      cards.forEach((card) => {
+        card.addEventListener('pointermove', (ev) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', (ev.clientX - r.left) + 'px');
+          card.style.setProperty('--my', (ev.clientY - r.top) + 'px');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
