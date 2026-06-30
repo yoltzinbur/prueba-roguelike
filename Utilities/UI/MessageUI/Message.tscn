@@ -1,8 +1,20 @@
 [gd_scene format=3 uid="uid://b1y0de6mb1cqi"]
 
 [ext_resource type="FontFile" uid="uid://c3gfiwcm2yoxw" path="res://Assets/Fonts/Minecraft.ttf" id="1_e8mj4"]
+[ext_resource type="Script" uid="uid://by4s6asymwpp5" path="res://Utilities/UI/MessageUI/message_ui.gd" id="2_msgui"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_on30b"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_msg"]
 font = ExtResource("1_e8mj4")
 font_size = 8
 
@@ -11,14 +23,36 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -304.0
+offset_bottom = -254.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_msgui")
 
-[node name="Message" type="Label" parent="." unique_id=52521700]
-layout_mode = 0
-offset_left = -80.0
+[node name="Panel" type="Panel" parent="." unique_id=1379540270]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -88.0
 offset_top = -16.0
-offset_right = 80.0
-offset_bottom = -8.0
-label_settings = SubResource("LabelSettings_on30b")
-horizontal_alignment = 2
+offset_right = 88.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="Panel" unique_id=311934492]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_msg")
+horizontal_alignment = 1
+vertical_alignment = 1

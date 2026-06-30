@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://jkbifarrrv0f" path="res://Common/StateMachine/States/hit.gd" id="7_tepoh"]
 [ext_resource type="Script" uid="uid://osrelb7hxxqf" path="res://Entities/Scripts/Character/Nodes/player_input_component.gd" id="8_l2mqv"]
 [ext_resource type="Script" uid="uid://dqhgujueriu8i" path="res://Common/StateMachine/States/dodge.gd" id="9_gbla8"]
-[ext_resource type="Script" path="res://Common/StateMachine/States/parry.gd" id="40_parry"]
 [ext_resource type="Script" uid="uid://b35nh43yww5xt" path="res://Entities/Scripts/Character/Nodes/health_component.gd" id="12_laxle"]
 [ext_resource type="Texture2D" uid="uid://diwi2c76c3wb" path="res://Entities/Player/Art/Attack.png" id="12_o8vwu"]
 [ext_resource type="Script" uid="uid://do423eahufemx" path="res://Entities/Scripts/Character/Nodes/velocity_component.gd" id="14_3wmxr"]
@@ -30,6 +29,7 @@
 [ext_resource type="AudioStream" uid="uid://d17diy5xwqntj" path="res://Entities/Player/Audio/heal.mp3" id="29_e8qxc"]
 [ext_resource type="AudioStream" uid="uid://di1vuqbbcfujj" path="res://Entities/Player/Audio/knifeSlice.ogg" id="29_rvtm2"]
 [ext_resource type="Script" uid="uid://me8fgaw8qowh" path="res://Entities/Player/player.gd" id="31_plyr"]
+[ext_resource type="Script" uid="uid://bn0ie03lsm3tq" path="res://Common/StateMachine/States/parry.gd" id="40_parry"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sauhj"]
 atlas = ExtResource("12_o8vwu")
@@ -676,7 +676,7 @@ collision_layer = 64
 collision_mask = 17
 script = ExtResource("31_plyr")
 metadata/_edit_horizontal_guides_ = [-30.0, -50.0, -46.0]
-metadata/_edit_vertical_guides_ = [160.0]
+metadata/_edit_vertical_guides_ = [160.0, 152.0]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1341081834 node_paths=PackedStringArray("initial_state", "animation_sprite", "target")]
 script = ExtResource("15_5qe47")
@@ -708,7 +708,7 @@ script = ExtResource("7_tepoh")
 [node name="Dodge" type="Node" parent="StateMachine" unique_id=1717315949]
 script = ExtResource("9_gbla8")
 
-[node name="Parry" type="Node" parent="StateMachine"]
+[node name="Parry" type="Node" parent="StateMachine" unique_id=1458074489]
 script = ExtResource("40_parry")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
@@ -760,9 +760,9 @@ offset_bottom = -42.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Message" parent="UI" unique_id=684060352 instance=ExtResource("22_h03de")]
-offset_left = 72.0
+offset_left = 64.0
 offset_top = -64.0
-offset_right = 72.0
+offset_right = 64.0
 offset_bottom = -64.0
 
 [node name="PuzzlesCounter" parent="UI" unique_id=512160119 instance=ExtResource("23_ewrch")]
@@ -793,13 +793,13 @@ metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 shape = SubResource("RectangleShape2D_l2mqv")
 disabled = true
 
-[node name="ParryArea" type="Area2D" parent="."]
+[node name="ParryArea" type="Area2D" parent="." unique_id=143763039]
 collision_layer = 0
 collision_mask = 4
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea" unique_id=1381096152]
 shape = SubResource("CircleShape2D_parry")
 
 [node name="Audios" type="Node" parent="." unique_id=774208424]
