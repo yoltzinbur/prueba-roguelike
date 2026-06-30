@@ -19,7 +19,10 @@ func _process(delta: float) -> void:
 	
 	if input_attack:
 		TutorialManager.registrar_accion("atacar")
-		
+
+	if input_parry:
+		TutorialManager.registrar_accion("parry")
+
 	if input_dodge:
 		TutorialManager.registrar_accion("rodar")
 		

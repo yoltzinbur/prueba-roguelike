@@ -8,3 +8,14 @@ func set_damage(value: int):
 
 func get_damage() -> int:
 	return damage
+
+## Devuelve la entidad (el CharacterBody2D) dueña de este HitBox subiendo por el árbol.
+## La usan el parry/HurtBox para distinguir de quién viene un golpe (p. ej. jefe vs enemigo
+## normal). Devuelve null si el HitBox no cuelga de un cuerpo (p. ej. un proyectil suelto).
+func get_source_entity() -> Node2D:
+	var n: Node = get_parent()
+	while n:
+		if n is CharacterBody2D:
+			return n
+		n = n.get_parent()
+	return null

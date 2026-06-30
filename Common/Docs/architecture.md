@@ -262,11 +262,18 @@ El jefe final vive en `Entities/Bosses/Squid/` y se pelea en la arena `LayoutFin
   respiro al jugador.
 
 ### Parry (estado `Parry` del jugador, `Common/StateMachine/States/parry.gd`)
-Con clic derecho (accion `parry`) el jugador entra a `Parry`: abre una ventana corta y habilita la
-`ParryArea` (un `Area2D` hijo del Player con `mask` en la capa 3). Cada frame refleja los
-**proyectiles** dentro de la zona (objetos con metodo `reflect()`); el melee del jefe se ignora.
-`squid_projectile.reflect(boss)` apunta el proyectil al jefe **sin fallar**, lo pasa a la capa 6
-(`hitbox_player`, asi la HurtBox del jefe lo detecta y la del jugador no) y lo pinta cian.
+Con clic derecho (accion `parry`) el jugador entra a `Parry`: abre una ventana corta (`parry_window`),
+habilita la `ParryArea` (un `Area2D` hijo del Player con `mask` en la capa 3) y activa el escudo de la
+HurtBox (`hurtbox.set_guard(true)`). Tiene **doble funcion**:
+- **Proyectiles** (objetos con metodo `reflect()`) dentro de la zona: se reflejan hacia el jefe.
+  `squid_projectile.reflect(boss)` apunta el proyectil al jefe **sin fallar**, lo pasa a la capa 6
+  (`hitbox_player`, asi la HurtBox del jefe lo detecta y la del jugador no) y lo pinta cian. Esto
+  alimenta el Guard Break (`on_projectile_reflected()`).
+- **Melee de enemigos NORMALES**: el escudo anula su dano mientras dura la ventana (la HurtBox
+  ignora esos golpes en `_is_parried()`) y ademas los **empuja** lejos del jugador metiendolos en su
+  estado `Hit` con `knockback_from`/`knockback_force` (ver `_empujar_enemigo()`).
+- **Melee de JEFES** (entidad en el grupo `Boss`): **no** se bloquea ni empuja; atraviesa el escudo y
+  dana igual. La distincion jefe/enemigo se hace con `HitBox.get_source_entity()` + `is_in_group("Boss")`.
 
 ### Guard Break + critico (en `player.gd`)
 `on_projectile_reflected()` cuenta reflejos; cada `REFLECTS_PER_BREAK` (3) llama

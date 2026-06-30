@@ -81,10 +81,14 @@ const WAVE_INTERVAL_SECONDS: float = 15.0
 ## El puzzle de láseres presiona más al jugador: oleadas más frecuentes.
 const LASER_WAVE_INTERVAL_SECONDS: float = 7.0
 const MEDIUM_EVERY_WAVES: int = 5
+## Oleada en la que se le sugiere al jugador reiniciar el puzzle (lleva rato atascado).
+const WAVE_HINT_AT: int = 3
 
 # Temporizador de oleadas (creado bajo demanda) y número de oleadas ya lanzadas.
 var _wave_timer: Timer
 var _wave_count: int = 0
+# True una vez mostrado el consejo de reinicio, para no repetirlo cada partida en la sala.
+var _reset_hint_shown: bool = false
 
 ## Conecta el RoomTrigger (añadido manualmente en el editor) para detectar la
 ## entrada del jugador. Corre antes que configure_room(), así que room_type aún
@@ -513,6 +517,11 @@ func _on_wave_timer_timeout() -> void:
 	enemy_spawner.spawn_pool(easy_combat, puzzle_floor)
 	if _wave_count % MEDIUM_EVERY_WAVES == 0:
 		enemy_spawner.spawn_pool(medium_combat, puzzle_floor)
+	# Al llegar a la 3ª oleada el jugador lleva rato atascado: le recordamos que puede
+	# reiniciar el puzzle (acción "reset", tecla F) para empezar de cero. Solo una vez.
+	if _wave_count == WAVE_HINT_AT and not _reset_hint_shown:
+		_reset_hint_shown = true
+		_show_player_message("Reinicia el puzzle con 'F'", 4.0)
 
 ## Devuelve el piso navegable del puzzle actual (su corredor), buscando un nodo
 ## "FloorLayer" entre el contenido instanciado. Devuelve null si no lo encuentra.

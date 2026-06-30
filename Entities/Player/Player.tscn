@@ -809,7 +809,7 @@ radius = 24.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1539473209 groups=["Player"]]
 collision_layer = 64
-collision_mask = 17
+collision_mask = 273
 script = ExtResource("31_plyr")
 metadata/_edit_horizontal_guides_ = [-30.0, -50.0, -46.0]
 metadata/_edit_vertical_guides_ = [160.0, 152.0]
@@ -845,7 +845,7 @@ script = ExtResource("7_tepoh")
 [node name="Dodge" type="Node" parent="StateMachine" unique_id=1717315949]
 script = ExtResource("9_gbla8")
 
-[node name="Parry" type="Node" parent="StateMachine"]
+[node name="Parry" type="Node" parent="StateMachine" unique_id=1530066777]
 script = ExtResource("40_parry")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=203472699 node_paths=PackedStringArray("animatedSprite")]
@@ -933,14 +933,13 @@ metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 shape = SubResource("RectangleShape2D_l2mqv")
 disabled = true
 
-[node name="ParryArea" type="Area2D" parent="." unique_id=140929704]
 [node name="ParryArea" type="Area2D" parent="." unique_id=143763039]
 collision_layer = 0
 collision_mask = 4
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea" unique_id=823886278 unique_id=1381096152]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea" unique_id=823886278]
 shape = SubResource("CircleShape2D_parry")
 
 [node name="Audios" type="Node" parent="." unique_id=774208424]
