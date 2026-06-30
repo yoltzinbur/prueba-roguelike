@@ -60,11 +60,16 @@ func adjust_hitbox_position():
 	if hitbox == null:
 		return
 
-	if input_component.input_motion.y < 0:
-		hitbox.position = Vector2(0, -19)
-	elif input_component.input_motion.y > 0:
-		hitbox.position = Vector2(0, 27)
-	elif input_component.input_motion.x > 0:
-		hitbox.position = Vector2(20, 5)
-	elif input_component.input_motion.x < 0:
-		hitbox.position = Vector2(-20, 5)
+	# Usamos la dirección dominante ya calculada (abs(x) vs abs(y)) en lugar de
+	# mirar input_motion.y/x sueltos: con el joystick analógico un empuje lateral
+	# casi siempre deja un residuo vertical mínimo, y comprobar la "y" primero
+	# hacía que la hitbox nunca apuntara a los lados.
+	match input_component.last_direction:
+		"up":
+			hitbox.position = Vector2(0, -19)
+		"down":
+			hitbox.position = Vector2(0, 27)
+		"right":
+			hitbox.position = Vector2(20, 5)
+		"left":
+			hitbox.position = Vector2(-20, 5)
