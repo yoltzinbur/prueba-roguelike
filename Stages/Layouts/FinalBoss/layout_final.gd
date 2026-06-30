@@ -57,6 +57,11 @@ func _activate_boss() -> void:
 
 ## El jefe murió (salió del árbol): victoria y regreso al bosque.
 func _on_boss_defeated() -> void:
+	# El Squid también sale del árbol al desmontarse TODA la escena (p. ej. al usar el
+	# menú del Game Over tras morir). Eso NO es derrotarlo: si la propia arena ya salió
+	# del árbol, se ignora para no persistir la victoria ni tocar un get_tree() nulo.
+	if not is_inside_tree():
+		return
 	if _victory:
 		return
 	_victory = true

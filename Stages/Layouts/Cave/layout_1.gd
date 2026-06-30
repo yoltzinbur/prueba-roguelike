@@ -206,6 +206,11 @@ func _activate_boss() -> void:
 ## Disparada cuando un jefe abandona el árbol (muerte). Cuando ya no queda ninguno vivo,
 ## reabre las puertas que conectan con vecinos.
 func _on_boss_exited(boss: Node) -> void:
+	# El jefe también sale del árbol cuando se desmonta TODA la escena (p. ej. al volver
+	# al menú tras un Game Over). Eso NO es derrotarlo: si la propia sala ya salió del
+	# árbol, se ignora para no ejecutar la lógica de victoria ni tocar un get_tree() nulo.
+	if not is_inside_tree():
+		return
 	_bosses_alive.erase(boss)
 	if _bosses_alive.is_empty():
 		_boss_active = false
@@ -386,11 +391,27 @@ func _on_combat_enemy_exiting(child: Node) -> void:
 
 ## Da por limpiada la sala cuando ya no queda ningún enemigo vivo de la oleada.
 func _check_combat_cleared() -> void:
+	# Los enemigos también salen del árbol al desmontarse la escena (p. ej. menú del Game
+	# Over tras morir en la sala). Si la propia sala ya salió del árbol no es una limpieza
+	# real: se ignora para no anunciar "Sala completada" ni tocar un get_tree() nulo.
+	if not is_inside_tree():
+		return
 	if not _combat_active:
 		return
 	if _alive_combat_enemies() > 0:
 		return
+	# Hubo combate real y cayó el último enemigo: avisa al jugador en su Message UI.
+	# Se hace aquí (y no en _clear_combat) para no mostrarlo cuando la sala se limpia
+	# sin combate (pool vacía o spawn fallido).
+	_show_player_message("¡Sala completada!", 3.0)
 	_clear_combat()
+
+## Envía un mensaje breve al Message UI del jugador. Si no se encuentra al jugador
+## (sala fuera de partida), simplemente no muestra nada.
+func _show_player_message(text: String, duration: float = 3.0) -> void:
+	var player := get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("show_message"):
+		player.show_message(text, duration)
 
 ## Marca la sala como limpiada, deja de vigilar muertes y reabre las puertas que
 ## conectan con vecinos. Idempotente: reentrar no vuelve a encerrar al jugador.
@@ -622,6 +643,12 @@ func _rebuild_puzzle() -> void:
 	# ciclo de los puzzles con temporizador propio sobre la copia nueva.
 	if instance is PuzzleArithmetic:
 		instance.begin()
+
+	# Cada reinicio con F vuelve a mostrar la pista/objetivo del puzzle, para
+	# recordarle al jugador qué debe hacer tras un fallo (el aritmético ya la
+	# muestra en su begin(); este reset cubre el de Pila/Cola y el de láser).
+	_hint_shown = false
+	_show_puzzle_hint()
 
 	# Notifica el reset para que la UI/sistemas externos se reconecten.
 	puzzle_reset.emit()

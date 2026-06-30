@@ -321,7 +321,7 @@ func _update_beam_visual(laser: RayCast2D, status: Status) -> void:
 
 ## Muestra en la UI el objetivo de la compuerta actual. La llama la sala al entrar.
 func show_gate_hint() -> void:
-	_show_message(_objective_message())
+	_show_message(_objective_message(), 5.0)
 
 ## Mensaje legible del objetivo, con la compuerta al inicio:
 ## "<AND|OR|XOR>: <Tapar|Destapar> <A|B|ambos>".
@@ -350,7 +350,7 @@ func _find_room() -> RoomLayout:
 
 ## Envía el texto de retroalimentación al Label de la UI del jugador. Si no se
 ## encuentra al jugador (puzzle fuera de una partida), simplemente no muestra nada.
-func _show_message(text: String) -> void:
+func _show_message(text: String, duration: float = 3.0) -> void:
 	var player := get_tree().get_first_node_in_group("Player")
 	if player and player.has_method("show_message"):
-		player.show_message(text)
+		player.show_message(text, duration)

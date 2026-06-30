@@ -3,9 +3,6 @@ extends StaticBody2D
 ## vida y los frascos del jugador al máximo. Después queda inactiva (frame 0 del
 ## sprite) y ya no puede volver a usarse.
 
-## Frascos máximos a los que se rellena al jugador (igual al tope del HUD).
-@export var max_frascos: int = 3
-
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var interaction_area: InteractionArea = $InteractionArea
 
@@ -25,8 +22,10 @@ func _on_interacted() -> void:
 	usada = true
 
 	# Restaura vida y frascos a través de la API del jugador, sin depender del
-	# nombre/ruta interna de su HealthComponent.
-	jugador.curar_completo(max_frascos)
+	# nombre/ruta interna de su HealthComponent. El tope de frascos sale de
+	# SaveManager (sube +1 por cada jefe vencido), no de un valor fijo: así la
+	# fogata rellena los 4 frascos si ya los desbloqueaste, no solo 3.
+	jugador.curar_completo(SaveManager.max_flasks)
 
 	# Pasa a estado inactivo y se desactiva para no poder volver a usarla.
 	sprite.frame = 0

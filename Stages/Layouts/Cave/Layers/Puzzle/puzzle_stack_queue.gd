@@ -207,15 +207,15 @@ func _reset_room() -> void:
 ## Envía el texto de retroalimentación al Label fijo de la UI del jugador, que
 ## permanece unos segundos en pantalla y luego desaparece. Si no se encuentra al
 ## jugador (puzzle fuera de una partida), simplemente no muestra nada.
-func _show_message(text: String) -> void:
+func _show_message(text: String, duration: float = 3.0) -> void:
 	var player := get_tree().get_first_node_in_group("Player")
 	if player and player.has_method("show_message"):
-		player.show_message(text)
+		player.show_message(text, duration)
 
 ## Muestra momentáneamente en la UI el orden de elementos que el jugador debe
 ## seguir. La llama la sala al entrar y tras cada reinicio.
 func show_order_hint() -> void:
-	_show_message("Orden: " + " > ".join(target_order))
+	_show_message("Orden: " + " > ".join(target_order), 5.0)
 
 ## Crea un Label flotante por encima de cada caja con su elemento, para que el
 ## jugador pueda distinguirlas (todas comparten el mismo sprite).

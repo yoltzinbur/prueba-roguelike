@@ -153,7 +153,7 @@ func begin() -> void:
 	if _residue_label:
 		_residue_label.visible = true
 	# Aviso inicial para dejar claro el objetivo del puzzle.
-	_show_message("Obtén residuo 0", 3.0)
+	_show_message("Obtén residuo 0", 5.0)
 	_seconds_left = validation_interval
 	if _tick_timer == null:
 		_tick_timer = Timer.new()

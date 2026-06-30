@@ -6,6 +6,10 @@ extends RefCounted
 ## una ruta movida se actualiza una sola vez aquí. Añade aquí las escenas que
 ## referencien rutas literales repartidas por el código.
 
+## Router de arranque: revisa el guardado y entra al bosque o a la cueva. El Menú
+## Principal lo carga cuando el jugador pulsa START.
+const BOOT := "res://Stages/Boot/Boot.tscn"
+
 ## Escena de entrada al nivel procedural (se carga por ruta vía GameManager.load_scene).
 const STARTCAVE := "res://Stages/Layouts/Cave/CaveMain/StartCave.tscn"
 
