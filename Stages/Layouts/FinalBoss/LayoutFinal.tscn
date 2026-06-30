@@ -2,7 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="1_ykloq"]
 [ext_resource type="PackedScene" uid="uid://ds1sgtl3b5w6r" path="res://Entities/Bosses/Squid/Squid.tscn" id="2_2553r"]
-[ext_resource type="Script" path="res://Stages/Layouts/FinalBoss/layout_final.gd" id="3_lf"]
+[ext_resource type="Script" uid="uid://dpxaldu0tcsdn" path="res://Stages/Layouts/FinalBoss/layout_final.gd" id="3_lf"]
+[ext_resource type="AudioStream" uid="uid://bwybtssl0ixds" path="res://Stages/Layouts/FinalBoss/Beyond The Clouds (Dungeon Plunder).mp3" id="4_wkfux"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_rpjdk"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -779,5 +780,10 @@ shape = SubResource("RectangleShape2D_37qnp")
 [node name="Squid" parent="." unique_id=1350099525 instance=ExtResource("2_2553r")]
 position = Vector2(247, 71)
 
-[node name="PlayerSpawn" type="Marker2D" parent="."]
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1357276095]
 position = Vector2(248, 220)
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=2010093977]
+stream = ExtResource("4_wkfux")
+autoplay = true
+parameters/looping = true

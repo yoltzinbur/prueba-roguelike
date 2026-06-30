@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Prueba-Roguelike"
-run/main_scene="uid://fyux2tif6mbb"
+run/main_scene="uid://d0slvxbu2rsoe"
 config/features=PackedStringArray("4.6", "Mobile")
 
 [autoload]
