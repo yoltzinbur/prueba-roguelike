@@ -11,6 +11,8 @@ const PLAYER_SCENE := "res://Entities/Player/Player.tscn"
 
 # Evita disparar la victoria dos veces.
 var _victory: bool = false
+# Evita repetir el aviso de parry cada vez que se reevalúa la activación del jefe.
+var _hint_shown: bool = false
 
 func _ready() -> void:
 	var player := _spawn_player()
@@ -54,6 +56,13 @@ func _activate_if_player_inside() -> void:
 func _activate_boss() -> void:
 	if is_instance_valid(squid) and squid.has_method("activate"):
 		squid.activate()
+	# Al entrar a la arena, recuerda al jugador cómo reflejar los proyectiles del jefe.
+	# Solo una vez, aunque la activación se reevalúe (trigger + chequeo de solape inicial).
+	if not _hint_shown:
+		_hint_shown = true
+		var player := get_tree().get_first_node_in_group("Player")
+		if player != null and player.has_method("show_message"):
+			player.show_message("Refleja proyectiles con 'Clic Derecho'", 5.0)
 
 ## El jefe murió (salió del árbol): victoria y regreso al bosque.
 func _on_boss_defeated() -> void:

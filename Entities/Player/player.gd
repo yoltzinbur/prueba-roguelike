@@ -3,10 +3,6 @@ extends CharacterBody2D
 var current_interactable: Node = null
 var current_room: Node = null
 
-# Identifica el último mensaje pedido para que un temporizador antiguo no oculte
-# un mensaje más reciente.
-var _message_token: int = 0
-
 # --- Parry / Guard Break ---------------------------------------------------
 ## Reflejos necesarios para provocar un Guard Break.
 const REFLECTS_PER_BREAK := 3
@@ -23,7 +19,9 @@ var _crit_until: float = 0.0
 ## Componente de vida del jugador, expuesto para que otros sistemas (p. ej. la
 ## fogata) no dependan del nombre/ruta interna del nodo.
 @onready var health_component: HealthComponent = $HealthComponent
-@onready var message_label: Label = $UI/Message.get_node("Message")
+## Panel de avisos en pantalla. Delegamos en su API animada show_message()/
+## hide_message() (ver message_ui.gd) en lugar de tocar el Label directamente.
+@onready var message_ui: MessageUI = $UI/Message
 
 # Contador de puzzles del nivel (instancia de PuzzlesCounter.tscn bajo UI). Lo
 # controla el administrador del nivel a través de la API pública de este script.
@@ -31,9 +29,6 @@ var _crit_until: float = 0.0
 @onready var _puzzle_counter_label: Label = _puzzle_counter.get_node_or_null("Label") if _puzzle_counter else null
 
 func _ready() -> void:
-	# El Label arranca vacío y oculto; solo aparece al pedir un mensaje.
-	message_label.text = ""
-	message_label.visible = false
 	# El contador arranca oculto: solo se muestra dentro de un nivel procedural.
 	if _puzzle_counter:
 		_puzzle_counter.visible = false
@@ -45,18 +40,11 @@ func _process(_delta: float) -> void:
 	if input_component.input_reset and current_room:
 		current_room.reset_current_puzzle()
 
-## Muestra un mensaje en el Label fijo de la UI durante 'duration' segundos y
-## luego lo oculta. Llamadas sucesivas reinician el temporizador.
+## Muestra un mensaje en el panel animado de la UI durante 'duration' segundos.
+## Delega en message_ui.gd, que se encarga del deslizamiento, el desvanecido y el
+## token interno para que un temporizador viejo no borre un mensaje más reciente.
 func show_message(text: String, duration: float = 3.0) -> void:
-	message_label.text = text
-	message_label.visible = true
-	_message_token += 1
-	var token := _message_token
-	await get_tree().create_timer(duration).timeout
-	# Solo oculta si no llegó un mensaje más reciente mientras esperábamos.
-	if token == _message_token:
-		message_label.text = ""
-		message_label.visible = false
+	message_ui.show_message(text, duration)
 
 ## Restaura por completo al jugador: vida al máximo y frascos al tope indicado.
 ## La usan los interactuables de descanso (fogata) sin tocar el HealthComponent

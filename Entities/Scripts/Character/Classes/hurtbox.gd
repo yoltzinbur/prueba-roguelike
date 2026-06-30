@@ -31,6 +31,12 @@ func _on_area_entered(hitbox: HitBox) -> void:
 ## Mientras al menos un HitBox permanezca dentro, repite su daño cada
 ## damage_interval. En cuanto no queda ninguno, detiene el proceso para no gastar ciclos.
 func _physics_process(delta: float) -> void:
+	# Durante una transición de escena el nodo puede estar liberándose y Godot
+	# apaga el monitoreo del área; pedir las áreas solapadas en ese estado lanza
+	# un error. Si el monitoreo está apagado, detenemos el proceso periódico.
+	if not monitoring:
+		set_physics_process(false)
+		return
 	_cooldown -= delta
 	if _cooldown > 0.0:
 		return
