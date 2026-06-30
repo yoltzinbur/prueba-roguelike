@@ -9,6 +9,17 @@ var time_elapsed: float = 0.0
 func enter(args := {}):
 	time_elapsed = 0.0
 
+	# El parry puede forzar un empuje en una dirección concreta (alejar del jugador) y con
+	# una fuerza propia. Si llega "knockback_from", el retroceso apunta desde ese punto.
+	if args.has("knockback_from"):
+		var force: float = args.get("knockback_force", knockback_force)
+		var away: Vector2 = target.global_position - args["knockback_from"]
+		if away == Vector2.ZERO:
+			away = Vector2.UP
+		knockback_velocity = away.normalized() * force
+		play_directional_anim("hit")
+		return
+
 	var current_velocity = target.velocity
 	if current_velocity != Vector2.ZERO:
 		knockback_velocity = -current_velocity.normalized() * knockback_force

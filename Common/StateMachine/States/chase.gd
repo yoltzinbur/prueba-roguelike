@@ -8,10 +8,12 @@ func enter(args := {}):
 		anim.play("walk")
 
 func state_physics_process(delta: float) -> void:
+	# Dirección = path de navegación (que ya rodea cajas/obstáculos gracias al recorte
+	# del navmesh) + separación local entre enemigos para que no se amontonen.
 	var direction: Vector2 = navigation_component.get_next_direction(target)
 	var separation: Vector2 = velocity_component.get_separation_vector()
 
-	var final_direction = (direction + separation * 0.75).normalized()
+	var final_direction := (direction + separation * 0.75).normalized()
 
 	if direction == Vector2.ZERO:
 		if not navigation_component.player or not is_instance_valid(navigation_component.player):

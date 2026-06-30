@@ -248,15 +248,15 @@ animations = [{
 radius = 19.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yeydr"]
-radius = 21.0
-height = 58.0
+radius = 28.0
+height = 62.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d2llr"]
-radius = 29.017237
+radius = 26.0
 
 [node name="Squid" type="CharacterBody2D" unique_id=1350099525 groups=["Boss", "Enemy"]]
 process_mode = 4
-collision_layer = 8
+collision_layer = 264
 collision_mask = 9
 script = ExtResource("1_34pbs")
 metadata/_edit_horizontal_guides_ = [32.0, 16.0, -22.0, -32.0]
@@ -309,7 +309,7 @@ metadata/_custom_type_script = "uid://ctnnopoy830jx"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2084932781]
 sprite_frames = SubResource("SpriteFrames_4435p")
-animation = &"idle"
+animation = &"attack_loop"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1245924067]
 position = Vector2(0, -3)
@@ -323,12 +323,13 @@ damage = 20
 metadata/_custom_type_script = "uid://c0tyncrgwvwai"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox" unique_id=1871531085]
-position = Vector2(0, 11)
+position = Vector2(-1, 2)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_yeydr")
 disabled = true
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=527315171 node_paths=PackedStringArray("health")]
+visible = false
 collision_layer = 2
 collision_mask = 32
 script = ExtResource("7_qmcca")
@@ -336,7 +337,6 @@ health = NodePath("../HealthComponent")
 metadata/_custom_type_script = "uid://du0cpqxnjs3fe"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=1753020190]
-position = Vector2(0, -3)
 shape = SubResource("CircleShape2D_d2llr")
 
 [node name="NavigationComponent" type="Node2D" parent="." unique_id=1381432624 node_paths=PackedStringArray("navigation_agent", "timer")]
@@ -352,6 +352,7 @@ wait_time = 0.5
 autostart = true
 
 [node name="SeparationArea" type="Area2D" parent="." unique_id=1060437216]
+visible = false
 collision_layer = 8
 collision_mask = 8
 

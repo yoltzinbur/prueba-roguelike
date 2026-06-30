@@ -7,6 +7,7 @@ var pasos_completados = {
 	"moverse": false,
 	"rodar":false,
 	"atacar": false,
+	"parry": false,
 	"curar": false,
 	"interactuar":false,
 	"entrar":false
@@ -24,6 +25,8 @@ func verificar_siguiente_paso():
 		mostrar_mensaje.emit("Usa la barra de espacio para rodar")
 	elif not pasos_completados["atacar"]:
 		mostrar_mensaje.emit("¡Bien! Ahora presiona clic izquierdo para atacar")
+	elif not pasos_completados["parry"]:
+		mostrar_mensaje.emit("Presiona clic derecho para hacer un parry: refleja proyectiles y bloquea/empuja a los enemigos")
 	elif not pasos_completados["curar"]:
 		mostrar_mensaje.emit("Genial. Ahora presiona R para curarte")
 	elif not pasos_completados["interactuar"]:

@@ -14,6 +14,8 @@ extends Control
 @export var gap: float = 6.0
 ## Color de los cuadrados y del fondo semitransparente.
 @export var square_color: Color = Color.WHITE
+## Color de la casilla donde se encuentra el jugador ahora mismo.
+@export var current_color: Color = Color("ffd54a")
 @export var background_color: Color = Color(0, 0, 0, 0.6)
 
 # Direcciones cardinales en coordenadas de cuadrícula (igual que start_cave.gd).
@@ -73,6 +75,9 @@ func _actualizar_descubrimiento() -> void:
 		return
 	_last_room = room
 	_revelar(_coord_de(room))
+	# Si el mapa está abierto, refresca para mover el resaltado a la nueva sala.
+	if visible:
+		queue_redraw()
 
 ## Coordenada de cuadrícula de una sala, derivada de su posición en píxeles.
 func _coord_de(room: Node) -> Vector2i:
@@ -132,9 +137,14 @@ func _draw() -> void:
 	var origin := (size - grid_total) * 0.5
 	var square := Vector2(cell - gap, cell - gap)
 
+	# Coordenada de la sala actual del jugador (si la conocemos) para resaltarla.
+	var has_current := _last_room != null and is_instance_valid(_last_room)
+	var current := _coord_de(_last_room) if has_current else Vector2i.ZERO
+
 	for c in coords:
 		var cell_pos := Vector2((c.x - min_x) * cell, (c.y - min_y) * cell)
-		draw_rect(Rect2(origin + cell_pos, square), square_color)
+		var col := current_color if (has_current and c == current) else square_color
+		draw_rect(Rect2(origin + cell_pos, square), col)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:

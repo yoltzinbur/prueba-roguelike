@@ -6,37 +6,22 @@ extends Node
 @onready var target: CharacterBody2D = get_parent()
 
 var separation_area: Area2D = null
-var nav_agent: NavigationAgent2D = null
 
 func _ready() -> void:
 	if target.is_in_group("Enemy"):
 		separation_area = $"../SeparationArea"
-		nav_agent = $"../NavigationComponent/NavigationAgent2D"
-	
-	if nav_agent:
-		nav_agent.velocity_computed.connect(_on_navigation_agent_2d_velocity_computed)
 
+## Aplica movimiento directo en la dirección dada (ya viene con la separación entre
+## enemigos mezclada desde el estado Chase). No se usa el pipeline de evitación RVO del
+## NavigationAgent2D: la evitación de obstáculos (cajas, obstáculos de combate) se resuelve
+## recortando el navmesh para que el propio path los rodee (ver box.gd y layout_1.gd).
 func move(delta: float, direction: Vector2) -> void:
 	var target_velocity := Vector2.ZERO
-	
+
 	if direction:
 		target_velocity = direction * speed
-	
-	if nav_agent and nav_agent.avoidance_enabled and nav_agent.get_navigation_map() != RID():
-		nav_agent.set_velocity_forced(target_velocity)
-	else:
-		_apply_movement(target_velocity)
 
-func _on_navigation_agent_2d_velocity_computed(safe_velocity: Vector2) -> void:
-	if not target or not is_instance_valid(target):
-		return
-	
-	var separation = Vector2.ZERO
-	if separation_area:
-		separation = get_separation_vector() * (speed * 0.5)
-	
-	var final_velocity = safe_velocity + separation
-	_apply_movement(final_velocity)
+	_apply_movement(target_velocity)
 
 func _apply_movement(velocity_to_apply: Vector2) -> void:
 	target.velocity.x = move_toward(target.velocity.x, velocity_to_apply.x, speed)
