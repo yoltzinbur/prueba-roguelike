@@ -48,6 +48,21 @@ func _process(_delta: float) -> void:
 	elif visible and Input.is_action_just_pressed("pause"):
 		_close()
 
+## Con el mapa abierto, un toque/clic en cualquier parte del overlay lo cierra
+## (en táctil no hay tecla M ni Esc). Los botones táctiles consumen su propio
+## toque antes del GUI, así que pulsarlos no cierra el mapa por accidente.
+func _gui_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	var cerrar := false
+	if event is InputEventScreenTouch and event.pressed:
+		cerrar = true
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		cerrar = true
+	if cerrar:
+		_close()
+		accept_event()
+
 # --- Resolución del nivel procedural ---------------------------------------
 
 ## Localiza (una sola vez) el nodo raíz del nivel si expone `map`. En escenas no

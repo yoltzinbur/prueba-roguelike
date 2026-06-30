@@ -1,0 +1,195 @@
+[gd_scene format=3 uid="uid://dgj0slvh86m60"]
+
+[ext_resource type="Script" uid="uid://dgu0f3jiyq4rb" path="res://Utilities/UI/TouchControls/touch_controls.gd" id="1_root"]
+[ext_resource type="Script" uid="uid://dg5l336m0jbfg" path="res://Utilities/UI/TouchControls/virtual_joystick.gd" id="2_joy"]
+[ext_resource type="Script" uid="uid://bssxysajqicyb" path="res://Utilities/UI/TouchControls/touch_action_button.gd" id="3_btn"]
+[ext_resource type="Texture2D" uid="uid://b8lfbgcg2el41" path="res://Utilities/UI/TouchControls/Icons/attack.svg" id="4_attack"]
+[ext_resource type="Texture2D" uid="uid://q5ajgr6asj83" path="res://Utilities/UI/TouchControls/Icons/parry.svg" id="5_parry"]
+[ext_resource type="Texture2D" uid="uid://cgtlac6q1443c" path="res://Utilities/UI/TouchControls/Icons/dodge.svg" id="6_dodge"]
+[ext_resource type="Texture2D" uid="uid://duevigax4fy4s" path="res://Utilities/UI/TouchControls/Icons/heal.svg" id="7_heal"]
+[ext_resource type="Texture2D" uid="uid://b3q34s7k5vdbq" path="res://Utilities/UI/TouchControls/Icons/enter.svg" id="8_enter"]
+[ext_resource type="Texture2D" uid="uid://bp0yolf3yhr05" path="res://Utilities/UI/TouchControls/Icons/reset.svg" id="9_reset"]
+[ext_resource type="Texture2D" uid="uid://cp5jwlsfkcnc4" path="res://Utilities/UI/TouchControls/Icons/pause.svg" id="10_pause"]
+[ext_resource type="Texture2D" uid="uid://cbchagny3rngj" path="res://Utilities/UI/TouchControls/Icons/map.svg" id="11_map"]
+
+[sub_resource type="StyleBoxFlat" id="sb_neutral_n"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.45, 0.47, 0.52, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 0.35)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[sub_resource type="StyleBoxFlat" id="sb_neutral_p"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.6, 0.62, 0.67, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.5)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[node name="TouchControls" type="CanvasLayer" unique_id=796817262]
+layer = 99
+script = ExtResource("1_root")
+metadata/_edit_vertical_guides_ = [432.0]
+
+[node name="Joystick" type="Control" parent="." unique_id=469250744]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -110.0
+offset_right = 112.0
+offset_bottom = -30.0
+grow_vertical = 0
+script = ExtResource("2_joy")
+
+[node name="Actions" type="Control" parent="." unique_id=1717540771]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -256.0
+offset_top = -206.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Attack" type="Button" parent="Actions" unique_id=1529164993]
+layout_mode = 0
+offset_left = 208.0
+offset_top = 160.0
+offset_right = 248.0
+offset_bottom = 200.0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("4_attack")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"attack"
+
+[node name="Parry" type="Button" parent="Actions" unique_id=521414745]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 160.0
+offset_right = 200.0
+offset_bottom = 200.0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("5_parry")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"parry"
+
+[node name="Dodge" type="Button" parent="Actions" unique_id=1145502113]
+layout_mode = 0
+offset_left = 208.0
+offset_top = 112.0
+offset_right = 248.0
+offset_bottom = 152.0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("6_dodge")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"dodge"
+
+[node name="Heal" type="Button" parent="Actions" unique_id=1906343354]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 112.0
+offset_right = 200.0
+offset_bottom = 152.0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("7_heal")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"heal"
+
+[node name="Enter" type="Button" parent="Actions" unique_id=1731801910]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 160.0
+offset_right = 152.0
+offset_bottom = 200.0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("8_enter")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"enter"
+
+[node name="Reset" type="Button" parent="Actions" unique_id=2074313208]
+layout_mode = 0
+offset_left = 208.0
+offset_top = 64.0
+offset_right = 248.0
+offset_bottom = 104.0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("9_reset")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"reset"
+
+[node name="Pause" type="Button" parent="." unique_id=1703897281]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -48.0
+offset_top = 40.0
+offset_right = -8.0
+offset_bottom = 80.0
+grow_horizontal = 0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("10_pause")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"pause"
+
+[node name="Map" type="Button" parent="." unique_id=994702995]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -96.0
+offset_top = 40.0
+offset_right = -56.0
+offset_bottom = 80.0
+grow_horizontal = 0
+theme_override_styles/normal = SubResource("sb_neutral_n")
+theme_override_styles/pressed = SubResource("sb_neutral_p")
+theme_override_styles/hover = SubResource("sb_neutral_n")
+icon = ExtResource("11_map")
+expand_icon = true
+script = ExtResource("3_btn")
+action = &"map"
