@@ -31,6 +31,7 @@
 [ext_resource type="AudioStream" uid="uid://di1vuqbbcfujj" path="res://Entities/Player/Audio/knifeSlice.ogg" id="29_rvtm2"]
 [ext_resource type="Script" uid="uid://me8fgaw8qowh" path="res://Entities/Player/player.gd" id="31_plyr"]
 [ext_resource type="Script" uid="uid://bn0ie03lsm3tq" path="res://Common/StateMachine/States/parry.gd" id="40_parry"]
+[ext_resource type="PackedScene" uid="uid://dgj0slvh86m60" path="res://Utilities/UI/TouchControls/TouchControls.tscn" id="41_touch"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sauhj"]
 atlas = ExtResource("12_o8vwu")
@@ -934,17 +935,11 @@ shape = SubResource("RectangleShape2D_l2mqv")
 disabled = true
 
 [node name="ParryArea" type="Area2D" parent="." unique_id=140929704]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea" unique_id=1381096152]
-shape = SubResource("CircleShape2D_parry")
-
-[node name="ParryArea2" type="Area2D" parent="." unique_id=143763039]
 collision_layer = 0
 collision_mask = 4
 monitoring = false
-monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea" unique_id=823886278]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParryArea" unique_id=1381096152]
 shape = SubResource("CircleShape2D_parry")
 
 [node name="Audios" type="Node" parent="." unique_id=774208424]
@@ -963,5 +958,7 @@ stream = ExtResource("24_mgqku")
 
 [node name="Heal" type="AudioStreamPlayer" parent="Audios" unique_id=469429396]
 stream = ExtResource("29_e8qxc")
+
+[node name="TouchControls" parent="." instance=ExtResource("41_touch")]
 
 [connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]

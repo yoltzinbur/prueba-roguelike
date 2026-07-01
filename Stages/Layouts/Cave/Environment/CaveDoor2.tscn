@@ -1,9 +1,7 @@
 [gd_scene format=3 uid="uid://flno0vimiwv4"]
 
 [ext_resource type="Script" uid="uid://d1d2wqsgsnnti" path="res://Stages/Layouts/Cave/Environment/cave_door.gd" id="1_x0hbm"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_eiv63"]
-load_path = "res://.godot/imported/cave.png-5131d393f7511bd9994498b8d3d6b7bf.ctex"
+[ext_resource type="Texture2D" uid="uid://b1algrlwq04d4" path="res://Stages/Art/Cave/cave.png" id="2_cave"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x0hbm"]
 radius = 13.000002
@@ -18,7 +16,7 @@ metadata/_edit_horizontal_guides_ = [40.0]
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1393791196]
 position = Vector2(24.000002, 28)
 scale = Vector2(0.9999998, 1)
-texture = SubResource("CompressedTexture2D_eiv63")
+texture = ExtResource("2_cave")
 region_enabled = true
 region_rect = Rect2(48, 56, 48, 56)
 

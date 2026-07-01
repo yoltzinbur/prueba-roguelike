@@ -105,9 +105,12 @@ func _restore_carved() -> void:
 	if _carved.is_empty():
 		return
 	for entry in _carved:
-		var layer: TileMapLayer = entry["layer"]
+		# Sin tipar todavía: si la TileMapLayer fue liberada (p. ej. al recargar el
+		# nivel), asignarla a una variable tipada lanzaría "invalid freed instance".
+		# Validamos primero y solo entonces la usamos.
+		var layer = entry["layer"]
 		if is_instance_valid(layer):
-			layer.set_cell(entry["coords"], entry["source"], entry["atlas"], entry["alt"])
+			(layer as TileMapLayer).set_cell(entry["coords"], entry["source"], entry["atlas"], entry["alt"])
 	_carved.clear()
 	if is_inside_tree():
 		NavigationServer2D.map_force_update(get_world_2d().get_navigation_map())
