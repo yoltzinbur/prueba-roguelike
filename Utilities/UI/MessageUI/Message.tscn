@@ -14,10 +14,6 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="LabelSettings" id="LabelSettings_msg"]
-font = ExtResource("1_e8mj4")
-font_size = 8
-
 [node name="Message" type="Control" unique_id=684060352]
 layout_mode = 3
 anchors_preset = 15
@@ -46,13 +42,18 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="Panel" unique_id=311934492]
+[node name="Label" type="RichTextLabel" parent="Panel" unique_id=311934492]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-label_settings = SubResource("LabelSettings_msg")
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("1_e8mj4")
+theme_override_font_sizes/normal_font_size = 8
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1

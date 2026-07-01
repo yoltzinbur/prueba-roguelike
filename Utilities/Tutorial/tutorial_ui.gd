@@ -13,7 +13,9 @@ func _ready():
 	TutorialManager.iniciar_tutorial()
 
 func _on_mostrar_mensaje(texto: String):
-	label.text = texto
+	# El texto llega con BBCode (íconos de botón, negritas). Lo centramos envolviéndolo
+	# en [center] porque RichTextLabel no expone alineación horizontal como propiedad.
+	label.text = "[center]%s[/center]" % texto
 	panel.visible = true
 
 func _on_ocultar_mensaje():

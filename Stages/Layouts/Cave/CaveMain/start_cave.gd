@@ -63,9 +63,9 @@ func _ready() -> void:
 	if player != null:
 		SaveManager.apply_player_state(player)
 		# Solo en el primer nivel (sin niveles completados aún) recordamos al jugador
-		# que puede abrir el mapa con 'M'. En niveles posteriores ya lo conoce.
+		# que puede abrir el mapa con su botón. En niveles posteriores ya lo conoce.
 		if SaveManager.levels_completed == 0 and player.has_method("show_message"):
-			player.show_message("Abre el mapa con 'M'", 5.0)
+			player.show_message("Abre el mapa con [img=12]res://Utilities/UI/TouchControls/Icons/map_white.svg[/img]", 5.0)
 
 ## Calcula el tamaño total del mapa y reparte los tipos de sala sobre las
 ## coordenadas obtenidas con Drunkard's Walk.

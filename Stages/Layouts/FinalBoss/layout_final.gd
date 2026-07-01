@@ -62,7 +62,7 @@ func _activate_boss() -> void:
 		_hint_shown = true
 		var player := get_tree().get_first_node_in_group("Player")
 		if player != null and player.has_method("show_message"):
-			player.show_message("Refleja proyectiles con 'Clic Derecho'", 5.0)
+			player.show_message("Refleja proyectiles con [img=12]res://Utilities/UI/TouchControls/Icons/parry_white.svg[/img]", 5.0)
 
 ## El jefe murió (salió del árbol): victoria y regreso al bosque.
 func _on_boss_defeated() -> void:

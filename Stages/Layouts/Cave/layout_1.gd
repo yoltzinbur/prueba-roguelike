@@ -576,7 +576,7 @@ func _on_wave_timer_timeout() -> void:
 	# reiniciar el puzzle (acción "reset", tecla F) para empezar de cero. Solo una vez.
 	if _wave_count == WAVE_HINT_AT and not _reset_hint_shown:
 		_reset_hint_shown = true
-		_show_player_message("Reinicia el puzzle con 'F'", 4.0)
+		_show_player_message("Reinicia el puzzle con [img=12]res://Utilities/UI/TouchControls/Icons/reset_white.svg[/img]", 4.0)
 
 ## Devuelve el piso navegable del puzzle actual (su corredor), buscando un nodo
 ## "FloorLayer" entre el contenido instanciado. Devuelve null si no lo encuentra.

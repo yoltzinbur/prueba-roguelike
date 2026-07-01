@@ -9,7 +9,7 @@ extends Control
 ## mismo panel animado.
 
 @onready var _panel: Panel = $Panel
-@onready var _label: Label = $Panel/Label
+@onready var _label: RichTextLabel = $Panel/Label
 
 ## Distancia (px) que recorre el panel al deslizarse hacia/desde su posición de reposo.
 const SLIDE_DISTANCE: float = 14.0
@@ -37,7 +37,9 @@ func _ready() -> void:
 ## Muestra `text` deslizando el panel hacia dentro y lo oculta tras `duration` segundos.
 ## Llamadas sucesivas reinician el texto y el temporizador (reanima la entrada).
 func show_message(text: String, duration: float = 3.0) -> void:
-	_label.text = text
+	# Los mensajes pueden traer BBCode (íconos de botón). RichTextLabel no expone
+	# alineación horizontal como propiedad, así que centramos con [center].
+	_label.text = "[center]%s[/center]" % text
 	_panel.visible = true
 	_token += 1
 	var token := _token
